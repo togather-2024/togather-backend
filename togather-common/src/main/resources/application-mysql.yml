@@ -1,0 +1,22 @@
+spring:
+  datasource:
+    url: ENC(A+xhyKlTdTHmA9lXjNifMAR9tTqCEEdeDERaWiGEiea6WcOq54g2NPXc70Ts7AZUlsupZ6kOnhvVFpU23E89I3YSc+7jijglwfZG9QpyoSWmFETIYVnLsDoGLFWMGSfZ)
+    username: ENC(eYbB907/PxPGSCyeEZ+DMQ==)
+    password: ENC(AYyY9n4cMylETc9nS9alNh3/jHuIqMqI)
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    show-sql: true # 콘솔창에 쿼리문 출력
+    hibernate:
+      ddl-auto: validate # DDL 은 SQL에 의해 직접 handling
+    properties:
+      hibernate:
+        format_sql: true # sql문 포맷
+        default_batch_fetch_size: 500 # 일대다 컬렉션 조회 시 성능 최적화
+    open-in-view: false # 영속성 컨텍스트의 생존 범위를 트랜잭션 범위로 한정(OSIV)
+
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.orm.jdbc.bind: trace
