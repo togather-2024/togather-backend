@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS `party_room`(
         PRIMARY KEY (`party_room_id`),
         INDEX (`party_room_name`),
         INDEX (`party_room_host_srl`),
-        INDEX ('party_room_view_count'),
+        INDEX (`party_room_view_count`),
         INDEX (`opening_hour`, `closing_hour`, `price`, `guest_capacity`)
 );
 
