@@ -1,3 +1,6 @@
+DROP TABLE IF EXISTS member;
+DROP TABLE IF EXISTS email_verification;
+
 -- 회원
 CREATE TABLE `member` (
                           `member_srl` bigint NOT NULL,
@@ -6,7 +9,6 @@ CREATE TABLE `member` (
                           `role` varchar(50) NOT NULL,
                           `email` varchar(50) NOT NULL UNIQUE,
                           `profile_pic_file` varchar(50),
-                          `email_verified` boolean,
                           PRIMARY KEY (`member_srl`)
 );
 
