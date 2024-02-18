@@ -1,6 +1,6 @@
 package com.togather.member.model;
 
-import com.togather.email_verification.model.Email_verification;
+import com.togather.email_verification.model.EmailVerification;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,19 +11,30 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor
+@Table(name = "member")
 public class Member {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long member_srl;
-    private String member_name;
+    private long memberSrl;
+
+    @Column(name = "member_name")
+    private String memberName;
+
+    @Column(name ="password")
     private String password;
+
     @Enumerated(value = EnumType.STRING)
+    @Column(name = "role", columnDefinition = "varchar")
     private Role role;
+
+    @Column(name = "email")
     private String email;
-    private String profile_pic_file;
-    @Column(insertable=false, updatable=false)
+
+    @Column(name = "profile_pic_file")
+    private String profilePicFile;
+
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<Email_verification> emailVerificationList = new ArrayList<>();
+    private List<EmailVerification> emailVerificationList = new ArrayList<>();
 
 }
