@@ -1,9 +1,12 @@
+DROP TABLE IF EXISTS member;
+DROP TABLE IF EXISTS email_verification;
+
 -- 회원
 CREATE TABLE `member` (
                           `member_srl` bigint NOT NULL,
                           `member_name` varchar(50) NOT NULL,
                           `password` varchar(50) NOT NULL,
-                          `role` varchar(50) NOT NULL,
+                          `role` ENUM('GUEST', 'HOST', 'ADMIN') NOT NULL,
                           `email` varchar(50) NOT NULL UNIQUE,
                           `profile_pic_file` varchar(50),
                           `email_verified` boolean,
