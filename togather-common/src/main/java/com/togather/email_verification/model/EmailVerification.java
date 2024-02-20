@@ -1,7 +1,7 @@
 package com.togather.email_verification.model;
 
-import com.togather.member.model.Member;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -23,8 +23,14 @@ public class EmailVerification {
     @Column(name = "verification_expiration_time", columnDefinition = "DATETIME")
     private LocalDateTime verificationExpirationTime;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "receiverEmailAddress", referencedColumnName = "email")
-    private Member member;
+    @Column(name ="receiver_email_address")
+    private String receiverEmailAddress;
+
+    @Builder
+    public EmailVerification(String verificationCode, LocalDateTime verificationExpirationTime, String receiverEmailAddress) {
+        this.verificationCode = verificationCode;
+        this.verificationExpirationTime = verificationExpirationTime;
+        this.receiverEmailAddress = receiverEmailAddress;
+    }
 
 }

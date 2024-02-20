@@ -15,6 +15,23 @@ spring:
         default_batch_fetch_size: 500 # 일대다 컬렉션 조회 시 성능 최적화
     open-in-view: false # 영속성 컨텍스트의 생존 범위를 트랜잭션 범위로 한정(OSIV)
 
+  mail:
+    host: smtp.gmail.com # Gmail SMTP 서버 호스트
+    port: 587 # SMTP 서버의 포트 번호
+    username: ENC(rhVwA/gNogsz1Z56JSuskXD2duP8o+MusdLVbKtDmYA=)
+    password: ENC(Pf4ikNvFQmfZxjl2qWipR2mR0ZJakc8+ZSSJrFk0QtA=)
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+    auth-code-expiration-millis: 1800000  # 유효시간, 30 * 60 * 1000 == 30분
+
 
 logging:
   level:

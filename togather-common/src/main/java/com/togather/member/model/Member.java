@@ -1,12 +1,10 @@
 package com.togather.member.model;
 
-import com.togather.email_verification.model.EmailVerification;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
@@ -34,7 +32,13 @@ public class Member {
     @Column(name = "profile_pic_file")
     private String profilePicFile;
 
-    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<EmailVerification> emailVerificationList = new ArrayList<>();
+    @Builder
+    public Member(String memberName, String password, Role role, String email, String profilePicFile) {
+        this.memberName = memberName;
+        this.password = password;
+        this.role = role;
+        this.email = email;
+        this.profilePicFile = profilePicFile;
+    }
 
 }
