@@ -11,4 +11,8 @@ public class PartyRoomImageDto {
     private PartyRoomDto partyRoomDto;
     private String imageFileName;
     private PartyRoomImageType partyRoomImageType;
+
+    public void setToMainImage() {
+        this.partyRoomImageType = PartyRoomImageType.MAIN;
+    }
 }

@@ -11,7 +11,7 @@ import java.time.DayOfWeek;
 @Table(name = "party_room_operation_days")
 @Getter
 @NoArgsConstructor
-public class PartyRoomOperationDays {
+public class PartyRoomOperationDay {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long operationDaysId;
@@ -25,7 +25,7 @@ public class PartyRoomOperationDays {
     private DayOfWeek operationDay;
 
     @Builder
-    public PartyRoomOperationDays(PartyRoom partyRoom, DayOfWeek operationDay) {
+    public PartyRoomOperationDay(PartyRoom partyRoom, DayOfWeek operationDay) {
         this.partyRoom = partyRoom;
         this.operationDay = operationDay;
     }

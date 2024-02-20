@@ -2,6 +2,7 @@ package com.togather.partyroom.tags.model;
 
 import com.togather.partyroom.core.model.PartyRoom;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -21,4 +22,10 @@ public class PartyRoomCustomTagRel {
     @ManyToOne
     @JoinColumn(name = "tag_id")
     private PartyRoomCustomTag partyRoomCustomTag;
+
+    @Builder
+    public PartyRoomCustomTagRel(PartyRoom partyRoom, PartyRoomCustomTag partyRoomCustomTag) {
+        this.partyRoom = partyRoom;
+        this.partyRoomCustomTag = partyRoomCustomTag;
+    }
 }

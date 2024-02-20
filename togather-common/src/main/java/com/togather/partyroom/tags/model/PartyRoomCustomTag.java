@@ -1,6 +1,7 @@
 package com.togather.partyroom.tags.model;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -21,5 +22,11 @@ public class PartyRoomCustomTag {
 
     public void incrementTagCount() {
         this.tagContent += 1;
+    }
+
+    @Builder
+    public PartyRoomCustomTag(String tagContent, long tagCount) {
+        this.tagContent = tagContent;
+        this.tagCount = tagCount;
     }
 }
