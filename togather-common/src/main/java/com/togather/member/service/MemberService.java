@@ -3,6 +3,8 @@ package com.togather.member.service;
 import com.togather.member.converter.MemberConverter;
 import com.togather.member.model.Member;
 import com.togather.member.model.MemberDto;
+import com.togather.member.model.MemberInfoDto;
+import com.togather.member.model.Role;
 import com.togather.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,14 +36,18 @@ public class MemberService {
         log.info("member logged in: {}", findMember.getEmail());
     }
 
-    public MemberDto searchMember(Long memberSrl) {
+    public MemberInfoDto searchMemberInfo(Long memberSrl) {
         Member findMember = memberRepository.findById(memberSrl)
                 .orElseThrow(RuntimeException::new);//TODO: 예외 클래스 추후 수정
 
-        log.info("search member: {}", memberSrl);
+        log.info("search member info: {}", memberSrl);
 
-        return memberConverter.convertToDto(findMember);
-
+        return MemberInfoDto.builder()
+                .memberName(findMember.getMemberName())
+                .role(findMember.getRole())
+                .prifolePicFile(findMember.getProfilePicFile())
+//                .partyRoomReservationDto() TODO: partyRoomReservationDto 추가
+                .build();
     }
 
 }
