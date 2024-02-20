@@ -38,7 +38,7 @@ public class MemberService {
 
     public MemberInfoDto searchMemberInfo(Long memberSrl) {
         Member findMember = memberRepository.findById(memberSrl)
-                .orElseThrow(RuntimeException::new);//TODO: 예외 클래스 추후 수정
+                .orElseThrow(RuntimeException::new); //TODO: 예외 클래스 추후 수정
 
         log.info("search member info: {}", memberSrl);
 
@@ -46,8 +46,18 @@ public class MemberService {
                 .memberName(findMember.getMemberName())
                 .role(findMember.getRole())
                 .prifolePicFile(findMember.getProfilePicFile())
-//                .partyRoomReservationDto() TODO: partyRoomReservationDto 추가
+//                .partyRoomReservationDtos() TODO: partyRoomReservationDtos 추가
                 .build();
+    }
+
+    @Transactional
+    public void update(MemberDto memberDto) {
+        Member findMember = memberRepository.findByEmail(memberDto.getEmail())
+                .orElseThrow(RuntimeException::new); //TODO: 예외 클래스 추후 수정
+
+        findMember.update(memberDto.getMemberName(), memberDto.getPassword(), memberDto.getProfilePicFile());
+
+        log.info("update member info: {}", findMember.getMemberSrl());
     }
 
 }
