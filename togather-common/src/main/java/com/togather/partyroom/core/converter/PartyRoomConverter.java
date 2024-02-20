@@ -17,7 +17,7 @@ public class PartyRoomConverter {
         }
         return PartyRoomDto.builder()
                 .partyRoomName(partyRoom.getPartyRoomName())
-                .partyRoomHost(memberConverter.convert(partyRoom.getPartyRoomHost()))
+                .partyRoomHost(memberConverter.convertToDto(partyRoom.getPartyRoomHost()))
                 .partyRoomDesc(partyRoom.getPartyRoomDesc())
                 .openingHour(partyRoom.getOpeningHour())
                 .closingHour(partyRoom.getClosingHour())
@@ -34,7 +34,7 @@ public class PartyRoomConverter {
 
         return PartyRoom.builder()
                 .partyRoomName(partyRoomDto.getPartyRoomName())
-                .partyRoomHost(memberConverter.convert(partyRoomDto.getPartyRoomHost()))
+                .partyRoomHost(memberConverter.convertToEntity(partyRoomDto.getPartyRoomHost()))
                 .partyRoomDesc(partyRoomDto.getPartyRoomDesc())
                 .openingHour(partyRoomDto.getOpeningHour())
                 .closingHour(partyRoomDto.getClosingHour())
