@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 public class PartyRoomImageConverter {
     private final PartyRoomConverter partyRoomConverter;
 
-    public PartyRoomImage convertFomDto(PartyRoomImageDto partyRoomImageDto) {
+    public PartyRoomImage convertFromDto(PartyRoomImageDto partyRoomImageDto) {
         if (partyRoomImageDto == null) {
             return null;
         }

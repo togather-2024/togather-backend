@@ -14,6 +14,6 @@ public class PartyRoomImageService {
 
     public void registerPartyRoomMainImage(PartyRoomImageDto partyRoomImageDto) {
         partyRoomImageDto.setToMainImage();
-        partyRoomImageRepository.save(partyRoomImageConverter.convertFomDto(partyRoomImageDto));
+        partyRoomImageRepository.save(partyRoomImageConverter.convertFromDto(partyRoomImageDto));
     }
 }
