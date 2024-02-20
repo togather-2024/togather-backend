@@ -19,11 +19,10 @@ public class MemberService {
 
     @Transactional
     public void join(MemberDto memberDto) {
-        Member member = memberConverter.convertToEntity(memberDto);
+        Member member = memberConverter.convertToEntity(memberDto); //TODO: Role(Enum) 세팅은 Controller에서
         memberRepository.save(member);
 
         log.info("save into member: {}", member.getEmail());
-
     }
 
 }
