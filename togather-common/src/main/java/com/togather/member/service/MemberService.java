@@ -4,7 +4,6 @@ import com.togather.member.converter.MemberConverter;
 import com.togather.member.model.Member;
 import com.togather.member.model.MemberDto;
 import com.togather.member.model.MemberInfoDto;
-import com.togather.member.model.Role;
 import com.togather.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,7 +44,7 @@ public class MemberService {
         return MemberInfoDto.builder()
                 .memberName(findMember.getMemberName())
                 .role(findMember.getRole())
-                .prifolePicFile(findMember.getProfilePicFile())
+                .profilePicFile(findMember.getProfilePicFile())
 //                .partyRoomReservationDtos() TODO: partyRoomReservationDtos 추가
                 .build();
     }

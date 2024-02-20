@@ -9,7 +9,7 @@ import java.util.List;
 @Getter
 @Builder
 public class MemberInfoDto {
-    private String prifolePicFile;
+    private String profilePicFile;
     private String memberName;
     private List<PartyRoomReservationDto> partyRoomReservationDtos;
     private Role role;
