@@ -34,4 +34,14 @@ public class MemberService {
         log.info("member logged in: {}", findMember.getEmail());
     }
 
+    public MemberDto searchMember(Long memberSrl) {
+        Member findMember = memberRepository.findById(memberSrl)
+                .orElseThrow(RuntimeException::new);//TODO: 예외 클래스 추후 수정
+
+        log.info("search member: {}", memberSrl);
+
+        return memberConverter.convertToDto(findMember);
+
+    }
+
 }
