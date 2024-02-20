@@ -18,11 +18,20 @@ public class MemberService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public void join(MemberDto memberDto) {
+    public void register(MemberDto memberDto) {
         Member member = memberConverter.convertToEntity(memberDto); //TODO: Role(Enum) 세팅은 Controller에서
         memberRepository.save(member);
 
         log.info("save into member: {}", member.getEmail());
+    }
+
+    public void login(MemberDto memberDto) {
+        Member findMember = memberRepository.findByEmailAndPassword(memberDto.getEmail(), memberDto.getPassword())
+                .orElseThrow(RuntimeException::new); //TODO: 예외 클래스 추후 수정
+
+        //TODO: jwt 토큰 발급 로직 구현
+
+        log.info("member logged in: {}", findMember.getEmail());
     }
 
 }

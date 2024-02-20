@@ -12,7 +12,4 @@ public class MemberDto {
     private String email;
     private String profilePicFile;
 
-    public void from() {
-
-    }
 }

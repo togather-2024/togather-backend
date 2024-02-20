@@ -8,6 +8,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface EmailVerificationRepository extends JpaRepository<EmailVerification, Long> {
-    @Query("SELECT e FROM EmailVerification e WHERE e.receiverEmailAddress = :email ORDER BY e.emailVerificationId DESC LIMIT 1")
+    @Query("select e from EmailVerification e where e.receiverEmailAddress = :email order by e.emailVerificationId desc limit 1")
     Optional<EmailVerification> findLatestByEmail(String email);
 }
