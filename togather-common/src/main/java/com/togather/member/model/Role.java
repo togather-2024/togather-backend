@@ -15,4 +15,5 @@ public enum Role {
     public static Role from(String role) {
         return roles.getOrDefault(role, NONE);
     }
+
 }
