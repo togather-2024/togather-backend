@@ -1,17 +1,14 @@
----
-name: Feature request
-about: Suggest an idea for this project
-title: ''
-labels: ''
-assignees: ''
+## :technologist: Assignee
+<!-- 이름 -->
 
----
+## :memo: Task Description
+<!-- 작업 상세 내용 -->
+- [ ] todo1
+- [ ] todo2
+- [ ] todo3
 
-Assignee : [이름]
-
-Task Description : [작업 상세 내용]
-[ ] todo1
-[ ] todo2
-[ ] todo3
-
-Date : [작업일] ex) 7월 4일(화)
+## :white_check_mark: Date
+<!-- 
+[작업일] 
+ ex) 7월 4일(화)
+-->
