@@ -21,9 +21,9 @@ public class PartyRoomReservationConverter {
     private final MemberConverter memberConverter;
 
     public PartyRoomReservation convertToEntity(PartyRoomReservationDto partyRoomReservationDto) {
-        PartyRoom partyRoom = partyRoomRepository.findById(partyRoomReservationDto.getReservationId())
+        PartyRoom partyRoom = partyRoomRepository.findById(partyRoomReservationDto.getPartyRoomId())
                 .orElseThrow(RuntimeException::new); //TODO: 예외 클래스 수정
-        Member reservationGuest = memberRepository.findById(partyRoomReservationDto.getReservationGuestId())
+        Member reservationGuest = memberRepository.findById(partyRoomReservationDto.getReservationGuestSrl())
                 .orElseThrow(RuntimeException::new); //TODO: 예외 클래스 수정
 
         return PartyRoomReservation.builder()

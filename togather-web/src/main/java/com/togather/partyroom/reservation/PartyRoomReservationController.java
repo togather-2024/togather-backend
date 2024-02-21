@@ -26,9 +26,7 @@ public class PartyRoomReservationController {
 
         //TODO: 토큰 검증 로직 추가
 
-        //수용 인원을 넘지 않았는지 확인
         boolean isValidReservationCapacity = partyRoomService.isValidReservationCapacity(reservationDto.getPartyRoomId(), reservationDto.getGuestCount());
-        //이용하려는 시간이 유효한지 확인
         boolean isValidTimeSlot = partyRoomService.isValidTimeSlot(reservationDto.getPartyRoomId(), reservationDto.getStartTime(), reservationDto.getEndTime());
 
         if (isValidReservationCapacity && isValidTimeSlot)

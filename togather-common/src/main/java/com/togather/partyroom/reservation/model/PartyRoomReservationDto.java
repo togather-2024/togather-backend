@@ -20,7 +20,7 @@ public class PartyRoomReservationDto {
 
     private PartyRoomDto partyRoomDto; //Response
 
-    private long reservationGuestId; //Request
+    private long reservationGuestSrl; //Request
 
     private MemberDto reservationGuest; //Response
 

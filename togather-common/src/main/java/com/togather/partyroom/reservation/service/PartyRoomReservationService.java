@@ -18,6 +18,7 @@ public class PartyRoomReservationService {
     private final PartyRoomReservationRepository partyRoomReservationRepository;
     private final PartyRoomReservationConverter partyRoomReservationConverter;
 
+    @Transactional
     public void register(PartyRoomReservationDto partyRoomReservationDto) {
         PartyRoomReservation partyRoomReservation = partyRoomReservationConverter.convertToEntity(partyRoomReservationDto);
         partyRoomReservationRepository.save(partyRoomReservation);
