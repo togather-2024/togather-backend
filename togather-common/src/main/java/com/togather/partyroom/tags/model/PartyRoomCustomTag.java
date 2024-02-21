@@ -21,7 +21,7 @@ public class PartyRoomCustomTag {
     private long tagCount;
 
     public void incrementTagCount() {
-        this.tagContent += 1;
+        this.tagCount += 1;
     }
 
     @Builder

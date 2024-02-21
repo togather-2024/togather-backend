@@ -1,6 +1,7 @@
 package com.togather.partyroom.core.service;
 
 import com.togather.partyroom.core.converter.PartyRoomConverter;
+import com.togather.partyroom.core.model.PartyRoom;
 import com.togather.partyroom.core.model.PartyRoomDto;
 import com.togather.partyroom.core.model.PartyRoomOperationDayDto;
 import com.togather.partyroom.core.repository.PartyRoomRepository;
@@ -14,6 +15,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -33,12 +35,21 @@ public class PartyRoomService {
     public PartyRoomDto register(PartyRoomDto partyRoomDto, List<PartyRoomCustomTagDto> customTags, PartyRoomLocationDto partyRoomLocationDto,
                                  PartyRoomImageDto mainPartyRoomImageDto, List<PartyRoomOperationDayDto> operationDayDtoList) {
 
-        partyRoomRepository.save(partyRoomConverter.convertFromDto(partyRoomDto));
-        partyRoomImageService.registerPartyRoomMainImage(mainPartyRoomImageDto);
-        partyRoomLocationService.registerLocation(partyRoomLocationDto);
-        partyRoomOperationDayService.registerOperationDays(operationDayDtoList);
-        partyRoomCustomTagService.registerTags(partyRoomDto, customTags);
+        PartyRoom savedPartyRoomEntity = partyRoomRepository.save(partyRoomConverter.convertFromDto(partyRoomDto));
+        partyRoomDto.setPartyRoomId(savedPartyRoomEntity.getPartyRoomId());
 
+        partyRoomLocationDto.setPartyRoomDto(partyRoomDto);
+        partyRoomLocationService.registerLocation(partyRoomLocationDto);
+
+        operationDayDtoList.stream().forEach(operationDayDto -> operationDayDto.setPartyRoomDto(partyRoomDto));
+        partyRoomOperationDayService.registerOperationDays(operationDayDtoList);
+
+        if (StringUtils.hasText(mainPartyRoomImageDto.getImageFileName())) {
+            mainPartyRoomImageDto.setPartyRoomDto(partyRoomDto);
+            partyRoomImageService.registerPartyRoomMainImage(mainPartyRoomImageDto);
+        }
+
+        partyRoomCustomTagService.registerTags(partyRoomDto, customTags);
 
         return partyRoomDto;
     }

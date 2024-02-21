@@ -6,28 +6,41 @@ import com.togather.partyroom.image.model.PartyRoomImageDto;
 import com.togather.partyroom.image.model.PartyRoomImageType;
 import com.togather.partyroom.location.model.PartyRoomLocationDto;
 import com.togather.partyroom.tags.model.PartyRoomCustomTagDto;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.time.DayOfWeek;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Getter
 @RequiredArgsConstructor
 public class PartyRoomRegisterRequestDto {
-    private static int MAX_NUMBER_OF_TAG_INPUT_PER_PARTY_ROOM = 3;
+    private static int MAX_NUMBER_OF_TAG_INPUT_PER_PARTY_ROOM = 10;
 
     // PARTY ROOM FIELDS
+    @NotBlank
     private final String partyRoomName;
+
+    @NotBlank
     private final String partyRoomDesc;
-    private final int opening_hour;
-    private final int closing_hour;
+
+    @Min(0) @Max(24)
+    private final int openingHour;
+
+    @Min(0) @Max(24)
+    private final int closingHour;
+
+    @Positive
     private final long price;
+
+    @Positive
     private final int guestCapacity;
 
     // TAG FIELDS
-    private final List<String> customTags;
+    private final List<String> customTags = new ArrayList<>();
 
     // IMAGE FIELDS
     private final String imageFileName;
@@ -40,6 +53,7 @@ public class PartyRoomRegisterRequestDto {
     private final String jibunAddress;
 
     // OPERATION DAY FIELDS
+    @NotEmpty @DayList
     private final List<String> operationDays;
 
     public PartyRoomDto extractPartyRoomDto() {
@@ -47,8 +61,8 @@ public class PartyRoomRegisterRequestDto {
                 .partyRoomName(this.partyRoomName)
                 .partyRoomDesc(this.partyRoomDesc)
                 .partyRoomViewCount(0L)
-                .openingHour(this.opening_hour)
-                .closingHour(this.closing_hour)
+                .openingHour(this.openingHour)
+                .closingHour(this.closingHour)
                 .price(this.price)
                 .guestCapacity(this.guestCapacity)
                 .build();

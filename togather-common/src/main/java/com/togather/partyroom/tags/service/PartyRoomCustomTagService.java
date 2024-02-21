@@ -25,18 +25,19 @@ public class PartyRoomCustomTagService {
 
     @Transactional
     public void registerTag(PartyRoomDto partyRoomDto, PartyRoomCustomTagDto partyRoomCustomTagDto) {
-        // Always save relation between partyRoom & customTag
-        PartyRoomCustomTagRel relation = partyRoomCustomTagConverter.convertFromDto(partyRoomDto, partyRoomCustomTagDto);
-        partyRoomCustomTagRelRepository.save(relation);
-
         // If tag with content does not exist - create one
         // If tag with content already exists - increment count of original tag
         PartyRoomCustomTag customTag = partyRoomCustomTagRepository.findByTagContent(partyRoomCustomTagDto.getTagContent());
         if (customTag == null) {
-            partyRoomCustomTagRepository.save(partyRoomCustomTagConverter.convertFromDto(partyRoomCustomTagDto));
+            customTag = partyRoomCustomTagRepository.save(partyRoomCustomTagConverter.convertFromDto(partyRoomCustomTagDto));
         } else {
             customTag.incrementTagCount();
         }
+        partyRoomCustomTagDto.setTagId(customTag.getTagId());
+
+        // Always save relation between partyRoom & customTag
+        PartyRoomCustomTagRel relation = partyRoomCustomTagConverter.convertFromDto(partyRoomDto, partyRoomCustomTagDto);
+        partyRoomCustomTagRelRepository.save(relation);
     }
 
     @Transactional
