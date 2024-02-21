@@ -1,5 +1,6 @@
 package com.togather.email_verification.dto;
 
+import jakarta.validation.constraints.Email;
 import lombok.Builder;
 import lombok.Getter;
 import java.time.LocalDateTime;
@@ -9,6 +10,7 @@ import java.time.temporal.ChronoUnit;
 @Builder
 public class EmailVerificationDto {
     private long emailVerificationId;
+    @Email
     private String receiverEmailAddress;
     private String verificationCode;
     private LocalDateTime verificationExpirationTime;
