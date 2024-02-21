@@ -11,6 +11,7 @@ public class EmailVerificationConverter {
 
     public EmailVerification convertToEntity(EmailVerificationDto emailVerificationDto) {
         return EmailVerification.builder()
+                .emailVerificationId(emailVerificationDto.getEmailVerificationId())
                 .receiverEmailAddress(emailVerificationDto.getReceiverEmailAddress())
                 .verificationCode(emailVerificationDto.getVerificationCode())
                 .verificationExpirationTime(emailVerificationDto.getVerificationExpirationTime())

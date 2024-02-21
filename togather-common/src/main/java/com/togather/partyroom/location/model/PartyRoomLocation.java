@@ -35,7 +35,8 @@ public class PartyRoomLocation {
     private String jibunAddress;
 
     @Builder
-    public PartyRoomLocation(PartyRoom partyRoom, String sido, String sigungu, String roadName, String roadAddress, String jibunAddress) {
+    public PartyRoomLocation(long partyRoomLocationId, PartyRoom partyRoom, String sido, String sigungu, String roadName, String roadAddress, String jibunAddress) {
+        this.partyRoomLocationId = partyRoomLocationId;
         this.partyRoom = partyRoom;
         this.sido = sido;
         this.sigungu = sigungu;

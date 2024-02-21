@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 public class PartyRoomReviewDto {
+    private long reviewId;
     private PartyRoomDto partyRoomDto;
     private MemberDto reviewer;
     private String reviewDesc;

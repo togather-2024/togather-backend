@@ -17,6 +17,7 @@ public class PartyRoomLocationConverter {
         }
 
         return PartyRoomLocation.builder()
+                .partyRoomLocationId(partyRoomLocationDto.getPartyRoomLocationId())
                 .partyRoom(partyRoomConverter.convertFromDto(partyRoomLocationDto.getPartyRoomDto()))
                 .sido(partyRoomLocationDto.getSido())
                 .sigungu(partyRoomLocationDto.getSigungu())

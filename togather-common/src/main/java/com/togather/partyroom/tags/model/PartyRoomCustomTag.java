@@ -25,7 +25,8 @@ public class PartyRoomCustomTag {
     }
 
     @Builder
-    public PartyRoomCustomTag(String tagContent, long tagCount) {
+    public PartyRoomCustomTag(long tagId, String tagContent, long tagCount) {
+        this.tagId = tagId;
         this.tagContent = tagContent;
         this.tagCount = tagCount;
     }

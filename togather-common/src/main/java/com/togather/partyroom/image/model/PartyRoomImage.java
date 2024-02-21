@@ -28,7 +28,8 @@ public class PartyRoomImage {
 
 
     @Builder
-    public PartyRoomImage(PartyRoom partyRoom, String imageFileName, PartyRoomImageType imageType) {
+    public PartyRoomImage(long partyRoomImageId, PartyRoom partyRoom, String imageFileName, PartyRoomImageType imageType) {
+        this.partyRoomImageId = partyRoomImageId;
         this.partyRoom = partyRoom;
         this.imageFileName = imageFileName;
         this.imageType = imageType;

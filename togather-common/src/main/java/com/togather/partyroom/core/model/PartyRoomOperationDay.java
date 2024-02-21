@@ -25,7 +25,8 @@ public class PartyRoomOperationDay {
     private DayOfWeek operationDay;
 
     @Builder
-    public PartyRoomOperationDay(PartyRoom partyRoom, DayOfWeek operationDay) {
+    public PartyRoomOperationDay(long operationDaysId, PartyRoom partyRoom, DayOfWeek operationDay) {
+        this.operationDaysId = operationDaysId;
         this.partyRoom = partyRoom;
         this.operationDay = operationDay;
     }

@@ -19,6 +19,7 @@ public class PartyRoomCustomTagConverter {
             return null;
         }
         return PartyRoomCustomTagDto.builder()
+                .tagId(partyRoomCustomTag.getTagId())
                 .tagContent(partyRoomCustomTag.getTagContent())
                 .tagCount(partyRoomCustomTag.getTagCount())
                 .build();
@@ -29,6 +30,7 @@ public class PartyRoomCustomTagConverter {
             return null;
         }
         return PartyRoomCustomTag.builder()
+                .tagId(partyRoomCustomTagDto.getTagId())
                 .tagContent(partyRoomCustomTagDto.getTagContent())
                 .tagCount(partyRoomCustomTagDto.getTagCount())
                 .build();
@@ -40,6 +42,7 @@ public class PartyRoomCustomTagConverter {
         }
 
         return PartyRoomCustomTagRel.builder()
+                .partyRoomTagId(partyRoomCustomTagRelDto.getPartyRoomTagId())
                 .partyRoom(partyRoomConverter.convertFromDto(partyRoomCustomTagRelDto.getPartyRoomDto()))
                 .partyRoomCustomTag(convertFromDto(partyRoomCustomTagRelDto.getPartyRoomCustomTagDto()))
                 .build();

@@ -40,7 +40,8 @@ public class PartyRoom {
     @Column(name = "guestCapacity")
     private int guestCapacity;
     @Builder
-    public PartyRoom(String partyRoomName, Member partyRoomHost, String partyRoomDesc, long partyRoomViewCount, int openingHour, int closingHour, long price, int guestCapacity) {
+    public PartyRoom(long partyRoomId, String partyRoomName, Member partyRoomHost, String partyRoomDesc, long partyRoomViewCount, int openingHour, int closingHour, long price, int guestCapacity) {
+        this.partyRoomId = partyRoomId;
         this.partyRoomName = partyRoomName;
         this.partyRoomHost = partyRoomHost;
         this.partyRoomDesc = partyRoomDesc;

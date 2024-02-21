@@ -24,7 +24,8 @@ public class PartyRoomCustomTagRel {
     private PartyRoomCustomTag partyRoomCustomTag;
 
     @Builder
-    public PartyRoomCustomTagRel(PartyRoom partyRoom, PartyRoomCustomTag partyRoomCustomTag) {
+    public PartyRoomCustomTagRel(long partyRoomTagId, PartyRoom partyRoom, PartyRoomCustomTag partyRoomCustomTag) {
+        this.partyRoomTagId = partyRoomTagId;
         this.partyRoom = partyRoom;
         this.partyRoomCustomTag = partyRoomCustomTag;
     }

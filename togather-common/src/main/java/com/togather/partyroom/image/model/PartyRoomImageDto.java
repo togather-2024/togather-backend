@@ -8,6 +8,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class PartyRoomImageDto {
+    private long partyRoomImageId;
     private PartyRoomDto partyRoomDto;
     private String imageFileName;
     private PartyRoomImageType partyRoomImageType;
