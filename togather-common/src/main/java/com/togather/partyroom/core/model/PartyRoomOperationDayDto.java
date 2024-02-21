@@ -2,6 +2,7 @@ package com.togather.partyroom.core.model;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.DayOfWeek;
 
@@ -9,6 +10,7 @@ import java.time.DayOfWeek;
 @Builder
 public class PartyRoomOperationDayDto {
     private long operationDaysId;
+    @Setter
     private PartyRoomDto partyRoomDto;
     private DayOfWeek operationDay;
 }
