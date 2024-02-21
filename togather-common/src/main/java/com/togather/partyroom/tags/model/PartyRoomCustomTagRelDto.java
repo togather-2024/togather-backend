@@ -7,6 +7,7 @@ import lombok.Getter;
 @Builder
 @Getter
 public class PartyRoomCustomTagRelDto {
+    private long partyRoomTagId;
     private PartyRoomDto partyRoomDto;
     private PartyRoomCustomTagDto partyRoomCustomTagDto;
 }

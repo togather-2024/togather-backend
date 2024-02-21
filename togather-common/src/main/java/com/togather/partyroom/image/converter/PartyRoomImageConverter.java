@@ -17,6 +17,7 @@ public class PartyRoomImageConverter {
         }
 
         return PartyRoomImage.builder()
+                .partyRoomImageId(partyRoomImageDto.getPartyRoomImageId())
                 .partyRoom(partyRoomConverter.convertFromDto(partyRoomImageDto.getPartyRoomDto()))
                 .imageFileName(partyRoomImageDto.getImageFileName())
                 .imageType(partyRoomImageDto.getPartyRoomImageType())

@@ -8,7 +8,7 @@ import java.time.temporal.ChronoUnit;
 @Getter
 @Builder
 public class EmailVerificationDto {
-
+    private long emailVerificationId;
     private String receiverEmailAddress;
     private String verificationCode;
     private LocalDateTime verificationExpirationTime;

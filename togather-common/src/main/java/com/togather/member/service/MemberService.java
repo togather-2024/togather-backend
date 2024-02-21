@@ -42,6 +42,7 @@ public class MemberService {
         log.info("search member info: {}", memberSrl);
 
         return MemberInfoDto.builder()
+                .memberSrl(memberSrl)
                 .memberName(findMember.getMemberName())
                 .role(findMember.getRole())
                 .profilePicFile(findMember.getProfilePicFile())
