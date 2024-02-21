@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class EmailVerificationDtoConverter {
+public class EmailVerificationConverter {
 
     public EmailVerification convertToEntity(EmailVerificationDto emailVerificationDto) {
         return EmailVerification.builder()

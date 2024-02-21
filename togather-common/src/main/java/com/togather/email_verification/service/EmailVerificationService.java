@@ -1,8 +1,9 @@
 package com.togather.email_verification.service;
 
-import com.togather.email_verification.converter.EmailVerificationDtoConverter;
+import com.togather.email_verification.converter.EmailVerificationConverter;
 import com.togather.email_verification.dto.EmailVerificationDto;
 import com.togather.email_verification.model.EmailVerification;
+import com.togather.member.model.MemberDto;
 import com.togather.member.repository.MemberRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
@@ -16,6 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.UnsupportedEncodingException;
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -28,7 +31,7 @@ public class EmailVerificationService {
     private final JavaMailSender javaMailSender;
     private final EmailVerificationRepository emailVerificationRepository;
     private final MemberRepository memberRepository;
-    private final EmailVerificationDtoConverter emailVerificationDtoConverter;
+    private final EmailVerificationConverter emailVerificationDtoConverter;
 
     @Transactional
     public void registerEmailVerification(EmailVerificationDto emailVerificationDto) {
@@ -79,5 +82,18 @@ public class EmailVerificationService {
 
     public boolean isEmailDuplicated(String email) {
         return memberRepository.findByEmail(email).isEmpty() ? false : true; //false - 사용 가능, true - 사용 불가능(중복)
+    }
+
+    public void verifyEmailVerificationCode(EmailVerificationDto emailVerificationDto) {
+        EmailVerification findEmailVerification = emailVerificationRepository.findLatestByEmail(emailVerificationDto.getReceiverEmailAddress())
+                .orElseThrow(RuntimeException::new); //TODO: 예외 클래스 수정
+
+        LocalDateTime currentTime = LocalDateTime.now();
+        if (currentTime.isAfter(findEmailVerification.getVerificationExpirationTime())
+                || !findEmailVerification.getVerificationCode().equals(emailVerificationDto.getVerificationCode())) {
+            throw new RuntimeException(); //TODO: 상황에 따라 예외 처리 세분화
+        }
+
+        log.info("email verification successfully completed.: {}", emailVerificationDto.getReceiverEmailAddress());
     }
 }
