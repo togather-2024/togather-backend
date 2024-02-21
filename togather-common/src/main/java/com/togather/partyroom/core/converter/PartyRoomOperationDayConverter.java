@@ -12,6 +12,7 @@ public class PartyRoomOperationDayConverter {
 
     public PartyRoomOperationDay convertFromDto(PartyRoomOperationDayDto partyRoomOperationDayDto) {
         return PartyRoomOperationDay.builder()
+                .operationDaysId(partyRoomOperationDayDto.getOperationDaysId())
                 .partyRoom(partyRoomConverter.convertFromDto(partyRoomOperationDayDto.getPartyRoomDto()))
                 .operationDay(partyRoomOperationDayDto.getOperationDay())
                 .build();

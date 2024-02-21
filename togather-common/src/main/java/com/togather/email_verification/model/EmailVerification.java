@@ -27,7 +27,8 @@ public class EmailVerification {
     private String receiverEmailAddress;
 
     @Builder
-    public EmailVerification(String verificationCode, LocalDateTime verificationExpirationTime, String receiverEmailAddress) {
+    public EmailVerification(long emailVerificationId, String verificationCode, LocalDateTime verificationExpirationTime, String receiverEmailAddress) {
+        this.emailVerificationId = emailVerificationId;
         this.verificationCode = verificationCode;
         this.verificationExpirationTime = verificationExpirationTime;
         this.receiverEmailAddress = receiverEmailAddress;
