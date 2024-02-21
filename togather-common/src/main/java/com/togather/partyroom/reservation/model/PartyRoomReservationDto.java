@@ -1,5 +1,6 @@
 package com.togather.partyroom.reservation.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.togather.member.model.MemberDto;
 import com.togather.partyroom.core.model.PartyRoomDto;
 import com.togather.partyroom.payment.model.PaymentStatus;

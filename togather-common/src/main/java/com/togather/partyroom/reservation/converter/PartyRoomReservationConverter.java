@@ -6,6 +6,7 @@ import com.togather.member.repository.MemberRepository;
 import com.togather.partyroom.core.converter.PartyRoomConverter;
 import com.togather.partyroom.core.model.PartyRoom;
 import com.togather.partyroom.core.repository.PartyRoomRepository;
+import com.togather.partyroom.payment.model.PaymentStatus;
 import com.togather.partyroom.reservation.model.PartyRoomReservation;
 import com.togather.partyroom.reservation.model.PartyRoomReservationDto;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +34,7 @@ public class PartyRoomReservationConverter {
                 .guestCount(partyRoomReservationDto.getGuestCount())
                 .startTime(partyRoomReservationDto.getStartTime())
                 .endTime(partyRoomReservationDto.getEndTime())
-                .paymentStatus(partyRoomReservationDto.getPaymentStatus())
+                .paymentStatus(PaymentStatus.from(String.valueOf(partyRoomReservationDto.getPaymentStatus())))
                 .build();
 
     }

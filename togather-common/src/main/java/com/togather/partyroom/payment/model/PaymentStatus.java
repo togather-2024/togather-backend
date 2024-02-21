@@ -1,18 +1,17 @@
 package com.togather.partyroom.payment.model;
 
-import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonCreator;
+
+import java.util.stream.Stream;
 
 public enum PaymentStatus {
     NOT_PAYED, PENDING, COMPLETE, NONE;
 
-    private static final HashMap<String, PaymentStatus> paymentStatuses = new HashMap<>();
-
-    static {
-        for (PaymentStatus paymentStatus : PaymentStatus.values())
-            paymentStatuses.put(paymentStatus.name(), paymentStatus);
-    }
-
+    @JsonCreator
     public static PaymentStatus from(String paymentStatus) {
-        return paymentStatuses.getOrDefault(paymentStatus, NONE);
+        return Stream.of(PaymentStatus.values())
+                .filter(status -> status.toString().equals(paymentStatus.toUpperCase()))
+                .findFirst()
+                .orElse(NONE);
     }
 }
