@@ -35,20 +35,25 @@ public class PartyRoomService {
     public PartyRoomDto register(PartyRoomDto partyRoomDto, List<PartyRoomCustomTagDto> customTags, PartyRoomLocationDto partyRoomLocationDto,
                                  PartyRoomImageDto mainPartyRoomImageDto, List<PartyRoomOperationDayDto> operationDayDtoList) {
 
+        // Save party room basic data and persist to get PK of entity
         PartyRoom savedPartyRoomEntity = partyRoomRepository.save(partyRoomConverter.convertFromDto(partyRoomDto));
         partyRoomDto.setPartyRoomId(savedPartyRoomEntity.getPartyRoomId());
 
+        // Save location data
         partyRoomLocationDto.setPartyRoomDto(partyRoomDto);
         partyRoomLocationService.registerLocation(partyRoomLocationDto);
 
+        // Save operation day data
         operationDayDtoList.stream().forEach(operationDayDto -> operationDayDto.setPartyRoomDto(partyRoomDto));
         partyRoomOperationDayService.registerOperationDays(operationDayDtoList);
 
+        // Save main party room image only when file exists
         if (StringUtils.hasText(mainPartyRoomImageDto.getImageFileName())) {
             mainPartyRoomImageDto.setPartyRoomDto(partyRoomDto);
             partyRoomImageService.registerPartyRoomMainImage(mainPartyRoomImageDto);
         }
 
+        // Save tag related data
         partyRoomCustomTagService.registerTags(partyRoomDto, customTags);
 
         return partyRoomDto;

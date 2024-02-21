@@ -25,7 +25,7 @@ public class PartyRoomCustomTagService {
 
     @Transactional
     public void registerTag(PartyRoomDto partyRoomDto, PartyRoomCustomTagDto partyRoomCustomTagDto) {
-        // If tag with content does not exist - create one
+        // If tag with content does not exist - create one and get PK by inserting data
         // If tag with content already exists - increment count of original tag
         PartyRoomCustomTag customTag = partyRoomCustomTagRepository.findByTagContent(partyRoomCustomTagDto.getTagContent());
         if (customTag == null) {
