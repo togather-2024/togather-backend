@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Builder
 @Getter
 public class PartyRoomReservationDto {
+    private long reservationId;
     private PartyRoomDto partyRoomDto;
     private MemberDto reservationGuest;
     private int guestCount;

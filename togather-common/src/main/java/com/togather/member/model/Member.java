@@ -33,7 +33,8 @@ public class Member {
     private String profilePicFile;
 
     @Builder
-    public Member(String memberName, String password, Role role, String email, String profilePicFile) {
+    public Member(long memberSrl, String memberName, String password, Role role, String email, String profilePicFile) {
+        this.memberSrl = memberSrl;
         this.memberName = memberName;
         this.password = password;
         this.role = role;

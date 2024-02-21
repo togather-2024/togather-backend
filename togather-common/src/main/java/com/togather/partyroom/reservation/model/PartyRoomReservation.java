@@ -41,7 +41,8 @@ public class PartyRoomReservation {
     private PaymentStatus paymentStatus;
 
     @Builder
-    public PartyRoomReservation(PartyRoom partyRoom, Member reservationGuest, int guestCount, LocalDateTime startTime, LocalDateTime endTime, PaymentStatus paymentStatus) {
+    public PartyRoomReservation(long reservationId, PartyRoom partyRoom, Member reservationGuest, int guestCount, LocalDateTime startTime, LocalDateTime endTime, PaymentStatus paymentStatus) {
+        this.reservationId = reservationId;
         this.partyRoom = partyRoom;
         this.reservationGuest = reservationGuest;
         this.guestCount = guestCount;

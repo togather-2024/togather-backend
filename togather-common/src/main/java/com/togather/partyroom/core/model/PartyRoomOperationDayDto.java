@@ -9,6 +9,7 @@ import java.time.DayOfWeek;
 @Getter
 @Builder
 public class PartyRoomOperationDayDto {
+    private long operationDaysId;
     @Setter
     private PartyRoomDto partyRoomDto;
     private DayOfWeek operationDay;

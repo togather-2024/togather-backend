@@ -8,6 +8,7 @@ import lombok.Setter;
 @Getter
 @Builder
 public class PartyRoomLocationDto {
+    private long partyRoomLocationId;
     @Setter
     private PartyRoomDto partyRoomDto;
     private String sido;
