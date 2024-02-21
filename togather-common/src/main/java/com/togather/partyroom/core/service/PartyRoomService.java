@@ -39,6 +39,7 @@ public class PartyRoomService {
         partyRoomOperationDayService.registerOperationDays(operationDayDtoList);
         partyRoomCustomTagService.registerTags(partyRoomDto, customTags);
 
+
         return partyRoomDto;
     }
 }

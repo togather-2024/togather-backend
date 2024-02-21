@@ -3,11 +3,13 @@ package com.togather.partyroom.core.model;
 import com.togather.member.model.MemberDto;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Builder
 public class PartyRoomDto {
     private String partyRoomName;
+    @Setter
     private MemberDto partyRoomHost;
     private String partyRoomDesc;
     private long partyRoomViewCount;
