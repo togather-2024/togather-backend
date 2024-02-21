@@ -22,4 +22,11 @@ public class EmailVerificationController {
 
         return ResponseEntity.ok("ok");
     }
+
+    @PostMapping("/valid")
+    public ResponseEntity<String> verifyEmailVerificationCode(@RequestBody EmailVerificationDto emailVerificationDto) {
+        emailVerificationService.verifyEmailVerificationCode(emailVerificationDto);
+
+        return ResponseEntity.ok("ok");
+    }
 }

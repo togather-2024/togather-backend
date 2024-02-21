@@ -41,4 +41,10 @@ public class Member {
         this.profilePicFile = profilePicFile;
     }
 
+    public void update(String memberName, String password, String profilePicFile) {
+        this.memberName = memberName;
+        this.password = password;
+        this.profilePicFile = profilePicFile;
+    }
+
 }
