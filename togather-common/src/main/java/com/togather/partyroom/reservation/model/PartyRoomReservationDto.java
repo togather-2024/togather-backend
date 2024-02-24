@@ -1,10 +1,8 @@
 package com.togather.partyroom.reservation.model;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.togather.member.model.MemberDto;
 import com.togather.partyroom.core.model.PartyRoomDto;
 import com.togather.partyroom.payment.model.PaymentStatus;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,13 +15,11 @@ public class PartyRoomReservationDto {
 
     private long reservationId;
 
-    private long partyRoomId; //Request
+    @Setter
+    private PartyRoomDto partyRoomDto;
 
-    private PartyRoomDto partyRoomDto; //Response
-
-    private long reservationGuestSrl; //Request
-
-    private MemberDto reservationGuest; //Response
+    @Setter
+    private MemberDto reservationGuestDto;
 
     private int guestCount;
 

@@ -17,20 +17,13 @@ import org.springframework.stereotype.Component;
 public class PartyRoomReservationConverter {
 
     private final PartyRoomConverter partyRoomConverter;
-    private final PartyRoomRepository partyRoomRepository;
-    private final MemberRepository memberRepository;
     private final MemberConverter memberConverter;
 
     public PartyRoomReservation convertToEntity(PartyRoomReservationDto partyRoomReservationDto) {
-        PartyRoom partyRoom = partyRoomRepository.findById(partyRoomReservationDto.getPartyRoomId())
-                .orElseThrow(RuntimeException::new); //TODO: 예외 클래스 수정
-        Member reservationGuest = memberRepository.findById(partyRoomReservationDto.getReservationGuestSrl())
-                .orElseThrow(RuntimeException::new); //TODO: 예외 클래스 수정
-
         return PartyRoomReservation.builder()
                 .reservationId(partyRoomReservationDto.getReservationId())
-                .partyRoom(partyRoom)
-                .reservationGuest(reservationGuest)
+                .partyRoom(partyRoomConverter.convertFromDto(partyRoomReservationDto.getPartyRoomDto()))
+                .reservationGuest(memberConverter.convertToEntity(partyRoomReservationDto.getReservationGuestDto()))
                 .guestCount(partyRoomReservationDto.getGuestCount())
                 .startTime(partyRoomReservationDto.getStartTime())
                 .endTime(partyRoomReservationDto.getEndTime())
@@ -43,7 +36,7 @@ public class PartyRoomReservationConverter {
         return PartyRoomReservationDto.builder()
                 .reservationId(partyRoomReservation.getReservationId())
                 .partyRoomDto(partyRoomConverter.convertFromEntity(partyRoomReservation.getPartyRoom()))
-                .reservationGuest(memberConverter.convertToDto(partyRoomReservation.getReservationGuest()))
+                .reservationGuestDto(memberConverter.convertToDto(partyRoomReservation.getReservationGuest()))
                 .startTime(partyRoomReservation.getStartTime())
                 .endTime(partyRoomReservation.getEndTime())
                 .paymentStatus(partyRoomReservation.getPaymentStatus())

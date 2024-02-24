@@ -72,4 +72,10 @@ public class MemberService {
         log.info("delete member: {}", findMember.getMemberSrl());
     }
 
+    @Transactional
+    public Member findById(long id) {
+        return memberRepository.findById(id)
+                .orElseThrow(RuntimeException::new);
+    }
+
 }
