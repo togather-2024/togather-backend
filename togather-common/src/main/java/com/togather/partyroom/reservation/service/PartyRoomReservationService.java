@@ -5,6 +5,7 @@ import com.togather.member.model.MemberDto;
 import com.togather.member.service.MemberService;
 import com.togather.partyroom.core.converter.PartyRoomConverter;
 import com.togather.partyroom.core.model.PartyRoom;
+import com.togather.partyroom.core.model.PartyRoomDto;
 import com.togather.partyroom.core.service.PartyRoomService;
 import com.togather.partyroom.reservation.converter.PartyRoomReservationConverter;
 import com.togather.partyroom.reservation.model.PartyRoomReservation;
@@ -49,6 +50,16 @@ public class PartyRoomReservationService {
 
         log.info("save into party_room_reservation: {} ", partyRoomReservation.getReservationId());
 
+    }
+
+    public PartyRoomReservationDto findOneByReservationId(long reservationId) {
+
+        PartyRoomReservation findPartyRoomReservation = partyRoomReservationRepository.findById(reservationId)
+                .orElseThrow(RuntimeException::new);
+
+        log.info("search party_room_reservation by reservation_id: {}", reservationId);
+
+        return partyRoomReservationConverter.convertToDto(findPartyRoomReservation);
     }
 
 }
