@@ -36,7 +36,6 @@ public class PartyRoomService {
     private final PartyRoomOperationDayService partyRoomOperationDayService;
     private final PartyRoomLocationService partyRoomLocationService;
     private final PartyRoomImageService partyRoomImageService;
-    private final PartyRoomOperationDayRepository partyRoomOperationDayRepository;
 
     @Transactional
     public PartyRoomDto register(PartyRoomDto partyRoomDto, List<PartyRoomCustomTagDto> customTags, PartyRoomLocationDto partyRoomLocationDto,
@@ -71,26 +70,4 @@ public class PartyRoomService {
                 .orElseThrow(RuntimeException::new);
     }
 
-    public boolean isValidReservationCapacity(PartyRoomReservationDto partyRoomReservationDto) {
-        return partyRoomReservationDto.getPartyRoomDto().getGuestCapacity() >= partyRoomReservationDto.getGuestCount();
-    }
-
-    public boolean isValidTimeSlot(PartyRoomReservationDto partyRoomReservationDto) {
-        List<PartyRoomOperationDay> findPartyRoomOperationDay = partyRoomOperationDayRepository.findByPartyRoom(partyRoomConverter.convertFromDto(partyRoomReservationDto.getPartyRoomDto()));
-
-        //TODO: 로직 구체화(중복 체크 등)
-        List<DayOfWeek> operationDays = findPartyRoomOperationDay.stream()
-                .map(PartyRoomOperationDay::getOperationDay)
-                .toList();
-        int openingHour = partyRoomReservationDto.getPartyRoomDto().getOpeningHour();
-        int closingHour = partyRoomReservationDto.getPartyRoomDto().getClosingHour();
-
-        DayOfWeek startDayOfWeek = partyRoomReservationDto.getStartTime().getDayOfWeek();
-        DayOfWeek endDayOfWeek = partyRoomReservationDto.getEndTime().getDayOfWeek();
-        int startHour = partyRoomReservationDto.getStartTime().getHour();
-        int endHour = partyRoomReservationDto.getEndTime().getHour();
-
-        return (operationDays.contains(startDayOfWeek) && operationDays.contains(endDayOfWeek))
-                && (startHour >= openingHour && endHour <= closingHour);
-    }
 }
