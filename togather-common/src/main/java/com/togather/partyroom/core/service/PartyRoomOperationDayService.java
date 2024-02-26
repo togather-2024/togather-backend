@@ -44,6 +44,7 @@ public class PartyRoomOperationDayService {
     public void modifyOperationDays(List<PartyRoomOperationDayDto> before, List<PartyRoomOperationDayDto> after) {
         List<DayOfWeek> beforeDays = before.stream().map(PartyRoomOperationDayDto::getOperationDay).collect(Collectors.toList());
         List<DayOfWeek> afterDays = after.stream().map(PartyRoomOperationDayDto::getOperationDay).collect(Collectors.toList());
+        PartyRoomDto partyRoomDto = before.get(0).getPartyRoomDto();
 
         // Both on before and after -> Do nothing
 
@@ -54,7 +55,10 @@ public class PartyRoomOperationDayService {
 
         // Only on after -> Add new data
         after.stream().filter(afterDay -> !beforeDays.contains(afterDay.getOperationDay())).forEach(
-                this::registerOperationDay
+                afterDayDto -> {
+                    afterDayDto.setPartyRoomDto(partyRoomDto);
+                    this.registerOperationDay(afterDayDto);
+                }
         );
     }
 }
