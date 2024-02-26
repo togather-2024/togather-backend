@@ -3,12 +3,15 @@ package com.togather.partyroom.core.service;
 import com.togather.partyroom.core.converter.PartyRoomConverter;
 import com.togather.partyroom.core.model.PartyRoom;
 import com.togather.partyroom.core.model.PartyRoomDto;
+import com.togather.partyroom.core.model.PartyRoomOperationDay;
 import com.togather.partyroom.core.model.PartyRoomOperationDayDto;
+import com.togather.partyroom.core.repository.PartyRoomOperationDayRepository;
 import com.togather.partyroom.core.repository.PartyRoomRepository;
 import com.togather.partyroom.image.model.PartyRoomImageDto;
 import com.togather.partyroom.image.service.PartyRoomImageService;
 import com.togather.partyroom.location.model.PartyRoomLocationDto;
 import com.togather.partyroom.location.service.PartyRoomLocationService;
+import com.togather.partyroom.reservation.model.PartyRoomReservationDto;
 import com.togather.partyroom.tags.model.PartyRoomCustomTagDto;
 import com.togather.partyroom.tags.service.PartyRoomCustomTagService;
 import jakarta.transaction.Transactional;
@@ -17,7 +20,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.time.DayOfWeek;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -29,7 +36,6 @@ public class PartyRoomService {
     private final PartyRoomOperationDayService partyRoomOperationDayService;
     private final PartyRoomLocationService partyRoomLocationService;
     private final PartyRoomImageService partyRoomImageService;
-
 
     @Transactional
     public PartyRoomDto register(PartyRoomDto partyRoomDto, List<PartyRoomCustomTagDto> customTags, PartyRoomLocationDto partyRoomLocationDto,
@@ -58,4 +64,10 @@ public class PartyRoomService {
 
         return partyRoomDto;
     }
+
+    public PartyRoom findById(long partyRoomId) {
+        return partyRoomRepository.findById(partyRoomId)
+                .orElseThrow(RuntimeException::new);
+    }
+
 }
