@@ -1,5 +1,7 @@
 package com.togather.partyroom.tags.service;
 
+import com.togather.partyroom.core.converter.PartyRoomConverter;
+import com.togather.partyroom.core.model.PartyRoom;
 import com.togather.partyroom.core.model.PartyRoomDto;
 import com.togather.partyroom.tags.converter.PartyRoomCustomTagConverter;
 import com.togather.partyroom.tags.model.PartyRoomCustomTag;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -22,6 +25,13 @@ public class PartyRoomCustomTagService {
     private final PartyRoomCustomTagRepository partyRoomCustomTagRepository;
     private final PartyRoomCustomTagRelRepository partyRoomCustomTagRelRepository;
     private final PartyRoomCustomTagConverter partyRoomCustomTagConverter;
+    private final PartyRoomConverter partyRoomConverter;
+
+
+    public List<PartyRoomCustomTagDto> findCustomTagsByPartyRoom(PartyRoomDto partyRoomDto) {
+        return partyRoomCustomTagRelRepository.findCustomTagsByPartyRoom(partyRoomConverter.convertFromDto(partyRoomDto)).stream()
+                .map(partyRoomCustomTagConverter::convertFromEntity).collect(Collectors.toList());
+    }
 
     @Transactional
     public void registerTag(PartyRoomDto partyRoomDto, PartyRoomCustomTagDto partyRoomCustomTagDto) {
@@ -29,6 +39,7 @@ public class PartyRoomCustomTagService {
         // If tag with content already exists - increment count of original tag
         PartyRoomCustomTag customTag = partyRoomCustomTagRepository.findByTagContent(partyRoomCustomTagDto.getTagContent());
         if (customTag == null) {
+            partyRoomCustomTagDto.setInitialTagCount();
             customTag = partyRoomCustomTagRepository.save(partyRoomCustomTagConverter.convertFromDto(partyRoomCustomTagDto));
         } else {
             customTag.incrementTagCount();
@@ -44,5 +55,44 @@ public class PartyRoomCustomTagService {
     public void registerTags(PartyRoomDto partyRoomDto, List<PartyRoomCustomTagDto> customTagDtoList) {
         customTagDtoList.stream()
                 .forEach(customTagDto -> registerTag(partyRoomDto, customTagDto));
+    }
+
+    @Transactional
+    public void removeTagFromPartyRoom(PartyRoomDto partyRoomDto, PartyRoomCustomTagDto partyRoomCustomTagDto) {
+        // Always drop the relation between party room and custom tag
+        PartyRoomCustomTag customTag = partyRoomCustomTagRepository.findByTagContent(partyRoomCustomTagDto.getTagContent());
+        PartyRoom partyRoom = partyRoomConverter.convertFromDto(partyRoomDto);
+
+        partyRoomCustomTagRelRepository.deleteByPartyRoomAndPartyRoomCustomTag(partyRoom, customTag);
+
+
+        // If tagCount is still positive (tagCount > 0), leave the tag data
+        // If tagCount becomes 0 -> It means the tag data should be deleted
+        if (customTag.getTagCount() == 1) {
+            partyRoomCustomTagRepository.delete(customTag);
+        } else {
+            customTag.decrementTagCount();
+        }
+    }
+
+    @Transactional
+    public void removeTagsFromPartyRoom(PartyRoomDto partyRoomDto, List<PartyRoomCustomTagDto> customTagDtoList) {
+        customTagDtoList.stream().forEach(customTagDto -> removeTagFromPartyRoom(partyRoomDto, customTagDto));
+    }
+
+    @Transactional
+    public void modifyTags(PartyRoomDto partyRoomDto, List<PartyRoomCustomTagDto> afterList) {
+        List<PartyRoomCustomTagDto> beforeList = findCustomTagsByPartyRoom(partyRoomDto);
+
+        List<String> beforeTagContent = beforeList.stream().map(PartyRoomCustomTagDto::getTagContent).collect(Collectors.toList());
+        List<String> afterTagContent = afterList.stream().map(PartyRoomCustomTagDto::getTagContent).collect(Collectors.toList());
+
+        // Skip for contents both on before and after
+
+        // Tags only on before: remove relation between tag and party room
+        beforeList.stream().filter(beforeDto -> !afterTagContent.contains(beforeDto.getTagContent())).forEach(beforeDto -> removeTagFromPartyRoom(partyRoomDto, beforeDto));
+
+        // Tags only on after: add relation between tag and party room
+        afterList.stream().filter(afterDto -> !beforeTagContent.contains(afterDto.getTagContent())).forEach(afterDto -> registerTag(partyRoomDto, afterDto));
     }
 }

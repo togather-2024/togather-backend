@@ -44,4 +44,16 @@ public class PartyRoomLocation {
         this.roadAddress = roadAddress;
         this.jibunAddress = jibunAddress;
     }
+
+    public void modifyPartyRoomLocation(String sido, String sigungu, String roadName, String roadAddress, String jibunAddress) {
+        this.sido = sido;
+        this.sigungu = sigungu;
+        this.roadName = roadName;
+        this.roadAddress = roadAddress;
+        this.jibunAddress = jibunAddress;
+    }
+
+    public void modifyPartyRoomLocation(PartyRoomLocation after) {
+        modifyPartyRoomLocation(after.getSido(), after.getSigungu(), after.getRoadName(), after.getRoadAddress(), after.getJibunAddress());
+    }
 }

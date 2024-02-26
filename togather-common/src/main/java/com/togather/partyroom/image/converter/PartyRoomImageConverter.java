@@ -23,4 +23,17 @@ public class PartyRoomImageConverter {
                 .imageType(partyRoomImageDto.getPartyRoomImageType())
                 .build();
     }
+
+    public PartyRoomImageDto convertFromEntity(PartyRoomImage partyRoomImage) {
+        if (partyRoomImage == null) {
+            return null;
+        }
+
+        return PartyRoomImageDto.builder()
+                .partyRoomImageId(partyRoomImage.getPartyRoomImageId())
+                .partyRoomDto(partyRoomConverter.convertFromEntity(partyRoomImage.getPartyRoom()))
+                .imageFileName(partyRoomImage.getImageFileName())
+                .partyRoomImageType(partyRoomImage.getImageType())
+                .build();
+    }
 }

@@ -51,4 +51,13 @@ public class PartyRoom {
         this.price = price;
         this.guestCapacity = guestCapacity;
     }
+
+    public void modifyPartyRoom(PartyRoom after) {
+        this.partyRoomName = after.getPartyRoomName();
+        this.partyRoomDesc = after.getPartyRoomDesc();
+        this.openingHour = after.getOpeningHour();
+        this.closingHour = after.getClosingHour();
+        this.price = after.getPrice();
+        this.guestCapacity = after.getGuestCapacity();
+    }
 }

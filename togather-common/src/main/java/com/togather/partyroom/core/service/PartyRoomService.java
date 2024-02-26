@@ -31,6 +31,15 @@ public class PartyRoomService {
     private final PartyRoomImageService partyRoomImageService;
 
 
+    public PartyRoomDto findPartyRoomById(long partyRoomId) {
+        return partyRoomConverter.convertFromEntity(partyRoomRepository.findById(partyRoomId).orElseThrow());
+    }
+
+    public void modifyPartyRoomCore(PartyRoomDto before, PartyRoomDto after) {
+        PartyRoom beforeEntity = partyRoomConverter.convertFromDto(before);
+        beforeEntity.modifyPartyRoom(partyRoomConverter.convertFromDto(after));
+    }
+
     @Transactional
     public PartyRoomDto register(PartyRoomDto partyRoomDto, List<PartyRoomCustomTagDto> customTags, PartyRoomLocationDto partyRoomLocationDto,
                                  PartyRoomImageDto mainPartyRoomImageDto, List<PartyRoomOperationDayDto> operationDayDtoList) {
@@ -57,5 +66,31 @@ public class PartyRoomService {
         partyRoomCustomTagService.registerTags(partyRoomDto, customTags);
 
         return partyRoomDto;
+    }
+
+    @Transactional
+    public PartyRoomDto modifyPartyRoom(PartyRoomDto afterPartyRoomDto, List<PartyRoomCustomTagDto> afterCustomTags, PartyRoomLocationDto afterPartyRoomLocationDto,
+                                        PartyRoomImageDto afterMainPartyRoomImageDto, List<PartyRoomOperationDayDto> afterOperationDayDtoList) {
+
+        // Modify partyRoom Core info(e.g. name/desc/price/open/close/guestCapacity)
+        PartyRoomDto beforePartyRoomDto = findPartyRoomById(afterPartyRoomDto.getPartyRoomId());
+        modifyPartyRoomCore(beforePartyRoomDto, afterPartyRoomDto);
+
+        // Get original location info and replace the info to the parameters input by client
+        PartyRoomLocationDto beforeLocationDto = partyRoomLocationService.findByPartyRoom(partyRoomConverter.convertFromDto(afterPartyRoomDto));
+        partyRoomLocationService.modifyPartyRoomLocation(beforeLocationDto, afterPartyRoomLocationDto);
+
+        // Get original main image and replace the imageFile to inputImage by client
+        PartyRoomImageDto beforeImageDto = partyRoomImageService.findPartyRoomMainImageByPartyRoom(partyRoomConverter.convertFromDto(afterPartyRoomDto));
+        partyRoomImageService.modifyPartyRoomImageFile(beforeImageDto, afterMainPartyRoomImageDto);
+
+        // Get original operation days and modify to input by client
+        List<PartyRoomOperationDayDto> beforeOperationDayDtoList = partyRoomOperationDayService.findOperationDaysByPartyRoom(partyRoomConverter.convertFromDto(afterPartyRoomDto));
+        partyRoomOperationDayService.modifyOperationDays(beforeOperationDayDtoList, afterOperationDayDtoList);
+
+        //Modify Tags related data
+        partyRoomCustomTagService.modifyTags(afterPartyRoomDto, afterCustomTags);
+
+        return null;
     }
 }
