@@ -6,6 +6,7 @@ import com.togather.partyroom.core.model.PartyRoomDto;
 import com.togather.partyroom.core.model.PartyRoomOperationDay;
 import com.togather.partyroom.core.model.PartyRoomOperationDayDto;
 import com.togather.partyroom.core.repository.PartyRoomOperationDayRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -41,6 +42,7 @@ public class PartyRoomOperationDayService {
     // Modify PartyRoom Operation Day Data
     // If beforeDays = ["MONDAY", "TUESDAY", "WEDNESDAY"] and afterDays = ["MONDAY","FRIDAY"]
     // we should delete data for ["TUESDAY", "WEDNESDAY"] and add data for ["FRIDAY"]
+    @Transactional
     public void modifyOperationDays(List<PartyRoomOperationDayDto> before, List<PartyRoomOperationDayDto> after) {
         List<DayOfWeek> beforeDays = before.stream().map(PartyRoomOperationDayDto::getOperationDay).collect(Collectors.toList());
         List<DayOfWeek> afterDays = after.stream().map(PartyRoomOperationDayDto::getOperationDay).collect(Collectors.toList());

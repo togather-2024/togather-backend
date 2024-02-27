@@ -17,7 +17,7 @@ public class PartyRoomImageService {
     private final PartyRoomImageRepository partyRoomImageRepository;
 
     public PartyRoomImageDto findPartyRoomMainImageByPartyRoom(PartyRoom partyRoom) {
-        return partyRoomImageConverter.convertFromEntity(partyRoomImageRepository.findByPartyRoomAndImageType(partyRoom, PartyRoomImageType.MAIN).get());
+        return partyRoomImageConverter.convertFromEntity(partyRoomImageRepository.findByPartyRoomAndImageType(partyRoom, PartyRoomImageType.MAIN).orElse(null));
     }
 
     public void modifyPartyRoomImageFile(PartyRoomImageDto before, PartyRoomImageDto after) {
