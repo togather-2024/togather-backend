@@ -16,7 +16,7 @@
 
         private final PartyRoomReservationService partyRoomReservationService;
 
-        @PostMapping
+        @PostMapping("/registration")
         public ResponseEntity<String> register(@Valid @RequestBody PartyRoomReservationDto reservationDto) {
 
             //TODO: 토큰 검증 로직 추가
@@ -35,6 +35,8 @@
 
             return ResponseEntity.ok(partyRoomReservationDto);
         }
+
+        @GetMapping("/{reservation-id}")
 
         @DeleteMapping("/{reservation-id}")
         public ResponseEntity<String> delete(@PathVariable(name = "reservation-id") long reservationId) {
