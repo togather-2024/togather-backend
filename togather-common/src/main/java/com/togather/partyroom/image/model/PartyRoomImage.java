@@ -34,4 +34,8 @@ public class PartyRoomImage {
         this.imageFileName = imageFileName;
         this.imageType = imageType;
     }
+
+    public void modifyImageFileName(String imageFileName) {
+        this.imageFileName = imageFileName;
+    }
 }
