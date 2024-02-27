@@ -1,5 +1,7 @@
     package com.togather.partyroom.reservation;
 
+    import com.togather.member.model.Member;
+    import com.togather.member.service.MemberService;
     import com.togather.partyroom.reservation.model.PartyRoomReservationDto;
     import com.togather.partyroom.reservation.service.PartyRoomReservationService;
     import jakarta.validation.Valid;
@@ -8,6 +10,8 @@
     import org.springframework.http.ResponseEntity;
     import org.springframework.web.bind.annotation.*;
 
+    import java.util.List;
+
     @RestController
     @RequestMapping("/partyroom/reservation")
     @Slf4j
@@ -15,6 +19,7 @@
     public class PartyRoomReservationController {
 
         private final PartyRoomReservationService partyRoomReservationService;
+        private final MemberService memberService;
 
         @PostMapping("/registration")
         public ResponseEntity<String> register(@Valid @RequestBody PartyRoomReservationDto reservationDto) {
@@ -26,17 +31,27 @@
             return ResponseEntity.ok("ok");
         }
 
-        @GetMapping("/{reservation-id}")
+        @GetMapping("/my/{reservation-id}")
         public ResponseEntity<PartyRoomReservationDto> searchOneByReservationId(@PathVariable(name = "reservation-id") long reservationId) {
+            //guest - 특정 예약 내역 상세 조회
+            //TODO: 토큰 검증 로직, 토큰에서 회원 정보 빼오기
 
-            //TODO: 토큰 검증 로직 추가
+            PartyRoomReservationDto findReservationDto = partyRoomReservationService.findOneByReservationId(reservationId);
 
-            PartyRoomReservationDto partyRoomReservationDto = partyRoomReservationService.findOneByReservationId(reservationId);
+            return ResponseEntity.ok(findReservationDto);
 
-            return ResponseEntity.ok(partyRoomReservationDto);
         }
 
-        @GetMapping("/{reservation-id}")
+        @GetMapping("/my")
+        public ResponseEntity<List> searchByMember() {
+            //guest - 전체 예약 내역 조회
+            //TODO: 토큰 검증 로직 추가
+
+            Member findMember = memberService.findById(1L); //TODO: 파라미터 변경
+            List<PartyRoomReservationDto.Simple> findAllByMember = partyRoomReservationService.findAllByMember(findMember);
+
+            return ResponseEntity.ok(findAllByMember);
+        }
 
         @DeleteMapping("/{reservation-id}")
         public ResponseEntity<String> delete(@PathVariable(name = "reservation-id") long reservationId) {

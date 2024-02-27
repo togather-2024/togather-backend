@@ -77,4 +77,9 @@ public class MemberService {
                 .orElseThrow(RuntimeException::new));
     }
 
+    public Member findById(long id) {
+        return memberRepository.findById(id)
+                .orElseThrow(RuntimeException::new);
+    }
+
 }
