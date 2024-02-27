@@ -24,6 +24,10 @@ public class PartyRoomCustomTag {
         this.tagCount += 1;
     }
 
+    public void decrementTagCount() {
+        this.tagCount -= 1;
+    }
+
     @Builder
     public PartyRoomCustomTag(long tagId, String tagContent, long tagCount) {
         this.tagId = tagId;

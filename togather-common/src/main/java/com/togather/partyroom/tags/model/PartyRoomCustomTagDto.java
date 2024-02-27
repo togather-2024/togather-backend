@@ -12,4 +12,8 @@ public class PartyRoomCustomTagDto {
     private long tagId;
     private String tagContent;
     private long tagCount;
+
+    public void setInitialTagCount() {
+        this.tagCount = 1L;
+    }
 }

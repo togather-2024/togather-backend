@@ -26,4 +26,20 @@ public class PartyRoomLocationConverter {
                 .jibunAddress(partyRoomLocationDto.getJibunAddress())
                 .build();
     }
+
+    public PartyRoomLocationDto convertFromEntity(PartyRoomLocation partyRoomLocation) {
+        if (partyRoomLocation == null) {
+            return null;
+        }
+
+        return PartyRoomLocationDto.builder()
+                .partyRoomLocationId(partyRoomLocation.getPartyRoomLocationId())
+                .partyRoomDto(partyRoomConverter.convertFromEntity(partyRoomLocation.getPartyRoom()))
+                .sido(partyRoomLocation.getSido())
+                .sigungu(partyRoomLocation.getSigungu())
+                .roadName(partyRoomLocation.getRoadName())
+                .roadAddress(partyRoomLocation.getRoadAddress())
+                .jibunAddress(partyRoomLocation.getJibunAddress())
+                .build();
+    }
 }

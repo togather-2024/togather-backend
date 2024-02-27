@@ -32,20 +32,35 @@ public class PartyRoomController {
     @ResponseBody
     public ResponseEntity<PartyRoomDto> register(@Valid @RequestBody PartyRoomRegisterRequestDto partyRoomRegisterRequestDto) {
 
-        PartyRoomDto partyRoomDto = partyRoomRegisterRequestDto.extractPartyRoomDto();
+        PartyRoomDto partyRoomDto = partyRoomRegisterRequestDto.getPartyRoomDto();
         // TODO: extract from JWT token
         MemberDto partyRoomHost = createMemberDtoForTest();
 
-        PartyRoomLocationDto partyRoomLocationDto = partyRoomRegisterRequestDto.extractLocationDto();
-        List<PartyRoomCustomTagDto> customTags = partyRoomRegisterRequestDto.extractCustomTags();
-        List<PartyRoomOperationDayDto> operationDayDtos = partyRoomRegisterRequestDto.extractOperationDays();
-        PartyRoomImageDto partyRoomMainImageDto = partyRoomRegisterRequestDto.extractMainImageDto();
+        PartyRoomLocationDto partyRoomLocationDto = partyRoomRegisterRequestDto.getPartyRoomLocationDto();
+        List<PartyRoomCustomTagDto> customTags = partyRoomRegisterRequestDto.getCustomTags();
+        List<PartyRoomOperationDayDto> operationDayDtos = partyRoomRegisterRequestDto.getOperationDays();
+        PartyRoomImageDto partyRoomMainImageDto = partyRoomRegisterRequestDto.getPartyRoomImageDto();
 
         partyRoomDto.setPartyRoomHost(partyRoomHost);
 
         PartyRoomDto registeredPartyRoom = partyRoomService.register(partyRoomDto, customTags, partyRoomLocationDto, partyRoomMainImageDto, operationDayDtos);
 
         return ResponseEntity.ok(null);
+    }
+
+    @PostMapping("/modify")
+    @ResponseBody
+    public ResponseEntity<PartyRoomDto> modify(@Valid @RequestBody PartyRoomRegisterRequestDto partyRoomRegisterRequestDto) {
+        PartyRoomDto partyRoomDto = partyRoomService.findPartyRoomById(partyRoomRegisterRequestDto.getPartyRoomDto().getPartyRoomId());
+        // Compare JWT token and party room owner - only accept modification if requestClient == partyRoomOwner
+
+        PartyRoomLocationDto partyRoomLocationDto = partyRoomRegisterRequestDto.getPartyRoomLocationDto();
+        List<PartyRoomCustomTagDto> customTags = partyRoomRegisterRequestDto.getCustomTags();
+        List<PartyRoomOperationDayDto> operationDayDtos = partyRoomRegisterRequestDto.getOperationDays();
+        PartyRoomImageDto partyRoomMainImageDto = partyRoomRegisterRequestDto.getPartyRoomImageDto();
+
+        PartyRoomDto registeredPartyRoom = partyRoomService.modifyPartyRoom(partyRoomDto, customTags, partyRoomLocationDto, partyRoomMainImageDto, operationDayDtos);
+        return ResponseEntity.ok(registeredPartyRoom);
     }
 
     // TODO: MUST DELETE
