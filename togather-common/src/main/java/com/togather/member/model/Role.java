@@ -1,19 +1,17 @@
 package com.togather.member.model;
 
-import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonCreator;
+
+import java.util.stream.Stream;
 
 public enum Role {
     GUEST, HOST, ADMIN, NONE;
 
-    private static final HashMap<String, Role> roles = new HashMap<>();
-
-    static {
-        for (Role role : Role.values())
-            roles.put(role.name(), role);
-    }
-
+    @JsonCreator
     public static Role from(String role) {
-        return roles.getOrDefault(role, NONE);
+        return Stream.of(Role.values())
+                .filter(r -> r.toString().equals(role.toUpperCase()))
+                .findFirst()
+                .orElse(NONE);
     }
-
 }
