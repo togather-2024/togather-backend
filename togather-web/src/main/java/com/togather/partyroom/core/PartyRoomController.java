@@ -1,9 +1,8 @@
-package com.togather.partyroom.controller;
+package com.togather.partyroom.core;
 
 import com.togather.member.converter.MemberConverter;
 import com.togather.member.model.MemberDto;
 import com.togather.member.repository.MemberRepository;
-import com.togather.member.service.MemberService;
 import com.togather.partyroom.core.model.PartyRoomDto;
 import com.togather.partyroom.core.model.PartyRoomOperationDayDto;
 import com.togather.partyroom.core.service.PartyRoomService;

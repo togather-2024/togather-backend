@@ -1,9 +1,13 @@
 package com.togather.member.model;
 
+import com.togather.partyroom.core.model.PartyRoom;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
@@ -31,6 +35,9 @@ public class Member {
 
     @Column(name = "profile_pic_file")
     private String profilePicFile;
+
+    @OneToMany(mappedBy = "partyRoomHost")
+    private List<PartyRoom> partyRoomList = new ArrayList<>();
 
     @Builder
     public Member(long memberSrl, String memberName, String password, Role role, String email, String profilePicFile) {

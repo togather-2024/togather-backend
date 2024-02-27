@@ -61,7 +61,7 @@ public class MemberService {
     }
 
     @Transactional
-    public void withdrawal(Long memberSrl) {
+    public void delete(Long memberSrl) {
         //TODO: 비밀번호 검증 로직 추가할 가능성 있음!!
 
         Member findMember = memberRepository.findById(memberSrl)
@@ -70,6 +70,11 @@ public class MemberService {
         memberRepository.delete(findMember);
 
         log.info("delete member: {}", findMember.getMemberSrl());
+    }
+
+    public MemberDto findMemberDtoById(long id) {
+        return memberConverter.convertToDto(memberRepository.findById(id)
+                .orElseThrow(RuntimeException::new));
     }
 
 }
