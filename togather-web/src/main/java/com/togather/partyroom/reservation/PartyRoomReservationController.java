@@ -36,4 +36,13 @@
             return ResponseEntity.ok(partyRoomReservationDto);
         }
 
+        @DeleteMapping("/{reservation-id}")
+        public ResponseEntity<String> delete(@PathVariable(name = "reservation-id") long reservationId) {
+
+            //TODO: 토큰 검증 로직 추가
+            partyRoomReservationService.delete(reservationId);
+
+            return ResponseEntity.ok("ok");
+        }
+
     }

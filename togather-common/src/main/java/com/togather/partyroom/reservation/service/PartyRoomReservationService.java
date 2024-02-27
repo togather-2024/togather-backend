@@ -86,4 +86,14 @@ public class PartyRoomReservationService {
                 && (startHour >= openingHour && endHour <= closingHour);
     }
 
+    @Transactional
+    public void delete(long reservationId) {
+        PartyRoomReservation findPartyRoomReservation = partyRoomReservationRepository.findById(reservationId)
+                .orElseThrow(RuntimeException::new);
+
+        partyRoomReservationRepository.delete(findPartyRoomReservation);
+
+        log.info("delete party_room_reservation: {}", reservationId);
+    }
+
 }
