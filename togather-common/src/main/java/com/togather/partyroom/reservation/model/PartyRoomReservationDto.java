@@ -1,5 +1,6 @@
 package com.togather.partyroom.reservation.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.togather.member.model.MemberDto;
 import com.togather.partyroom.core.model.PartyRoomDto;
 import com.togather.partyroom.payment.model.PaymentStatus;
@@ -29,4 +30,25 @@ public class PartyRoomReservationDto {
 
     private PaymentStatus paymentStatus;
 
+    @Builder
+    public static class Simple {
+
+        @JsonProperty
+        private long reservationId;
+
+        @JsonProperty
+        private int guestCount;
+
+        @JsonProperty
+        private LocalDateTime startTime;
+
+        @JsonProperty
+        private LocalDateTime endTime;
+
+        @JsonProperty
+        private PaymentStatus paymentStatus;
+
+        @JsonProperty
+        private String partyRoomName;
+    }
 }
