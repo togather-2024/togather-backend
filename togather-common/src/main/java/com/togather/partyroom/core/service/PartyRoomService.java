@@ -121,8 +121,10 @@ public class PartyRoomService {
         log.info("[PartyRoomService - delete] deleted partyRoom data and mapped entities. partyRoomId: {}", partyRoomId);
     }
 
+    @Transactional
     public PartyRoomDetailDto findDetailDtoById(long partyRoomId) {
         PartyRoom partyRoom = findById(partyRoomId);
+        PartyRoomDto partyRoomDto = partyRoomConverter.convertFromEntity(partyRoom);
 
         PartyRoomLocationDto partyRoomLocationDto = partyRoomLocationService.findLocationDtoByPartyRoom(partyRoom);
         List<PartyRoomImageDto> partyRoomImageDtoList = partyRoomImageService.findAllImagesByPartyRoom(partyRoom);
@@ -130,7 +132,7 @@ public class PartyRoomService {
         List<PartyRoomCustomTagDto> customTagDtoList = partyRoomCustomTagService.findCustomTagsByPartyRoom(partyRoom);
 
         return new PartyRoomDetailDto(
-                partyRoomConverter.convertFromEntity(partyRoom),
+                partyRoomDto,
                 partyRoomLocationDto,
                 partyRoomImageDtoList,
                 operationDayDtoList,
