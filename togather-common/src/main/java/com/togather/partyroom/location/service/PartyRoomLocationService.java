@@ -14,8 +14,12 @@ public class PartyRoomLocationService {
     private final PartyRoomLocationRepository partyRoomLocationRepository;
     private final PartyRoomLocationConverter partyRoomLocationConverter;
 
-    public PartyRoomLocationDto findByPartyRoom(PartyRoom partyRoom) {
-        return partyRoomLocationConverter.convertFromEntity(partyRoomLocationRepository.findByPartyRoom(partyRoom).get());
+    public PartyRoomLocationDto findLocationDtoByPartyRoom(PartyRoom partyRoom) {
+        return partyRoomLocationConverter.convertFromEntity(findLocationByPartyRoom(partyRoom));
+    }
+
+    public PartyRoomLocation findLocationByPartyRoom(PartyRoom partyroom) {
+        return partyRoomLocationRepository.findByPartyRoom(partyroom).orElseThrow(RuntimeException::new);
     }
 
     public void modifyPartyRoomLocation(PartyRoomLocationDto before, PartyRoomLocationDto after) {
@@ -25,5 +29,8 @@ public class PartyRoomLocationService {
 
     public void registerLocation(PartyRoomLocationDto partyRoomLocationDto) {
         partyRoomLocationRepository.save(partyRoomLocationConverter.convertFromDto(partyRoomLocationDto));
+    }
+    public void deleteLocation(PartyRoomLocation partyRoomLocation) {
+        partyRoomLocationRepository.delete(partyRoomLocation);
     }
 }

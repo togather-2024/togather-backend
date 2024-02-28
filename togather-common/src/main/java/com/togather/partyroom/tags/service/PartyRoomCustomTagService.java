@@ -28,9 +28,13 @@ public class PartyRoomCustomTagService {
     private final PartyRoomConverter partyRoomConverter;
 
 
-    public List<PartyRoomCustomTagDto> findCustomTagsByPartyRoom(PartyRoomDto partyRoomDto) {
-        return partyRoomCustomTagRelRepository.findCustomTagsByPartyRoom(partyRoomConverter.convertFromDto(partyRoomDto)).stream()
+    public List<PartyRoomCustomTagDto> findCustomTagsByPartyRoom(PartyRoom partyRoom) {
+        return partyRoomCustomTagRelRepository.findCustomTagsByPartyRoom(partyRoom).stream()
                 .map(partyRoomCustomTagConverter::convertFromEntity).collect(Collectors.toList());
+    }
+
+    public List<PartyRoomCustomTagDto> findCustomTagsByPartyRoomDto(PartyRoomDto partyRoomDto) {
+        return findCustomTagsByPartyRoom(partyRoomConverter.convertFromDto(partyRoomDto));
     }
 
     @Transactional
@@ -41,7 +45,9 @@ public class PartyRoomCustomTagService {
         if (customTag == null) {
             partyRoomCustomTagDto.setInitialTagCount();
             customTag = partyRoomCustomTagRepository.save(partyRoomCustomTagConverter.convertFromDto(partyRoomCustomTagDto));
+            log.info("[PartyRoomCustomTagService - register] successfully registered new tag. content: {}", customTag.getTagContent());
         } else {
+            log.info("[PartyRoomCustomTagService - register] incremented count for tag with content: {}", customTag.getTagContent());
             customTag.incrementTagCount();
         }
         partyRoomCustomTagDto.setTagId(customTag.getTagId());
@@ -55,6 +61,8 @@ public class PartyRoomCustomTagService {
     public void registerTags(PartyRoomDto partyRoomDto, List<PartyRoomCustomTagDto> customTagDtoList) {
         customTagDtoList.stream()
                 .forEach(customTagDto -> registerTag(partyRoomDto, customTagDto));
+
+        log.info("[PartyRoomCustomTagService - register] created {} relations between tags and partyRoomId: {}", customTagDtoList.size(), partyRoomDto.getPartyRoomId());
     }
 
     @Transactional
@@ -70,7 +78,9 @@ public class PartyRoomCustomTagService {
         // If tagCount becomes 0 -> It means the tag data should be deleted
         if (customTag.getTagCount() == 1) {
             partyRoomCustomTagRepository.delete(customTag);
+            log.info("[PartyRoomCustomTagService - delete] deleted tag with content: {}", customTag.getTagContent());
         } else {
+            log.info("[PartyRoomCustomTagService - delete] decremented tagCount with content: {}", customTag.getTagContent());
             customTag.decrementTagCount();
         }
     }
@@ -78,11 +88,12 @@ public class PartyRoomCustomTagService {
     @Transactional
     public void removeTagsFromPartyRoom(PartyRoomDto partyRoomDto, List<PartyRoomCustomTagDto> customTagDtoList) {
         customTagDtoList.stream().forEach(customTagDto -> removeTagFromPartyRoom(partyRoomDto, customTagDto));
+        log.info("[PartyRoomCustomTagService - delete] removed {} relations between tags and partyRoomId: {}", customTagDtoList.size(), partyRoomDto.getPartyRoomId());
     }
 
     @Transactional
     public void modifyTags(PartyRoomDto partyRoomDto, List<PartyRoomCustomTagDto> afterList) {
-        List<PartyRoomCustomTagDto> beforeList = findCustomTagsByPartyRoom(partyRoomDto);
+        List<PartyRoomCustomTagDto> beforeList = findCustomTagsByPartyRoomDto(partyRoomDto);
 
         List<String> beforeTagContent = beforeList.stream().map(PartyRoomCustomTagDto::getTagContent).collect(Collectors.toList());
         List<String> afterTagContent = afterList.stream().map(PartyRoomCustomTagDto::getTagContent).collect(Collectors.toList());

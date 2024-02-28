@@ -8,6 +8,7 @@ import com.togather.partyroom.core.model.PartyRoomOperationDayDto;
 import com.togather.partyroom.core.repository.PartyRoomOperationDayRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PartyRoomOperationDayService {
     private final PartyRoomOperationDayConverter partyRoomOperationDayConverter;
     private final PartyRoomOperationDayRepository partyRoomOperationDayRepository;
@@ -27,6 +29,11 @@ public class PartyRoomOperationDayService {
 
     public void deleteOperationDay(PartyRoomOperationDayDto partyRoomOperationDayDto) {
         partyRoomOperationDayRepository.delete(partyRoomOperationDayConverter.convertFromDto(partyRoomOperationDayDto));
+    }
+
+    public void deleteAllOperationDaysByPartyRoom(PartyRoom partyroom) {
+        int deletedOperationDayCount = partyRoomOperationDayRepository.deleteAllByPartyRoom(partyroom);
+        log.info("[PartyRoomOperationDayService - deleteAll] successfully deleted {} operationDay for partyRoomId: {}", deletedOperationDayCount, partyroom.getPartyRoomId());
     }
 
     public void registerOperationDay(PartyRoomOperationDayDto partyRoomOperationDayDto) {

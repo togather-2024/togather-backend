@@ -2,16 +2,15 @@ package com.togather.partyroom.core.service;
 
 import com.togather.partyroom.core.converter.PartyRoomConverter;
 import com.togather.partyroom.core.model.PartyRoom;
+import com.togather.partyroom.core.model.PartyRoomDetailDto;
 import com.togather.partyroom.core.model.PartyRoomDto;
-import com.togather.partyroom.core.model.PartyRoomOperationDay;
 import com.togather.partyroom.core.model.PartyRoomOperationDayDto;
-import com.togather.partyroom.core.repository.PartyRoomOperationDayRepository;
 import com.togather.partyroom.core.repository.PartyRoomRepository;
 import com.togather.partyroom.image.model.PartyRoomImageDto;
 import com.togather.partyroom.image.service.PartyRoomImageService;
+import com.togather.partyroom.location.model.PartyRoomLocation;
 import com.togather.partyroom.location.model.PartyRoomLocationDto;
 import com.togather.partyroom.location.service.PartyRoomLocationService;
-import com.togather.partyroom.reservation.model.PartyRoomReservationDto;
 import com.togather.partyroom.tags.model.PartyRoomCustomTagDto;
 import com.togather.partyroom.tags.service.PartyRoomCustomTagService;
 import jakarta.transaction.Transactional;
@@ -20,11 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.time.DayOfWeek;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -38,8 +33,8 @@ public class PartyRoomService {
     private final PartyRoomImageService partyRoomImageService;
 
 
-    public PartyRoomDto findPartyRoomById(long partyRoomId) {
-        return partyRoomConverter.convertFromEntity(partyRoomRepository.findById(partyRoomId).orElseThrow());
+    public PartyRoomDto findPartyRoomDtoById(long partyRoomId) {
+        return partyRoomConverter.convertFromEntity(findById(partyRoomId));
     }
 
     public void modifyPartyRoomCore(PartyRoomDto before, PartyRoomDto after) {
@@ -80,11 +75,11 @@ public class PartyRoomService {
                                         PartyRoomImageDto afterMainPartyRoomImageDto, List<PartyRoomOperationDayDto> afterOperationDayDtoList) {
 
         // Modify partyRoom Core info(e.g. name/desc/price/open/close/guestCapacity)
-        PartyRoomDto beforePartyRoomDto = findPartyRoomById(afterPartyRoomDto.getPartyRoomId());
+        PartyRoomDto beforePartyRoomDto = findPartyRoomDtoById(afterPartyRoomDto.getPartyRoomId());
         modifyPartyRoomCore(beforePartyRoomDto, afterPartyRoomDto);
 
         // Get original location info and replace the info to the parameters input by client
-        PartyRoomLocationDto beforeLocationDto = partyRoomLocationService.findByPartyRoom(partyRoomConverter.convertFromDto(afterPartyRoomDto));
+        PartyRoomLocationDto beforeLocationDto = partyRoomLocationService.findLocationDtoByPartyRoom(partyRoomConverter.convertFromDto(afterPartyRoomDto));
         partyRoomLocationService.modifyPartyRoomLocation(beforeLocationDto, afterPartyRoomLocationDto);
 
         // Get original main image and replace the imageFile to inputImage by client
@@ -100,6 +95,49 @@ public class PartyRoomService {
 
         return null;
     }
+
+    @Transactional
+    public void deletePartyRoomById(long partyRoomId) {
+        PartyRoom partyRoom = findById(partyRoomId);
+        PartyRoomDto partyRoomDto = partyRoomConverter.convertFromEntity(partyRoom);
+
+        // Remove location info
+        PartyRoomLocation partyRoomLocation = partyRoomLocationService.findLocationByPartyRoom(partyRoom);
+        partyRoomLocationService.deleteLocation(partyRoomLocation);
+
+        // Remove image Files
+        partyRoomImageService.deleteAllByPartyRoom(partyRoom);
+
+        // Remove operationDays
+        partyRoomOperationDayService.deleteAllOperationDaysByPartyRoom(partyRoom);
+
+        // Remove custom tags
+        // Not using bulk update because delete logic for M:N relation is complicated
+        List<PartyRoomCustomTagDto> customTagDtoList = partyRoomCustomTagService.findCustomTagsByPartyRoom(partyRoom);
+        partyRoomCustomTagService.removeTagsFromPartyRoom(partyRoomDto, customTagDtoList);
+
+        // Remove PartyRoom core
+        partyRoomRepository.delete(partyRoom);
+        log.info("[PartyRoomService - delete] deleted partyRoom data and mapped entities. partyRoomId: {}", partyRoomId);
+    }
+
+    public PartyRoomDetailDto findDetailDtoById(long partyRoomId) {
+        PartyRoom partyRoom = findById(partyRoomId);
+
+        PartyRoomLocationDto partyRoomLocationDto = partyRoomLocationService.findLocationDtoByPartyRoom(partyRoom);
+        List<PartyRoomImageDto> partyRoomImageDtoList = partyRoomImageService.findAllImagesByPartyRoom(partyRoom);
+        List<PartyRoomOperationDayDto> operationDayDtoList = partyRoomOperationDayService.findOperationDaysByPartyRoom(partyRoom);
+        List<PartyRoomCustomTagDto> customTagDtoList = partyRoomCustomTagService.findCustomTagsByPartyRoom(partyRoom);
+
+        return new PartyRoomDetailDto(
+                partyRoomConverter.convertFromEntity(partyRoom),
+                partyRoomLocationDto,
+                partyRoomImageDtoList,
+                operationDayDtoList,
+                customTagDtoList
+        );
+    }
+
     public PartyRoom findById(long partyRoomId) {
         return partyRoomRepository.findById(partyRoomId)
                 .orElseThrow(RuntimeException::new);
