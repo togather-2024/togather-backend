@@ -9,7 +9,7 @@ public class JasyptEncryptorTest {
     @Test
     @Disabled
     public void test() {
-        String password = "Good Luck!"; //jasypt password
+        String password = "Good Luck!!"; //jasypt password
 
         PooledPBEStringEncryptor encryptor = new PooledPBEStringEncryptor();
         encryptor.setPoolSize(4);
