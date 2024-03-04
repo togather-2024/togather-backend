@@ -11,4 +11,8 @@ public interface PartyRoomReservationRepository extends JpaRepository<PartyRoomR
 
     @Query("select p from PartyRoomReservation p where p.reservationGuest = :member")
     List<PartyRoomReservation> findAllByGuest(Member member);
+
+
+    @Query("select p from PartyRoomReservation p where p.partyRoom.partyRoomHost = :member")
+    List<PartyRoomReservation> findAllByHost(Member member);
 }

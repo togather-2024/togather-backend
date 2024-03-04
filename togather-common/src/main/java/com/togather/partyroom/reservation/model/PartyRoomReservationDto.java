@@ -50,5 +50,9 @@ public class PartyRoomReservationDto {
 
         @JsonProperty
         private String partyRoomName;
+
+        @JsonProperty
+        private String reservationGuestName;
     }
+
 }

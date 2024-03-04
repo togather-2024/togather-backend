@@ -23,8 +23,8 @@
 
         @PostMapping("/registration")
         public ResponseEntity<String> register(@Valid @RequestBody PartyRoomReservationDto reservationDto) {
-
             //TODO: 토큰 검증 로직 추가
+            //TODO: paymentStatus 필드 처리
 
             partyRoomReservationService.register(reservationDto);
 
@@ -32,9 +32,9 @@
         }
 
         @GetMapping("/my/{reservation-id}")
-        public ResponseEntity<PartyRoomReservationDto> searchOneByReservationId(@PathVariable(name = "reservation-id") long reservationId) {
-            //guest - 특정 예약 내역 상세 조회
-            //TODO: 토큰 검증 로직, 토큰에서 회원 정보 빼오기
+        public ResponseEntity<PartyRoomReservationDto> searchGuestReservation(@PathVariable(name = "reservation-id") long reservationId) {
+            //특정 예약 내역 상세 조회
+            //TODO: 토큰 검증 로직
 
             PartyRoomReservationDto findReservationDto = partyRoomReservationService.findOneByReservationId(reservationId);
 
@@ -43,14 +43,25 @@
         }
 
         @GetMapping("/my")
-        public ResponseEntity<List> searchByMember() {
+        public ResponseEntity<List> searchGuestReservationList() {
             //guest - 전체 예약 내역 조회
             //TODO: 토큰 검증 로직 추가
 
             Member findMember = memberService.findById(1L); //TODO: 파라미터 변경
-            List<PartyRoomReservationDto.Simple> findAllByMember = partyRoomReservationService.findAllByMember(findMember);
+            List<PartyRoomReservationDto.Simple> findAllByGuest = partyRoomReservationService.findAllByGuest(findMember);
 
-            return ResponseEntity.ok(findAllByMember);
+            return ResponseEntity.ok(findAllByGuest);
+        }
+
+        @GetMapping("/my/host")
+        public ResponseEntity<List> searchHostReservationList() {
+            //host - 등록한 파티룸에 대한 전체 예약 내역 조회
+            //TODO: 토큰 검증 로직 추가(Role 검증?)
+
+            Member findMember = memberService.findById(1L); //TODO: 파라미터 변경
+            List<PartyRoomReservationDto.Simple> findAllByHost = partyRoomReservationService.findAllByHost(findMember);
+
+            return ResponseEntity.ok(findAllByHost);
         }
 
         @DeleteMapping("/{reservation-id}")
