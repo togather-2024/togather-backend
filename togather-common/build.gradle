@@ -2,6 +2,7 @@ dependencies {
     implementation 'com.mysql:mysql-connector-j'
     implementation "com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.4"
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '3.0.5'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.5'
 }
 
 bootJar { enabled = false }

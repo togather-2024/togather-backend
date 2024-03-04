@@ -1,12 +1,18 @@
 package com.togather.partyroom.reservation.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.ser.FilterProvider;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.togather.member.model.Member;
 import com.togather.member.model.MemberDto;
-import com.togather.member.model.Role;
 import com.togather.member.service.MemberService;
 import com.togather.partyroom.core.converter.PartyRoomConverter;
 import com.togather.partyroom.core.model.PartyRoom;
-import com.togather.partyroom.core.model.PartyRoomDto;
 import com.togather.partyroom.core.model.PartyRoomOperationDay;
 import com.togather.partyroom.core.repository.PartyRoomOperationDayRepository;
 import com.togather.partyroom.core.service.PartyRoomService;
@@ -19,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 
 import java.util.List;
@@ -35,7 +42,7 @@ public class PartyRoomReservationService {
     private final PartyRoomConverter partyRoomConverter;
     private final MemberService memberService;
     private final PartyRoomOperationDayRepository partyRoomOperationDayRepository;
-
+    private final ObjectMapper objectMapper;
 
     @Transactional
     public void register(PartyRoomReservationDto partyRoomReservationDto) {
@@ -80,14 +87,30 @@ public class PartyRoomReservationService {
         }
     }
 
-    public PartyRoomReservationDto findOneByReservationId(long reservationId) {
+    public String findOneByReservationId(long reservationId) {
 
         PartyRoomReservationDto findPartyRoomReservationDto = partyRoomReservationConverter.convertToDto(
                 partyRoomReservationRepository.findById(reservationId).orElseThrow(RuntimeException::new));
+        System.out.println(findPartyRoomReservationDto.getReservationId());
 
-        log.info("find party_room_reservation by reservation id: {}", reservationId);
+        try {
+            ObjectMapper filteredObjectMapper = new ObjectMapper();
+            filteredObjectMapper
+                    .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+                    .registerModule(new JavaTimeModule())
+                    .setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
 
-        return findPartyRoomReservationDto;
+            FilterProvider filterProvider = new SimpleFilterProvider()
+                    .addFilter("PartyRoomReservationDtoFilter", SimpleBeanPropertyFilter.serializeAll())
+                    .addFilter("PartyRoomDtoFilter", SimpleBeanPropertyFilter.serializeAll())
+                    .addFilter("MemberDtoFilter", SimpleBeanPropertyFilter.filterOutAllExcept("memberName", "email", "profilePicFile"));
+
+            filteredObjectMapper.setFilterProvider(filterProvider);
+
+            return filteredObjectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(findPartyRoomReservationDto);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("parsing error", e);
+        }
     }
 
     public List<PartyRoomReservationDto.Simple> findAllByHost(Member host) {

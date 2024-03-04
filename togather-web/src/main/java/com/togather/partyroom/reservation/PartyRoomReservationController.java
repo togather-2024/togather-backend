@@ -32,13 +32,13 @@
         }
 
         @GetMapping("/my/{reservation-id}")
-        public ResponseEntity<PartyRoomReservationDto> searchGuestReservation(@PathVariable(name = "reservation-id") long reservationId) {
+        public ResponseEntity<String > searchGuestReservation(@PathVariable(name = "reservation-id") long reservationId) {
             //특정 예약 내역 상세 조회
             //TODO: 토큰 검증 로직
 
-            PartyRoomReservationDto findReservationDto = partyRoomReservationService.findOneByReservationId(reservationId);
+            String partyRoomReservationDto = partyRoomReservationService.findOneByReservationId(reservationId);
 
-            return ResponseEntity.ok(findReservationDto);
+            return ResponseEntity.ok(partyRoomReservationDto);
 
         }
 
