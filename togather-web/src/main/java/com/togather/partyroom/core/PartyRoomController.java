@@ -33,7 +33,7 @@ public class PartyRoomController {
     public ResponseEntity<PartyRoomDto> register(@Valid @RequestBody PartyRoomRequestDto partyRoomRequestDto) {
 
         PartyRoomDto partyRoomDto = partyRoomRequestDto.getPartyRoomDto();
-        // TODO: extract from JWT token
+        // DONE: extract from JWT token
         MemberDto partyRoomHost = memberService.findByAuthentication(SecurityContextHolder.getContext().getAuthentication());
 
         PartyRoomLocationDto partyRoomLocationDto = partyRoomRequestDto.getPartyRoomLocationDto();
@@ -79,7 +79,6 @@ public class PartyRoomController {
         if (loginUser.getMemberSrl() != partyRoomDto.getPartyRoomHost().getMemberSrl()) {
             throw new AccessDeniedException("cannot modify different user's party room");
         }
-
         partyRoomService.deletePartyRoomById(partyRoomId);
         return ResponseEntity.ok("ok");
     }
@@ -89,4 +88,5 @@ public class PartyRoomController {
     public ResponseEntity<PartyRoomDetailDto> getPartyRoomDetail(@PathVariable("id") long partyRoomId) {
         return ResponseEntity.ok(partyRoomService.findDetailDtoById(partyRoomId));
     }
+
 }
