@@ -7,6 +7,8 @@ import com.togather.member.model.MemberInfoDto;
 import com.togather.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -80,6 +82,13 @@ public class MemberService {
     public Member findById(long id) {
         return memberRepository.findById(id)
                 .orElseThrow(RuntimeException::new);
+    }
+
+    public MemberDto findByAuthentication(Authentication authentication) {
+        String userEmail = authentication.getName();
+        return memberConverter.convertToDto(memberRepository.findByEmail(userEmail).orElseThrow(
+                () -> new UsernameNotFoundException("cannot find user by authentication")
+        ));
     }
 
 }
