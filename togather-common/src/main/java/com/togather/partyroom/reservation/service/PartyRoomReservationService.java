@@ -5,7 +5,6 @@ import com.togather.member.model.MemberDto;
 import com.togather.member.service.MemberService;
 import com.togather.partyroom.core.converter.PartyRoomConverter;
 import com.togather.partyroom.core.model.PartyRoom;
-import com.togather.partyroom.core.model.PartyRoomDto;
 import com.togather.partyroom.core.model.PartyRoomOperationDay;
 import com.togather.partyroom.core.repository.PartyRoomOperationDayRepository;
 import com.togather.partyroom.core.service.PartyRoomService;
@@ -19,7 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
-import java.util.ArrayList;
+
 import java.util.List;
 
 @Service
@@ -61,10 +60,10 @@ public class PartyRoomReservationService {
         List<PartyRoomReservation> findAllByGuest = partyRoomReservationRepository.findAllByGuest(member);
 
         if (findAllByGuest.isEmpty()) {
-            log.info("search party_room_reservation by reservation_id is empty: {}", findAllByGuest.getFirst().getReservationId());
+            log.info("search party_room_reservation by reservation_id is empty: {}", findAllByGuest.get(0).getReservationId());
             return null;
         } else {
-            log.info("search party_room_reservation by reservation_id: {}", findAllByGuest.getFirst().getReservationId());
+            log.info("search party_room_reservation by reservation_id: {}", findAllByGuest.get(0).getReservationId());
             return findAllByGuest.stream()
                     .map(reservation -> PartyRoomReservationDto.Simple.builder()
                             .reservationId(reservation.getReservationId())
