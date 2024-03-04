@@ -1,9 +1,13 @@
 package com.togather.member.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ser.FilterProvider;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.togather.member.converter.MemberConverter;
 import com.togather.member.model.Member;
 import com.togather.member.model.MemberDto;
-import com.togather.member.model.MemberInfoDto;
 import com.togather.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
     private final MemberConverter memberConverter;
     private final MemberRepository memberRepository;
+    private final ObjectMapper objectMapper;
 
     @Transactional
     public void register(MemberDto memberDto) {
@@ -35,19 +40,25 @@ public class MemberService {
         log.info("member logged in: {}", findMember.getEmail());
     }
 
-    public MemberInfoDto searchMemberInfo(Long memberSrl) {
-        Member findMember = memberRepository.findById(memberSrl)
-                .orElseThrow(RuntimeException::new); //TODO: 예외 클래스 추후 수정
+    public String searchMemberInfo(Long memberSrl) {
+        MemberDto findMemberDto = memberConverter.convertToDto(memberRepository.findById(memberSrl)
+                .orElseThrow(RuntimeException::new)); //TODO: 예외 클래스 추후 수정
 
         log.info("search member info: {}", memberSrl);
 
-        return MemberInfoDto.builder()
-                .memberSrl(memberSrl)
-                .memberName(findMember.getMemberName())
-                .role(findMember.getRole())
-                .profilePicFile(findMember.getProfilePicFile())
-//                .partyRoomReservationDtos() TODO: partyRoomReservationDtos 추가
-                .build();
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            FilterProvider filterProvider = new SimpleFilterProvider()
+                    .addFilter("MemberDtoFilter", SimpleBeanPropertyFilter.filterOutAllExcept("memberName", "email", "profilePicFile"));
+
+            objectMapper.setFilterProvider(filterProvider);
+
+            return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(findMemberDto);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("parsing error", e);
+        }
+
     }
 
     @Transactional

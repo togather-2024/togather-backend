@@ -91,11 +91,10 @@ public class PartyRoomReservationService {
 
         PartyRoomReservationDto findPartyRoomReservationDto = partyRoomReservationConverter.convertToDto(
                 partyRoomReservationRepository.findById(reservationId).orElseThrow(RuntimeException::new));
-        System.out.println(findPartyRoomReservationDto.getReservationId());
 
         try {
-            ObjectMapper filteredObjectMapper = new ObjectMapper();
-            filteredObjectMapper
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper
                     .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
                     .registerModule(new JavaTimeModule())
                     .setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
@@ -105,9 +104,9 @@ public class PartyRoomReservationService {
                     .addFilter("PartyRoomDtoFilter", SimpleBeanPropertyFilter.serializeAll())
                     .addFilter("MemberDtoFilter", SimpleBeanPropertyFilter.filterOutAllExcept("memberName", "email", "profilePicFile"));
 
-            filteredObjectMapper.setFilterProvider(filterProvider);
+            objectMapper.setFilterProvider(filterProvider);
 
-            return filteredObjectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(findPartyRoomReservationDto);
+            return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(findPartyRoomReservationDto);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("parsing error", e);
         }
