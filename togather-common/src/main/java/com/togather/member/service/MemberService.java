@@ -21,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
     private final MemberConverter memberConverter;
     private final MemberRepository memberRepository;
-    private final ObjectMapper objectMapper;
 
     @Transactional
     public void register(MemberDto memberDto) {
@@ -40,12 +39,16 @@ public class MemberService {
         log.info("member logged in: {}", findMember.getEmail());
     }
 
-    public String searchMemberInfo(Long memberSrl) {
+    public MemberDto findMemberDtoById(Long memberSrl) {
         MemberDto findMemberDto = memberConverter.convertToDto(memberRepository.findById(memberSrl)
                 .orElseThrow(RuntimeException::new)); //TODO: 예외 클래스 추후 수정
 
         log.info("search member info: {}", memberSrl);
 
+        return findMemberDto;
+    }
+
+    public String serializeDto(MemberDto memberDto) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
 
@@ -54,12 +57,13 @@ public class MemberService {
 
             objectMapper.setFilterProvider(filterProvider);
 
-            return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(findMemberDto);
+            return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(memberDto);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("parsing error", e);
         }
-
     }
+
+
 
     @Transactional
     public void update(MemberDto memberDto) {

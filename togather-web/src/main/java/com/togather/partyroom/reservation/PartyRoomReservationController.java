@@ -36,10 +36,10 @@
             //특정 예약 내역 상세 조회
             //TODO: 토큰 검증 로직
 
-            String partyRoomReservationDto = partyRoomReservationService.findOneByReservationId(reservationId);
+            PartyRoomReservationDto partyRoomReservationDto = partyRoomReservationService.findOneByReservationId(reservationId);
+            String serializePartyRoomReservationDto = partyRoomReservationService.serializePartyRoomReservationDto(partyRoomReservationDto);
 
-            return ResponseEntity.ok(partyRoomReservationDto);
-
+            return ResponseEntity.ok(serializePartyRoomReservationDto);
         }
 
         @GetMapping("/my")

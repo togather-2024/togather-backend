@@ -87,11 +87,14 @@ public class PartyRoomReservationService {
         }
     }
 
-    public String findOneByReservationId(long reservationId) {
+    public PartyRoomReservationDto findOneByReservationId(long reservationId) {
 
-        PartyRoomReservationDto findPartyRoomReservationDto = partyRoomReservationConverter.convertToDto(
+        return partyRoomReservationConverter.convertToDto(
                 partyRoomReservationRepository.findById(reservationId).orElseThrow(RuntimeException::new));
 
+    }
+
+    public String serializePartyRoomReservationDto(PartyRoomReservationDto partyRoomReservationDto) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper
@@ -106,7 +109,7 @@ public class PartyRoomReservationService {
 
             objectMapper.setFilterProvider(filterProvider);
 
-            return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(findPartyRoomReservationDto);
+            return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(partyRoomReservationDto);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("parsing error", e);
         }
