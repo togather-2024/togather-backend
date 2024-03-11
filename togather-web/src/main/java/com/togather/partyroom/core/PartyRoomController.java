@@ -10,9 +10,15 @@ import com.togather.partyroom.image.model.PartyRoomImageDto;
 import com.togather.partyroom.location.model.PartyRoomLocationDto;
 import com.togather.partyroom.register.PartyRoomRequestDto;
 import com.togather.partyroom.tags.model.PartyRoomCustomTagDto;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,6 +29,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Controller
+@Tag(name = "Party Room Core CRUD")
 @RequestMapping("/api/partyroom")
 public class PartyRoomController {
     private final PartyRoomService partyRoomService;
@@ -30,6 +37,14 @@ public class PartyRoomController {
     @PostMapping("/register")
     @PreAuthorize("hasRole('ROLE_HOST')")
     @ResponseBody
+    @Operation(summary = "partyRoom creation(Registration) API", description = "파티룸 등록 API")
+    @ApiResponse(responseCode = "200", description = "success", content = @Content(schema = @Schema(implementation = PartyRoomDto.class)))
+    @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
+    @ApiResponse(responseCode = "403", description = "has no role or is not owner of party room", content = @Content)
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "required in partyRoomDto: partyRoomName, desc, opening/closing hour, price, guestCapacity.<br>" +
+                    "required in customTags: tagContents"
+    )
     public ResponseEntity<PartyRoomDto> register(@Valid @RequestBody PartyRoomRequestDto partyRoomRequestDto) {
 
         PartyRoomDto partyRoomDto = partyRoomRequestDto.getPartyRoomDto();
@@ -84,6 +99,7 @@ public class PartyRoomController {
     }
 
     @GetMapping("/detail/{id}")
+    @PreAuthorize("hasRole('ROLE_HOST')")
     @ResponseBody
     public ResponseEntity<PartyRoomDetailDto> getPartyRoomDetail(@PathVariable("id") long partyRoomId) {
         return ResponseEntity.ok(partyRoomService.findDetailDtoById(partyRoomId));

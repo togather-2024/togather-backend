@@ -1,5 +1,6 @@
 package com.togather.partyroom.reservation.model;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.togather.member.model.MemberDto;
 import com.togather.partyroom.core.model.PartyRoomDto;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 
 @Builder
 @Getter
+@JsonFilter("PartyRoomReservationDtoFilter")
 public class PartyRoomReservationDto {
 
     private long reservationId;
