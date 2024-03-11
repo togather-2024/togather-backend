@@ -99,6 +99,7 @@ public class PartyRoomController {
     }
 
     @GetMapping("/detail/{id}")
+    @PreAuthorize("hasRole('ROLE_HOST')")
     @ResponseBody
     public ResponseEntity<PartyRoomDetailDto> getPartyRoomDetail(@PathVariable("id") long partyRoomId) {
         return ResponseEntity.ok(partyRoomService.findDetailDtoById(partyRoomId));

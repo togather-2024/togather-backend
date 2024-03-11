@@ -9,6 +9,8 @@ jwt:
   token-validity-in-seconds: 30000000
 
 
+
+
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
