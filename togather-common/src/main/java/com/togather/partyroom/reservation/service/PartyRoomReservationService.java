@@ -16,9 +16,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.time.DayOfWeek;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -59,9 +61,9 @@ public class PartyRoomReservationService {
 
         List<PartyRoomReservation> findAllByGuest = partyRoomReservationRepository.findAllByGuest(memberDto.getMemberSrl());
 
-        if (findAllByGuest.isEmpty()) {
-            log.info("search party_room_reservation by reservation_id is empty: {}", findAllByGuest.get(0).getReservationId());
-            return null;
+        if (CollectionUtils.isEmpty(findAllByGuest)) {
+            log.info("search party_room_reservation by reservation_id is empty");
+            return Collections.emptyList();
         } else {
             log.info("search party_room_reservation by reservation_id: {}", findAllByGuest.get(0).getReservationId());
             return findAllByGuest.stream()
