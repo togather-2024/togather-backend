@@ -127,7 +127,7 @@ public class PartyRoomReservationService {
 
         partyRoomReservationRepository.delete(partyRoomReservation);
 
-        log.info("delete party_room_reservation");
+        log.info("delete party_room_reservation: {}", partyRoomReservation.getReservationId());
     }
 
 }
