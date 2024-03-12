@@ -1,6 +1,5 @@
 package com.togather.partyroom.reservation.service;
 
-import com.togather.member.model.Member;
 import com.togather.member.model.MemberDto;
 import com.togather.member.service.MemberService;
 import com.togather.partyroom.core.converter.PartyRoomConverter;
@@ -22,6 +21,7 @@ import java.time.DayOfWeek;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -57,7 +57,7 @@ public class PartyRoomReservationService {
         } else throw new RuntimeException(); //TODO: 예외 처리
     }
 
-    public List<PartyRoomReservationDto.Simple> findAllByMember(MemberDto memberDto) {
+    public List<PartyRoomReservationDto> findAllByMember(MemberDto memberDto) {
 
         List<PartyRoomReservation> findAllByGuest = partyRoomReservationRepository.findAllByGuest(memberDto.getMemberSrl());
 
@@ -66,21 +66,14 @@ public class PartyRoomReservationService {
             return Collections.emptyList();
         } else {
             log.info("search party_room_reservation by reservation_id: {}", findAllByGuest.get(0).getReservationId());
+
             return findAllByGuest.stream()
-                    .map(reservation -> PartyRoomReservationDto.Simple.builder()
-                            .reservationId(reservation.getReservationId())
-                            .partyRoomName(reservation.getPartyRoom().getPartyRoomName())
-                            .guestCount(reservation.getGuestCount())
-                            .startTime(reservation.getStartTime())
-                            .endTime(reservation.getEndTime())
-                            .paymentStatus(reservation.getPaymentStatus())
-                            .build())
-                    .toList();
+                    .map(partyRoomReservationConverter::convertToDto)
+                    .collect(Collectors.toList());
         }
     }
 
     public PartyRoomReservationDto findDtoByReservationId(long reservationId) {
-
         PartyRoomReservationDto findPartyRoomReservationDto = partyRoomReservationConverter.convertToDto(
                 partyRoomReservationRepository.findById(reservationId).orElseThrow(RuntimeException::new));
 

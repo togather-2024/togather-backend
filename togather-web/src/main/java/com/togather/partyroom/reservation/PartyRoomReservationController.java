@@ -1,7 +1,6 @@
     package com.togather.partyroom.reservation;
 
     import com.togather.common.AddJsonFilters;
-    import com.togather.member.model.Member;
     import com.togather.member.model.MemberDto;
     import com.togather.member.service.MemberService;
     import com.togather.partyroom.reservation.model.PartyRoomReservation;
@@ -51,7 +50,7 @@
         @PreAuthorize("hasRole('ROLE_GUEST')")
         @Operation(summary = "Party Room Reservation Search - One", description = "파티룸 예약 상세 조회 API")
         @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
-        @AddJsonFilters(filters = {PARTY_ROOM_RESERVATION_DTO, PARTY_ROOM_DTO_SIMPLE, MEMBER_DTO_EXCLUDE_PII})
+        @AddJsonFilters(filters = {PARTY_ROOM_RESERVATION_DTO, PARTY_ROOM_DTO_SIMPLE, MEMBER_DTO_FOR_RESERVATION})
         @ApiResponse(content = @Content(schema = @Schema(implementation = PartyRoomReservationDto.class)))
         public MappingJacksonValue searchOneByReservationIdFiltered(@PathVariable(name = "reservation-id") long reservationId) {
             //guest - 특정 예약 내역 상세 조회
@@ -69,13 +68,16 @@
         @PreAuthorize("hasRole('ROLE_GUEST')")
         @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
         @Operation(summary = "Party Room Reservation Search - List", description = "파티룸 예약 리스트 조회 API")
-        public ResponseEntity<List> searchByMember() {
+        @AddJsonFilters(filters = {PARTY_ROOM_DTO_SIMPLE, PARTY_ROOM_RESERVATION_DTO_SIMPLE,
+                PARTY_ROOM_IMAGE_DTO_SIMPLE, MEMBER_DTO_FOR_RESERVATION})
+        @ApiResponse(content = @Content(schema = @Schema(implementation = PartyRoomReservationDto.class)))
+        public MappingJacksonValue searchByMember() {
             //guest - 전체 예약 내역 조회
 
             MemberDto loginUser = memberService.findByAuthentication(SecurityContextHolder.getContext().getAuthentication());
-            List<PartyRoomReservationDto.Simple> findAllByMember = partyRoomReservationService.findAllByMember(loginUser);
+            List<PartyRoomReservationDto> findAllByMember = partyRoomReservationService.findAllByMember(loginUser);
 
-            return ResponseEntity.ok(findAllByMember);
+            return new MappingJacksonValue(findAllByMember);
         }
 
         @DeleteMapping("/{reservation-id}")
