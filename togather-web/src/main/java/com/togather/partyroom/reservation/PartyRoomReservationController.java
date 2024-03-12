@@ -1,19 +1,21 @@
     package com.togather.partyroom.reservation;
 
     import com.togather.common.AddJsonFilters;
-    import com.togather.common.ResponseFilter;
     import com.togather.member.model.Member;
     import com.togather.member.service.MemberService;
     import com.togather.partyroom.reservation.model.PartyRoomReservationDto;
     import com.togather.partyroom.reservation.service.PartyRoomReservationService;
+    import io.swagger.v3.oas.annotations.Operation;
     import io.swagger.v3.oas.annotations.media.Content;
     import io.swagger.v3.oas.annotations.media.Schema;
     import io.swagger.v3.oas.annotations.responses.ApiResponse;
+    import io.swagger.v3.oas.annotations.tags.Tag;
     import jakarta.validation.Valid;
     import lombok.RequiredArgsConstructor;
     import lombok.extern.slf4j.Slf4j;
     import org.springframework.http.ResponseEntity;
     import org.springframework.http.converter.json.MappingJacksonValue;
+    import org.springframework.security.access.prepost.PreAuthorize;
     import org.springframework.web.bind.annotation.*;
 
     import java.util.List;
@@ -24,15 +26,17 @@
     @RequestMapping("/partyroom/reservation")
     @Slf4j
     @RequiredArgsConstructor
+    @Tag(name = "Party Room Reservation CRUD")
     public class PartyRoomReservationController {
 
         private final PartyRoomReservationService partyRoomReservationService;
         private final MemberService memberService;
 
         @PostMapping("/registration")
+        @PreAuthorize("hasRole('ROLE_GUEST')")
+        @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
+        @Operation(summary = "Party Room Reservation Registration", description = "파티룸 예약 등록 API")
         public ResponseEntity<String> register(@Valid @RequestBody PartyRoomReservationDto reservationDto) {
-
-            //TODO: 토큰 검증 로직 추가
 
             partyRoomReservationService.register(reservationDto);
 
@@ -40,22 +44,14 @@
         }
 
         @GetMapping("/my/{reservation-id}")
-        public ResponseEntity<PartyRoomReservationDto> searchOneByReservationId(@PathVariable(name = "reservation-id") long reservationId) {
-            //guest - 특정 예약 내역 상세 조회
-            //TODO: 토큰 검증 로직, 토큰에서 회원 정보 빼오기
-
-            PartyRoomReservationDto findReservationDto = partyRoomReservationService.findOneByReservationId(reservationId);
-
-            return ResponseEntity.ok(findReservationDto);
-
-        }
-
-        @GetMapping("/my/filtered/{reservation-id}")
+        @PreAuthorize("hasRole('ROLE_GUEST')")
+        @Operation(summary = "Party Room Reservation Search - One", description = "파티룸 예약 상세 조회 API")
+        @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
         @AddJsonFilters(filters = {PARTY_ROOM_RESERVATION_DTO, PARTY_ROOM_DTO_SIMPLE, MEMBER_DTO_EXCLUDE_PII})
         @ApiResponse(content = @Content(schema = @Schema(implementation = PartyRoomReservationDto.class)))
         public MappingJacksonValue searchOneByReservationIdFiltered(@PathVariable(name = "reservation-id") long reservationId) {
             //guest - 특정 예약 내역 상세 조회
-            //TODO: 토큰 검증 로직, 토큰에서 회원 정보 빼오기
+            //TODO: 조회하려는회원 == 조회하려는예약건 같은지 검증
 
             PartyRoomReservationDto findReservationDto = partyRoomReservationService.findOneByReservationId(reservationId);
 
@@ -63,6 +59,9 @@
         }
 
         @GetMapping("/my")
+        @PreAuthorize("hasRole('ROLE_GUEST')")
+        @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
+        @Operation(summary = "Party Room Reservation Search - List", description = "파티룸 예약 리스트 조회 API")
         public ResponseEntity<List> searchByMember() {
             //guest - 전체 예약 내역 조회
             //TODO: 토큰 검증 로직 추가
@@ -74,6 +73,9 @@
         }
 
         @DeleteMapping("/{reservation-id}")
+        @PreAuthorize("hasRole('ROLE_GUEST')")
+        @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
+        @Operation(summary = "Party Room Reservation Delete", description = "파티룸 예약 삭제 API")
         public ResponseEntity<String> delete(@PathVariable(name = "reservation-id") long reservationId) {
 
             //TODO: 토큰 검증 로직 추가
