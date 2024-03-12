@@ -19,6 +19,8 @@ import org.springframework.util.CollectionUtils;
 
 import java.time.DayOfWeek;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,7 +46,7 @@ public class PartyRoomReservationService {
         MemberDto memberDto = memberService.findMemberDtoById(partyRoomReservationDto.getReservationGuestDto().getMemberSrl());
         partyRoomReservationDto.setReservationGuestDto(memberDto);
         partyRoomReservationDto.setPartyRoomDto(partyRoomConverter.convertFromEntity(findPartyRoom));
-
+        partyRoomReservationDto.setBookedDate(LocalDate.now(ZoneId.of("Asia/Seoul")));
 
         boolean isValidReservationCapacity = isValidReservationCapacity(partyRoomReservationDto);
         boolean isValidTimeSlot = isValidTimeSlot(partyRoomReservationDto);
