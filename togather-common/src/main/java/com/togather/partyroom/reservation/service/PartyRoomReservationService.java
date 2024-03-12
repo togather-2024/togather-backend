@@ -55,9 +55,9 @@ public class PartyRoomReservationService {
         } else throw new RuntimeException(); //TODO: 예외 처리
     }
 
-    public List<PartyRoomReservationDto.Simple> findAllByMember(Member member) {
+    public List<PartyRoomReservationDto.Simple> findAllByMember(MemberDto memberDto) {
 
-        List<PartyRoomReservation> findAllByGuest = partyRoomReservationRepository.findAllByGuest(member);
+        List<PartyRoomReservation> findAllByGuest = partyRoomReservationRepository.findAllByGuest(memberDto.getMemberSrl());
 
         if (findAllByGuest.isEmpty()) {
             log.info("search party_room_reservation by reservation_id is empty: {}", findAllByGuest.get(0).getReservationId());

@@ -2,6 +2,7 @@
 
     import com.togather.common.AddJsonFilters;
     import com.togather.member.model.Member;
+    import com.togather.member.model.MemberDto;
     import com.togather.member.service.MemberService;
     import com.togather.partyroom.reservation.model.PartyRoomReservationDto;
     import com.togather.partyroom.reservation.service.PartyRoomReservationService;
@@ -16,6 +17,7 @@
     import org.springframework.http.ResponseEntity;
     import org.springframework.http.converter.json.MappingJacksonValue;
     import org.springframework.security.access.prepost.PreAuthorize;
+    import org.springframework.security.core.context.SecurityContextHolder;
     import org.springframework.web.bind.annotation.*;
 
     import java.util.List;
@@ -66,8 +68,8 @@
             //guest - 전체 예약 내역 조회
             //TODO: 토큰 검증 로직 추가
 
-            Member findMember = memberService.findById(1L); //TODO: 파라미터 변경
-            List<PartyRoomReservationDto.Simple> findAllByMember = partyRoomReservationService.findAllByMember(findMember);
+            MemberDto findMemberDto = memberService.findByAuthentication(SecurityContextHolder.getContext().getAuthentication());
+            List<PartyRoomReservationDto.Simple> findAllByMember = partyRoomReservationService.findAllByMember(findMemberDto);
 
             return ResponseEntity.ok(findAllByMember);
         }

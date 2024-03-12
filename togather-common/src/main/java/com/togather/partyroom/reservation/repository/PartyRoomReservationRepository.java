@@ -9,6 +9,6 @@ import java.util.List;
 
 public interface PartyRoomReservationRepository extends JpaRepository<PartyRoomReservation, Long> {
 
-    @Query("select p from PartyRoomReservation p where p.reservationGuest = :member")
-    List<PartyRoomReservation> findAllByGuest(Member member);
+    @Query("select p from PartyRoomReservation p where p.reservationGuest.memberSrl = :reservationGuestSrl")
+    List<PartyRoomReservation> findAllByGuest(long reservationGuestSrl);
 }
