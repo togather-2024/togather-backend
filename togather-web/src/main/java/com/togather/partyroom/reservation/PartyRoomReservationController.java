@@ -4,6 +4,7 @@
     import com.togather.member.model.Member;
     import com.togather.member.model.MemberDto;
     import com.togather.member.service.MemberService;
+    import com.togather.partyroom.reservation.model.PartyRoomReservation;
     import com.togather.partyroom.reservation.model.PartyRoomReservationDto;
     import com.togather.partyroom.reservation.service.PartyRoomReservationService;
     import io.swagger.v3.oas.annotations.Operation;
@@ -16,6 +17,7 @@
     import lombok.extern.slf4j.Slf4j;
     import org.springframework.http.ResponseEntity;
     import org.springframework.http.converter.json.MappingJacksonValue;
+    import org.springframework.security.access.AccessDeniedException;
     import org.springframework.security.access.prepost.PreAuthorize;
     import org.springframework.security.core.context.SecurityContextHolder;
     import org.springframework.web.bind.annotation.*;
@@ -53,9 +55,12 @@
         @ApiResponse(content = @Content(schema = @Schema(implementation = PartyRoomReservationDto.class)))
         public MappingJacksonValue searchOneByReservationIdFiltered(@PathVariable(name = "reservation-id") long reservationId) {
             //guest - 특정 예약 내역 상세 조회
-            //TODO: 조회하려는회원 == 조회하려는예약건 같은지 검증
 
-            PartyRoomReservationDto findReservationDto = partyRoomReservationService.findOneByReservationId(reservationId);
+            PartyRoomReservationDto findReservationDto = partyRoomReservationService.findDtoByReservationId(reservationId);
+
+            MemberDto loginUser = memberService.findByAuthentication(SecurityContextHolder.getContext().getAuthentication());
+            if (findReservationDto.getReservationGuestDto().getMemberSrl() != loginUser.getMemberSrl())
+                throw new AccessDeniedException("");
 
             return new MappingJacksonValue(findReservationDto);
         }
@@ -66,10 +71,9 @@
         @Operation(summary = "Party Room Reservation Search - List", description = "파티룸 예약 리스트 조회 API")
         public ResponseEntity<List> searchByMember() {
             //guest - 전체 예약 내역 조회
-            //TODO: 토큰 검증 로직 추가
 
-            MemberDto findMemberDto = memberService.findByAuthentication(SecurityContextHolder.getContext().getAuthentication());
-            List<PartyRoomReservationDto.Simple> findAllByMember = partyRoomReservationService.findAllByMember(findMemberDto);
+            MemberDto loginUser = memberService.findByAuthentication(SecurityContextHolder.getContext().getAuthentication());
+            List<PartyRoomReservationDto.Simple> findAllByMember = partyRoomReservationService.findAllByMember(loginUser);
 
             return ResponseEntity.ok(findAllByMember);
         }
@@ -79,9 +83,13 @@
         @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
         @Operation(summary = "Party Room Reservation Delete", description = "파티룸 예약 삭제 API")
         public ResponseEntity<String> delete(@PathVariable(name = "reservation-id") long reservationId) {
+            MemberDto loginUser = memberService.findByAuthentication(SecurityContextHolder.getContext().getAuthentication());
+            PartyRoomReservation findPartyRoomReservation = partyRoomReservationService.findByReservationId(reservationId);
 
-            //TODO: 토큰 검증 로직 추가
-            partyRoomReservationService.delete(reservationId);
+            if (findPartyRoomReservation.getReservationGuest().getMemberSrl() != loginUser.getMemberSrl())
+                throw new AccessDeniedException("");
+
+            partyRoomReservationService.delete(findPartyRoomReservation);
 
             return ResponseEntity.ok("ok");
         }

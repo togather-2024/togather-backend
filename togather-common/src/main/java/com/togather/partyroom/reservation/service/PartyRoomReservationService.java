@@ -77,7 +77,7 @@ public class PartyRoomReservationService {
         }
     }
 
-    public PartyRoomReservationDto findOneByReservationId(long reservationId) {
+    public PartyRoomReservationDto findDtoByReservationId(long reservationId) {
 
         PartyRoomReservationDto findPartyRoomReservationDto = partyRoomReservationConverter.convertToDto(
                 partyRoomReservationRepository.findById(reservationId).orElseThrow(RuntimeException::new));
@@ -85,6 +85,16 @@ public class PartyRoomReservationService {
         log.info("find party_room_reservation by reservation id: {}", reservationId);
 
         return findPartyRoomReservationDto;
+    }
+
+    public PartyRoomReservation findByReservationId(long reservationId) {
+
+        PartyRoomReservation findPartyRoomReservation = partyRoomReservationRepository.findById(reservationId)
+                .orElseThrow(RuntimeException::new);
+
+        log.info("find party_room_reservation by reservation id: {}", reservationId);
+
+        return findPartyRoomReservation;
     }
 
     public boolean isValidReservationCapacity(PartyRoomReservationDto partyRoomReservationDto) {
@@ -111,13 +121,11 @@ public class PartyRoomReservationService {
     }
 
     @Transactional
-    public void delete(long reservationId) {
-        PartyRoomReservation findPartyRoomReservation = partyRoomReservationRepository.findById(reservationId)
-                .orElseThrow(RuntimeException::new);
+    public void delete(PartyRoomReservation partyRoomReservation) {
 
-        partyRoomReservationRepository.delete(findPartyRoomReservation);
+        partyRoomReservationRepository.delete(partyRoomReservation);
 
-        log.info("delete party_room_reservation: {}", reservationId);
+        log.info("delete party_room_reservation");
     }
 
 }
