@@ -6,4 +6,11 @@ jwt:
   # original secret key -> base64 encoding -> jasypt encryption
   secret: ENC(WIbrkNvCxSnuLezKcoh6Ze8+AoiNB8Nekkrg4ShWGbqP/M+khGDO8siSnTOwmbyWf8LuQv1lh8Nq3L9jb9CczQ==)
   # TODO: Should be changed after test
-  token-validity-in-seconds: 30
+  token-validity-in-seconds: 30000000
+
+
+
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
