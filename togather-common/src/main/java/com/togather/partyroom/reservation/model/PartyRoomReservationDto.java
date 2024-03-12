@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @Getter
 @JsonFilter("PartyRoomReservationDtoFilter")
 public class PartyRoomReservationDto {
+    //+) 파티룸 상세 위치, 사진, 예약 날짜, 가격
 
     private long reservationId;
 
@@ -34,6 +35,8 @@ public class PartyRoomReservationDto {
 
     @Builder
     public static class Simple {
+        //+) 파티룸 대략적 위치, 사진, 예약 날짜, 가격
+        //-) 이용 인원
 
         @JsonProperty
         private long reservationId;
