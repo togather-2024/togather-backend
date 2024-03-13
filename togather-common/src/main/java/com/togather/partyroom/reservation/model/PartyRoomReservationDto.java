@@ -8,7 +8,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Builder
@@ -33,7 +32,7 @@ public class PartyRoomReservationDto {
     private PaymentStatus paymentStatus;
 
     @Setter
-    private LocalDate bookedDate;
+    private LocalDateTime bookedDate;
 
     private long totalPrice;
 
