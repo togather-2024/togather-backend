@@ -1,11 +1,7 @@
 package com.togather.partyroom.reservation.converter;
 
 import com.togather.member.converter.MemberConverter;
-import com.togather.member.model.Member;
-import com.togather.member.repository.MemberRepository;
 import com.togather.partyroom.core.converter.PartyRoomConverter;
-import com.togather.partyroom.core.model.PartyRoom;
-import com.togather.partyroom.core.repository.PartyRoomRepository;
 import com.togather.partyroom.payment.model.PaymentStatus;
 import com.togather.partyroom.reservation.model.PartyRoomReservation;
 import com.togather.partyroom.reservation.model.PartyRoomReservationDto;
@@ -28,6 +24,8 @@ public class PartyRoomReservationConverter {
                 .startTime(partyRoomReservationDto.getStartTime())
                 .endTime(partyRoomReservationDto.getEndTime())
                 .paymentStatus(PaymentStatus.from(String.valueOf(partyRoomReservationDto.getPaymentStatus())))
+                .bookedDate(partyRoomReservationDto.getBookedDate())
+                .totalPrice(partyRoomReservationDto.getTotalPrice())
                 .build();
 
     }
@@ -40,6 +38,8 @@ public class PartyRoomReservationConverter {
                 .startTime(partyRoomReservation.getStartTime())
                 .endTime(partyRoomReservation.getEndTime())
                 .paymentStatus(partyRoomReservation.getPaymentStatus())
+                .bookedDate(partyRoomReservation.getBookedDate())
+                .totalPrice(partyRoomReservation.getTotalPrice())
                 .build();
     }
 }

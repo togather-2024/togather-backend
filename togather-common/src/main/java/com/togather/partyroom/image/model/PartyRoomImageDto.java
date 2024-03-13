@@ -1,5 +1,6 @@
 package com.togather.partyroom.image.model;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.togather.partyroom.core.model.PartyRoomDto;
 import lombok.Builder;
@@ -9,6 +10,7 @@ import lombok.Setter;
 
 @Getter
 @Builder
+@JsonFilter("PartyRoomImageDtoFilter")
 public class PartyRoomImageDto {
     private long partyRoomImageId;
     @Setter @JsonIgnore
