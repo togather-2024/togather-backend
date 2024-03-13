@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -40,8 +41,14 @@ public class PartyRoomReservation {
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;
 
+    @Column(name = "booked_date", columnDefinition = "DATETIME")
+    private LocalDate bookedDate;
+
+    @Column(name = "total_price")
+    private long totalPrice;
+
     @Builder
-    public PartyRoomReservation(long reservationId, PartyRoom partyRoom, Member reservationGuest, int guestCount, LocalDateTime startTime, LocalDateTime endTime, PaymentStatus paymentStatus) {
+    public PartyRoomReservation(long reservationId, PartyRoom partyRoom, Member reservationGuest, int guestCount, LocalDateTime startTime, LocalDateTime endTime, PaymentStatus paymentStatus, LocalDate bookedDate, long totalPrice) {
         this.reservationId = reservationId;
         this.partyRoom = partyRoom;
         this.reservationGuest = reservationGuest;
@@ -49,5 +56,7 @@ public class PartyRoomReservation {
         this.startTime = startTime;
         this.endTime = endTime;
         this.paymentStatus = paymentStatus;
+        this.bookedDate = bookedDate;
+        this.totalPrice = totalPrice;
     }
 }

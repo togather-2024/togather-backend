@@ -1,6 +1,5 @@
 package com.togather.partyroom.reservation.service;
 
-import com.togather.member.model.Member;
 import com.togather.member.model.MemberDto;
 import com.togather.member.service.MemberService;
 import com.togather.partyroom.core.converter.PartyRoomConverter;
@@ -16,10 +15,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.time.DayOfWeek;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -42,7 +46,7 @@ public class PartyRoomReservationService {
         MemberDto memberDto = memberService.findMemberDtoById(partyRoomReservationDto.getReservationGuestDto().getMemberSrl());
         partyRoomReservationDto.setReservationGuestDto(memberDto);
         partyRoomReservationDto.setPartyRoomDto(partyRoomConverter.convertFromEntity(findPartyRoom));
-
+        partyRoomReservationDto.setBookedDate(LocalDate.now(ZoneId.of("Asia/Seoul")));
 
         boolean isValidReservationCapacity = isValidReservationCapacity(partyRoomReservationDto);
         boolean isValidTimeSlot = isValidTimeSlot(partyRoomReservationDto);
@@ -55,36 +59,39 @@ public class PartyRoomReservationService {
         } else throw new RuntimeException(); //TODO: 예외 처리
     }
 
-    public List<PartyRoomReservationDto.Simple> findAllByMember(Member member) {
+    public List<PartyRoomReservationDto> findAllByMember(MemberDto memberDto) {
 
-        List<PartyRoomReservation> findAllByGuest = partyRoomReservationRepository.findAllByGuest(member);
+        List<PartyRoomReservation> findAllByGuest = partyRoomReservationRepository.findAllByGuest(memberDto.getMemberSrl());
 
-        if (findAllByGuest.isEmpty()) {
-            log.info("search party_room_reservation by reservation_id is empty: {}", findAllByGuest.get(0).getReservationId());
-            return null;
+        if (CollectionUtils.isEmpty(findAllByGuest)) {
+            log.info("search party_room_reservation by reservation_id is empty");
+            return Collections.emptyList();
         } else {
             log.info("search party_room_reservation by reservation_id: {}", findAllByGuest.get(0).getReservationId());
+
             return findAllByGuest.stream()
-                    .map(reservation -> PartyRoomReservationDto.Simple.builder()
-                            .reservationId(reservation.getReservationId())
-                            .partyRoomName(reservation.getPartyRoom().getPartyRoomName())
-                            .guestCount(reservation.getGuestCount())
-                            .startTime(reservation.getStartTime())
-                            .endTime(reservation.getEndTime())
-                            .paymentStatus(reservation.getPaymentStatus())
-                            .build())
-                    .toList();
+                    .map(partyRoomReservationConverter::convertToDto)
+                    .collect(Collectors.toList());
         }
     }
 
-    public PartyRoomReservationDto findOneByReservationId(long reservationId) {
-
+    public PartyRoomReservationDto findDtoByReservationId(long reservationId) {
         PartyRoomReservationDto findPartyRoomReservationDto = partyRoomReservationConverter.convertToDto(
                 partyRoomReservationRepository.findById(reservationId).orElseThrow(RuntimeException::new));
 
         log.info("find party_room_reservation by reservation id: {}", reservationId);
 
         return findPartyRoomReservationDto;
+    }
+
+    public PartyRoomReservation findByReservationId(long reservationId) {
+
+        PartyRoomReservation findPartyRoomReservation = partyRoomReservationRepository.findById(reservationId)
+                .orElseThrow(RuntimeException::new);
+
+        log.info("find party_room_reservation by reservation id: {}", reservationId);
+
+        return findPartyRoomReservation;
     }
 
     public boolean isValidReservationCapacity(PartyRoomReservationDto partyRoomReservationDto) {
@@ -111,13 +118,11 @@ public class PartyRoomReservationService {
     }
 
     @Transactional
-    public void delete(long reservationId) {
-        PartyRoomReservation findPartyRoomReservation = partyRoomReservationRepository.findById(reservationId)
-                .orElseThrow(RuntimeException::new);
+    public void delete(PartyRoomReservation partyRoomReservation) {
 
-        partyRoomReservationRepository.delete(findPartyRoomReservation);
+        partyRoomReservationRepository.delete(partyRoomReservation);
 
-        log.info("delete party_room_reservation: {}", reservationId);
+        log.info("delete party_room_reservation: {}", partyRoomReservation.getReservationId());
     }
 
 }
