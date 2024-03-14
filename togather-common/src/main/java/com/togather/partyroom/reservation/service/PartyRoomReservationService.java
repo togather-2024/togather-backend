@@ -4,9 +4,14 @@ import com.togather.member.model.MemberDto;
 import com.togather.member.service.MemberService;
 import com.togather.partyroom.core.converter.PartyRoomConverter;
 import com.togather.partyroom.core.model.PartyRoom;
-import com.togather.partyroom.core.model.PartyRoomOperationDay;
-import com.togather.partyroom.core.repository.PartyRoomOperationDayRepository;
+import com.togather.partyroom.core.model.PartyRoomOperationDayDto;
+import com.togather.partyroom.core.service.PartyRoomOperationDayService;
 import com.togather.partyroom.core.service.PartyRoomService;
+import com.togather.partyroom.image.model.PartyRoomImageDto;
+import com.togather.partyroom.image.service.PartyRoomImageService;
+import com.togather.partyroom.location.model.PartyRoomLocationDto;
+import com.togather.partyroom.location.service.PartyRoomLocationService;
+import com.togather.partyroom.payment.model.PaymentStatus;
 import com.togather.partyroom.reservation.converter.PartyRoomReservationConverter;
 import com.togather.partyroom.reservation.model.PartyRoomReservation;
 import com.togather.partyroom.reservation.model.PartyRoomReservationDto;
@@ -35,28 +40,74 @@ public class PartyRoomReservationService {
     private final PartyRoomReservationConverter partyRoomReservationConverter;
     private final PartyRoomService partyRoomService;
     private final PartyRoomConverter partyRoomConverter;
-    private final MemberService memberService;
-    private final PartyRoomOperationDayRepository partyRoomOperationDayRepository;
+    private final PartyRoomLocationService partyRoomLocationService;
+    private final PartyRoomImageService partyRoomImageService;
+    private final PartyRoomOperationDayService partyRoomOperationDayService;
 
 
     @Transactional
-    public void register(PartyRoomReservationDto partyRoomReservationDto) {
+    public void register(PartyRoomReservationDto partyRoomReservationDto, MemberDto loginUser) {
 
         PartyRoom findPartyRoom = partyRoomService.findById(partyRoomReservationDto.getPartyRoomDto().getPartyRoomId());
-        MemberDto memberDto = memberService.findMemberDtoById(partyRoomReservationDto.getReservationGuestDto().getMemberSrl());
-        partyRoomReservationDto.setReservationGuestDto(memberDto);
         partyRoomReservationDto.setPartyRoomDto(partyRoomConverter.convertFromEntity(findPartyRoom));
+
+        partyRoomReservationDto.setReservationGuestDto(loginUser);
+
+        PartyRoomLocationDto partyRoomLocationDto = partyRoomLocationService.findLocationDtoByPartyRoom(findPartyRoom);
+        partyRoomReservationDto.setPartyRoomLocationDto(partyRoomLocationDto);
+
+        PartyRoomImageDto partyRoomImageDto = partyRoomImageService.findPartyRoomMainImageByPartyRoom(findPartyRoom); //main image
+        partyRoomReservationDto.setPartyRoomImageDto(partyRoomImageDto);
+
+        partyRoomReservationDto.setPaymentStatus(PaymentStatus.PENDING);
         partyRoomReservationDto.setBookedDate(LocalDateTime.now(ZoneId.of("Asia/Seoul")));
 
-        boolean isValidReservationCapacity = isValidReservationCapacity(partyRoomReservationDto);
-        boolean isValidTimeSlot = isValidTimeSlot(partyRoomReservationDto);
+        isRoomReservationAvailable(partyRoomReservationDto);
 
-        if (isValidReservationCapacity && isValidTimeSlot) {
-            PartyRoomReservation partyRoomReservation = partyRoomReservationConverter.convertToEntity(partyRoomReservationDto);
-            partyRoomReservationRepository.save(partyRoomReservation);
+        PartyRoomReservation partyRoomReservation = partyRoomReservationConverter.convertToEntity(partyRoomReservationDto);
+        partyRoomReservationRepository.save(partyRoomReservation);
 
-            log.info("save into party_room_reservation: {} ", partyRoomReservation.getReservationId());
-        } else throw new RuntimeException(); //TODO: 예외 처리
+        log.info("save into party_room_reservation: {}", partyRoomReservation.getReservationId());
+    }
+
+    private void isValidReservationCapacity(PartyRoomReservationDto partyRoomReservationDto) {
+        if (!(partyRoomReservationDto.getPartyRoomDto().getGuestCapacity() >= partyRoomReservationDto.getGuestCount()))
+            throw new RuntimeException("exceeds capacity");
+    }
+
+    private void isValidTimeSlot(PartyRoomReservationDto partyRoomReservationDto) {
+        List<PartyRoomOperationDayDto> findPartyRoomOperationDayList = partyRoomOperationDayService.findOperationDaysByPartyRoom(partyRoomConverter.convertFromDto(partyRoomReservationDto.getPartyRoomDto()));
+
+        List<DayOfWeek> operationDays = findPartyRoomOperationDayList.stream()
+                .map(PartyRoomOperationDayDto::getOperationDay)
+                .toList();
+        int openingHour = partyRoomReservationDto.getPartyRoomDto().getOpeningHour();
+        int closingHour = partyRoomReservationDto.getPartyRoomDto().getClosingHour();
+
+        DayOfWeek startDayOfWeek = partyRoomReservationDto.getStartTime().getDayOfWeek();
+        DayOfWeek endDayOfWeek = partyRoomReservationDto.getEndTime().getDayOfWeek();
+        int startHour = partyRoomReservationDto.getStartTime().getHour();
+        int endHour = partyRoomReservationDto.getEndTime().getHour();
+
+        if (!((operationDays.contains(startDayOfWeek) && operationDays.contains(endDayOfWeek))
+                && (startHour >= openingHour && endHour <= closingHour)))
+            throw new RuntimeException("unavailable for reservation");
+    }
+
+    private void isAlreadyReserved(PartyRoomReservationDto partyRoomReservationDto) {
+        List<PartyRoomReservation> partyRoomReservationList = partyRoomReservationRepository.findByDateTimeReserved(partyRoomReservationDto.getStartTime(), partyRoomReservationDto.getEndTime());
+
+        for (PartyRoomReservation reservation : partyRoomReservationList) {
+            System.out.println(reservation.getReservationId());
+            if (reservation.getPaymentStatus().equals(PaymentStatus.COMPLETE) || reservation.getPaymentStatus().equals(PaymentStatus.PENDING))
+                throw new RuntimeException("already reserved");
+        }
+    }
+
+    private void isRoomReservationAvailable(PartyRoomReservationDto partyRoomReservationDto) {
+        isValidTimeSlot(partyRoomReservationDto);
+        isValidReservationCapacity(partyRoomReservationDto);
+        isAlreadyReserved(partyRoomReservationDto);
     }
 
     public List<PartyRoomReservationDto> findAllByMember(MemberDto memberDto) {
@@ -92,29 +143,6 @@ public class PartyRoomReservationService {
         log.info("find party_room_reservation by reservation id: {}", reservationId);
 
         return findPartyRoomReservation;
-    }
-
-    public boolean isValidReservationCapacity(PartyRoomReservationDto partyRoomReservationDto) {
-        return partyRoomReservationDto.getPartyRoomDto().getGuestCapacity() >= partyRoomReservationDto.getGuestCount();
-    }
-
-    public boolean isValidTimeSlot(PartyRoomReservationDto partyRoomReservationDto) {
-        List<PartyRoomOperationDay> findPartyRoomOperationDay = partyRoomOperationDayRepository.findByPartyRoom(partyRoomConverter.convertFromDto(partyRoomReservationDto.getPartyRoomDto()));
-
-        //TODO: 로직 구체화(중복 체크 등)
-        List<DayOfWeek> operationDays = findPartyRoomOperationDay.stream()
-                .map(PartyRoomOperationDay::getOperationDay)
-                .toList();
-        int openingHour = partyRoomReservationDto.getPartyRoomDto().getOpeningHour();
-        int closingHour = partyRoomReservationDto.getPartyRoomDto().getClosingHour();
-
-        DayOfWeek startDayOfWeek = partyRoomReservationDto.getStartTime().getDayOfWeek();
-        DayOfWeek endDayOfWeek = partyRoomReservationDto.getEndTime().getDayOfWeek();
-        int startHour = partyRoomReservationDto.getStartTime().getHour();
-        int endHour = partyRoomReservationDto.getEndTime().getHour();
-
-        return (operationDays.contains(startDayOfWeek) && operationDays.contains(endDayOfWeek))
-                && (startHour >= openingHour && endHour <= closingHour);
     }
 
     @Transactional

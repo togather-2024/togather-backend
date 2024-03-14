@@ -39,9 +39,14 @@
         @PreAuthorize("hasRole('ROLE_GUEST')")
         @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
         @Operation(summary = "Party Room Reservation Registration", description = "파티룸 예약 등록 API")
+        @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                description = "<h3>Required Data List</h3>" +
+                        "partyRoomDto: partyRoomId<br>" +
+                        "guestCount, startTime, endTime, totalPrice"
+        )
         public ResponseEntity<String> register(@Valid @RequestBody PartyRoomReservationDto reservationDto) {
-
-            partyRoomReservationService.register(reservationDto);
+            MemberDto loginUser = memberService.findByAuthentication(SecurityContextHolder.getContext().getAuthentication());
+            partyRoomReservationService.register(reservationDto, loginUser);
 
             return ResponseEntity.ok("ok");
         }
@@ -59,7 +64,7 @@
 
             MemberDto loginUser = memberService.findByAuthentication(SecurityContextHolder.getContext().getAuthentication());
             if (findReservationDto.getReservationGuestDto().getMemberSrl() != loginUser.getMemberSrl())
-                throw new AccessDeniedException("");
+                throw new AccessDeniedException("not the same member");
 
             return new MappingJacksonValue(findReservationDto);
         }
@@ -89,7 +94,7 @@
             PartyRoomReservation findPartyRoomReservation = partyRoomReservationService.findByReservationId(reservationId);
 
             if (findPartyRoomReservation.getReservationGuest().getMemberSrl() != loginUser.getMemberSrl())
-                throw new AccessDeniedException("");
+                throw new AccessDeniedException("not the same member");
 
             partyRoomReservationService.delete(findPartyRoomReservation);
 

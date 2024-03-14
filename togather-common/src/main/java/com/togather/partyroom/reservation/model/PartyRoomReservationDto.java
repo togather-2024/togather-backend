@@ -3,6 +3,8 @@ package com.togather.partyroom.reservation.model;
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.togather.member.model.MemberDto;
 import com.togather.partyroom.core.model.PartyRoomDto;
+import com.togather.partyroom.image.model.PartyRoomImageDto;
+import com.togather.partyroom.location.model.PartyRoomLocationDto;
 import com.togather.partyroom.payment.model.PaymentStatus;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,11 +31,18 @@ public class PartyRoomReservationDto {
 
     private LocalDateTime endTime;
 
+    @Setter
     private PaymentStatus paymentStatus;
 
     @Setter
     private LocalDateTime bookedDate;
 
     private long totalPrice;
+
+    @Setter
+    private PartyRoomLocationDto partyRoomLocationDto;
+
+    @Setter
+    private PartyRoomImageDto partyRoomImageDto;
 
 }
