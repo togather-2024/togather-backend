@@ -28,7 +28,7 @@ public class Payment {
     @Column(name = "order_name")
     private String orderName; //예약 상품
 
-    @Column(name = "method")
+    @Column(name = "method", columnDefinition = "varchar")
     @Enumerated(EnumType.STRING)
     private Method method; //결제 수단
 
@@ -40,8 +40,8 @@ public class Payment {
     private boolean isPaymentSuccess; //성공 여부
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_srl")
-    private Member member; //예약자
+    @JoinColumn(name = "customer_srl")
+    private Member customer; //예약자
 
     @Column(name = "fail_reason")
     private String failReason; //실패 사유
@@ -49,19 +49,19 @@ public class Payment {
     @Column(name = "is_canceled")
     private boolean isCanceled; //취소 여부
 
-    @Column(name = "cancal_reason")
+    @Column(name = "cancel_reason")
     private String cancelReason; //취소 사유
 
 
     @Builder
-    public Payment(String paymentKey, String orderName, Method method, long amount, boolean isPaymentSuccess, Member member, String failReason, boolean isCanceled, String cancelReason) {
+    public Payment(String paymentKey, String orderName, Method method, long amount, boolean isPaymentSuccess, Member customer, String failReason, boolean isCanceled, String cancelReason) {
         this.orderId = UUID.randomUUID().toString();
         this.paymentKey = paymentKey;
         this.orderName = orderName;
         this.method = method;
         this.amount = amount;
         this.isPaymentSuccess = isPaymentSuccess;
-        this.member = member;
+        this.customer = customer;
         this.failReason = failReason;
         this.isCanceled = isCanceled;
         this.cancelReason = cancelReason;
