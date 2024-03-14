@@ -97,11 +97,9 @@ public class PartyRoomReservationService {
     private void isAlreadyReserved(PartyRoomReservationDto partyRoomReservationDto) {
         List<PartyRoomReservation> partyRoomReservationList = partyRoomReservationRepository.findByDateTimeReserved(partyRoomReservationDto.getStartTime(), partyRoomReservationDto.getEndTime());
 
-        for (PartyRoomReservation reservation : partyRoomReservationList) {
-            System.out.println(reservation.getReservationId());
+        for (PartyRoomReservation reservation : partyRoomReservationList)
             if (reservation.getPaymentStatus().equals(PaymentStatus.COMPLETE) || reservation.getPaymentStatus().equals(PaymentStatus.PENDING))
                 throw new RuntimeException("already reserved");
-        }
     }
 
     private void isRoomReservationAvailable(PartyRoomReservationDto partyRoomReservationDto) {
