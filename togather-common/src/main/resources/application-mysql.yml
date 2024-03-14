@@ -35,8 +35,8 @@ spring:
 
 payment:
   toss:
-    test_client_api_key: ENC(OneD0BjgOz70VdkxZvM/YKLPrhQCxqzx2ONgZRMCLzb04Z6W05fhlu7wq8xFd1No)
-    test_secret_api_key: ENC(+Cdquiuvn2nvwUSSzVV1ZT+hjq5BcIj+O84qrBMJTyZj/I3nl02nJRSb/n2R6bVx)
+    test_client_api_key: ENC(jnt0tjhaEPeVA2ZtWrTyX18jPbJJq7uOefN7JTvQc9Ttd33QpDo/ONSdaeYJQo8T)
+    test_secret_api_key: ENC(E1D62017hONxrHRhVwHCxoNXgTju5Dd69PcybjeYc+OXPEnHrIoTyvbD7KRQOdl6)
     success_url: "http://localhost:8080/api/v1/payments/toss/success"
     fail_url: "http://localhost:8080/api/v1/payments/toss/fail"
 
