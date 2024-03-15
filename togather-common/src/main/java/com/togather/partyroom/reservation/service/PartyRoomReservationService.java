@@ -1,13 +1,15 @@
 package com.togather.partyroom.reservation.service;
 
 import com.togather.member.model.MemberDto;
-import com.togather.member.service.MemberService;
 import com.togather.partyroom.core.converter.PartyRoomConverter;
 import com.togather.partyroom.core.model.PartyRoom;
+import com.togather.partyroom.core.model.PartyRoomDetailDto;
+import com.togather.partyroom.core.model.PartyRoomDto;
 import com.togather.partyroom.core.model.PartyRoomOperationDayDto;
 import com.togather.partyroom.core.service.PartyRoomOperationDayService;
 import com.togather.partyroom.core.service.PartyRoomService;
 import com.togather.partyroom.image.model.PartyRoomImageDto;
+import com.togather.partyroom.image.model.PartyRoomImageType;
 import com.togather.partyroom.image.service.PartyRoomImageService;
 import com.togather.partyroom.location.model.PartyRoomLocationDto;
 import com.togather.partyroom.location.service.PartyRoomLocationService;
@@ -15,6 +17,8 @@ import com.togather.partyroom.payment.model.PaymentStatus;
 import com.togather.partyroom.reservation.converter.PartyRoomReservationConverter;
 import com.togather.partyroom.reservation.model.PartyRoomReservation;
 import com.togather.partyroom.reservation.model.PartyRoomReservationDto;
+import com.togather.partyroom.reservation.model.PartyRoomReservationRequestDto;
+import com.togather.partyroom.reservation.model.PartyRoomReservationResponseDto;
 import com.togather.partyroom.reservation.repository.PartyRoomReservationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +30,7 @@ import java.time.DayOfWeek;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -46,21 +51,19 @@ public class PartyRoomReservationService {
 
 
     @Transactional
-    public void register(PartyRoomReservationDto partyRoomReservationDto, MemberDto loginUser) {
+    public void register(PartyRoomReservationRequestDto partyRoomReservationRequestDto, MemberDto loginUser) {
+        PartyRoomDto partyRoomDto = partyRoomService.findPartyRoomDtoById(partyRoomReservationRequestDto.getPartyRoomId());
 
-        PartyRoom findPartyRoom = partyRoomService.findById(partyRoomReservationDto.getPartyRoomDto().getPartyRoomId());
-        partyRoomReservationDto.setPartyRoomDto(partyRoomConverter.convertFromEntity(findPartyRoom));
-
-        partyRoomReservationDto.setReservationGuestDto(loginUser);
-
-        PartyRoomLocationDto partyRoomLocationDto = partyRoomLocationService.findLocationDtoByPartyRoom(findPartyRoom);
-        partyRoomReservationDto.setPartyRoomLocationDto(partyRoomLocationDto);
-
-        PartyRoomImageDto partyRoomImageDto = partyRoomImageService.findPartyRoomMainImageByPartyRoom(findPartyRoom); //main image
-        partyRoomReservationDto.setPartyRoomImageDto(partyRoomImageDto);
-
-        partyRoomReservationDto.setPaymentStatus(PaymentStatus.PENDING);
-        partyRoomReservationDto.setBookedDate(LocalDateTime.now(ZoneId.of("Asia/Seoul")));
+        PartyRoomReservationDto partyRoomReservationDto = PartyRoomReservationDto.builder()
+                .partyRoomDto(partyRoomDto)
+                .reservationGuestDto(loginUser)
+                .guestCount(partyRoomReservationRequestDto.getGuestCount())
+                .startTime(partyRoomReservationRequestDto.getStartTime())
+                .endTime(partyRoomReservationRequestDto.getEndTime())
+                .paymentStatus(PaymentStatus.PENDING)
+                .bookedDate(LocalDateTime.now(ZoneId.of("Asia/Seoul")))
+                .totalPrice(partyRoomReservationRequestDto.getTotalPrice())
+                .build();
 
         isRoomReservationAvailable(partyRoomReservationDto);
 
@@ -108,29 +111,46 @@ public class PartyRoomReservationService {
         isAlreadyReserved(partyRoomReservationDto);
     }
 
-    public List<PartyRoomReservationDto> findAllByMember(MemberDto memberDto) {
+    public List<PartyRoomReservationResponseDto> findAllByMember(MemberDto memberDto) {
 
-        List<PartyRoomReservation> findAllByGuest = partyRoomReservationRepository.findAllByGuest(memberDto.getMemberSrl());
+        List<Long> findReservationIdListByGuest = partyRoomReservationRepository.findAllByGuest(memberDto.getMemberSrl()).stream()
+                .map(PartyRoomReservation::getReservationId)
+                .collect(Collectors.toList());
 
-        if (CollectionUtils.isEmpty(findAllByGuest)) {
+        List<PartyRoomReservationResponseDto> reservationResponseDtos = new ArrayList<>();
+
+        if (CollectionUtils.isEmpty(findReservationIdListByGuest)) {
             log.info("search party_room_reservation by reservation_id is empty");
             return Collections.emptyList();
         } else {
-            log.info("search party_room_reservation by reservation_id: {}", findAllByGuest.get(0).getReservationId());
+            for (Long reservationId : findReservationIdListByGuest)
+                reservationResponseDtos.add(findDtoByReservationId(reservationId));
 
-            return findAllByGuest.stream()
-                    .map(partyRoomReservationConverter::convertToDto)
-                    .collect(Collectors.toList());
+            log.info("search party_room_reservation list by memberSrl: {}",
+                    reservationResponseDtos.get(0).getPartyRoomReservationDto().getReservationGuestDto().getMemberSrl());
+
+            return reservationResponseDtos;
         }
     }
 
-    public PartyRoomReservationDto findDtoByReservationId(long reservationId) {
-        PartyRoomReservationDto findPartyRoomReservationDto = partyRoomReservationConverter.convertToDto(
-                partyRoomReservationRepository.findById(reservationId).orElseThrow(RuntimeException::new));
+    public PartyRoomReservationResponseDto findDtoByReservationId(long reservationId) {
+
+        PartyRoomReservationDto partyRoomReservationDto = partyRoomReservationConverter.convertToDto(partyRoomReservationRepository.findById(reservationId)
+                .orElseThrow(RuntimeException::new));
+
+        PartyRoomDetailDto partyRoomDetailDto = partyRoomService.findDetailDtoById(partyRoomReservationDto.getPartyRoomDto().getPartyRoomId());
+
+        PartyRoomReservationResponseDto partyRoomReservationResponseDto = PartyRoomReservationResponseDto.builder()
+                .partyRoomReservationDto(partyRoomReservationDto)
+                .partyRoomLocationDto(partyRoomDetailDto.getPartyRoomLocationDto())
+                .partyRoomImageDto(partyRoomDetailDto.getPartyRoomImageDtoList().stream()
+                        .filter(image -> image.getPartyRoomImageType() == PartyRoomImageType.MAIN)
+                        .findFirst().orElse(null))
+                .build();
 
         log.info("find party_room_reservation by reservation id: {}", reservationId);
 
-        return findPartyRoomReservationDto;
+        return partyRoomReservationResponseDto;
     }
 
     public PartyRoomReservation findByReservationId(long reservationId) {
