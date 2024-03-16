@@ -113,23 +113,22 @@ public class PartyRoomReservationService {
 
     public List<PartyRoomReservationResponseDto> findAllByMember(MemberDto memberDto) {
 
-        List<Long> findReservationIdListByGuest = partyRoomReservationRepository.findAllByGuest(memberDto.getMemberSrl()).stream()
-                .map(PartyRoomReservation::getReservationId)
-                .collect(Collectors.toList());
+        List<PartyRoomReservation> findReservationListByGuest = partyRoomReservationRepository.findAllByGuest(memberDto.getMemberSrl());
 
-        List<PartyRoomReservationResponseDto> reservationResponseDtos = new ArrayList<>();
-
-        if (CollectionUtils.isEmpty(findReservationIdListByGuest)) {
+        if (CollectionUtils.isEmpty(findReservationListByGuest)) {
             log.info("search party_room_reservation by reservation_id is empty");
             return Collections.emptyList();
         } else {
-            for (Long reservationId : findReservationIdListByGuest)
-                reservationResponseDtos.add(findDtoByReservationId(reservationId));
-
             log.info("search party_room_reservation list by memberSrl: {}",
-                    reservationResponseDtos.get(0).getPartyRoomReservationDto().getReservationGuestDto().getMemberSrl());
+                    findReservationListByGuest.get(0).getReservationGuest().getMemberSrl());
 
-            return reservationResponseDtos;
+            return findReservationListByGuest.stream()
+                    .map(r -> PartyRoomReservationResponseDto.builder()
+                            .partyRoomImageDto(partyRoomImageService.findPartyRoomMainImageByPartyRoom(r.getPartyRoom()))
+                            .partyRoomLocationDto(partyRoomLocationService.findLocationDtoByPartyRoom(r.getPartyRoom()))
+                            .partyRoomReservationDto(partyRoomReservationConverter.convertToDto(r))
+                            .build())
+                    .toList();
         }
     }
 
