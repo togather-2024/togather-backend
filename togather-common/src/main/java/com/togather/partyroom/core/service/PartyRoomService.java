@@ -59,9 +59,10 @@ public class PartyRoomService {
         partyRoomOperationDayService.registerOperationDays(operationDayDtoList);
 
         // Save main party room image only when file exists
+        // TODO: Add image file from controller
         if (StringUtils.hasText(mainPartyRoomImageDto.getImageFileName())) {
             mainPartyRoomImageDto.setPartyRoomDto(partyRoomDto);
-            partyRoomImageService.registerPartyRoomMainImage(mainPartyRoomImageDto);
+            partyRoomImageService.registerPartyRoomMainImage(null, mainPartyRoomImageDto);
         }
 
         // Save tag related data

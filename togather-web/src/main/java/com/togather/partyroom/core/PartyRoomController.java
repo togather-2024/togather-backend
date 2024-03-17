@@ -1,6 +1,8 @@
 package com.togather.partyroom.core;
 
 import com.togather.common.AddJsonFilters;
+import com.togather.common.s3.S3ImageUploader;
+import com.togather.common.s3.S3ObjectDto;
 import com.togather.member.model.MemberDto;
 import com.togather.member.service.MemberService;
 import com.togather.partyroom.core.model.PartyRoomDetailDto;
@@ -18,6 +20,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.security.access.AccessDeniedException;
@@ -25,6 +28,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -37,6 +41,7 @@ import static com.togather.common.ResponseFilter.MEMBER_DTO_EXCLUDE_PII;
 public class PartyRoomController {
     private final PartyRoomService partyRoomService;
     private final MemberService memberService;
+    private final S3ImageUploader s3ImageUploader;
     @PostMapping("/register")
     @PreAuthorize("hasRole('ROLE_HOST')")
     @ResponseBody
@@ -117,6 +122,13 @@ public class PartyRoomController {
     @AddJsonFilters(filters = MEMBER_DTO_EXCLUDE_PII)
     public MappingJacksonValue getPartyRoomDetail(@PathVariable("id") long partyRoomId) {
         return new MappingJacksonValue(partyRoomService.findDetailDtoById(partyRoomId));
+    }
+
+    @PostMapping(value = "/test/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ResponseBody
+    public String s3uploadTest(@RequestPart("file") MultipartFile file) {
+        S3ObjectDto s3ObjectDto = s3ImageUploader.uploadFileWithRandomFilename(file);
+        return s3ObjectDto.getS3ResourceUrl();
     }
 
 }
