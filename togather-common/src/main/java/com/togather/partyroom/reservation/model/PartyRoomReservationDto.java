@@ -1,27 +1,23 @@
 package com.togather.partyroom.reservation.model;
 
-import com.fasterxml.jackson.annotation.JsonFilter;
 import com.togather.member.model.MemberDto;
 import com.togather.partyroom.core.model.PartyRoomDto;
 import com.togather.partyroom.payment.model.PaymentStatus;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Builder
 @Getter
-@JsonFilter("PartyRoomReservationDtoFilter")
+@Builder
 public class PartyRoomReservationDto {
 
     private long reservationId;
 
-    @Setter
     private PartyRoomDto partyRoomDto;
 
-    @Setter
     private MemberDto reservationGuestDto;
 
     private int guestCount;
@@ -32,9 +28,7 @@ public class PartyRoomReservationDto {
 
     private PaymentStatus paymentStatus;
 
-    @Setter
-    private LocalDate bookedDate;
+    private LocalDateTime bookedDate;
 
     private long totalPrice;
-
 }

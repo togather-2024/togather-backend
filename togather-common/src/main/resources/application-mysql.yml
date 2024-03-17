@@ -33,6 +33,13 @@ spring:
           writetimeout: 5000
     auth-code-expiration-millis: 1800000  # 유효시간, 30 * 60 * 1000 == 30분
 
+payment:
+  toss:
+    test_client_api_key: ENC(jnt0tjhaEPeVA2ZtWrTyX18jPbJJq7uOefN7JTvQc9Ttd33QpDo/ONSdaeYJQo8T)
+    test_secret_api_key: ENC(E1D62017hONxrHRhVwHCxoNXgTju5Dd69PcybjeYc+OXPEnHrIoTyvbD7KRQOdl6)
+    success_url: "http://localhost:8080/api/v1/payments/toss/success"
+    fail_url: "http://localhost:8080/api/v1/payments/toss/fail"
+
 
 logging:
   level:
