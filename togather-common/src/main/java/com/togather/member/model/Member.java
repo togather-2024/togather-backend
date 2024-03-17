@@ -1,6 +1,7 @@
 package com.togather.member.model;
 
 import com.togather.partyroom.core.model.PartyRoom;
+import com.togather.partyroom.payment.model.Payment;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -38,6 +39,9 @@ public class Member {
 
     @OneToMany(mappedBy = "partyRoomHost")
     private List<PartyRoom> partyRoomList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "customer")
+    private List<Payment> paymentList = new ArrayList<>();
 
     @Builder
     public Member(long memberSrl, String memberName, String password, Role role, String email, String profilePicFile) {

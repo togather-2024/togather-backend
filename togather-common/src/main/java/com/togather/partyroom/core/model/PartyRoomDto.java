@@ -31,8 +31,4 @@ public class PartyRoomDto {
     private long price;
 
     private int guestCapacity;
-
-    private PartyRoomLocationDto partyRoomLocationDto;
-
-    private PartyRoomImageDto partyRoomImageDto;
 }
