@@ -51,6 +51,7 @@ public class PaymentConverter {
                 .cancelReason(payment.getCancelReason())
                 .failReason(payment.getFailReason())
                 .createdAt(payment.getCreatedAt())
+                .modifiedAt(payment.getModifiedAt())
                 .build();
     }
 }

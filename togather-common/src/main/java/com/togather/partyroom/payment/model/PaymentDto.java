@@ -40,6 +40,8 @@ public class PaymentDto {
 
     private LocalDateTime createdAt;
 
+    private LocalDateTime modifiedAt;
+
     @Setter
     private String successUrl;
 

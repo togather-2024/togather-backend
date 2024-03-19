@@ -38,7 +38,6 @@ public class PaymentService {
                 .amount(paymentDto.getAmount())
                 .customer(memberConverter.convertToEntity(memberDto))
                 .build();
-        payment.updateCreatedAt();
 
         paymentRepository.save(payment);
 

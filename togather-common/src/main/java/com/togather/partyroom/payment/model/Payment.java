@@ -1,5 +1,6 @@
 package com.togather.partyroom.payment.model;
 
+import com.togather.common.model.BaseTimeEntity;
 import com.togather.member.model.Member;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -17,7 +18,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Entity
 @Builder
-public class Payment {
+public class Payment extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long paymentId;
@@ -54,11 +55,6 @@ public class Payment {
     @Column(name = "cancel_reason")
     private String cancelReason; //취소 사유
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt; //생성 일자
-
-
-
     @Builder
     public Payment(String orderName, Method method, long amount, Member customer) {
         this.orderId = UUID.randomUUID().toString();
@@ -73,7 +69,4 @@ public class Payment {
         this.isPaymentSuccess = true;
     }
 
-    public void updateCreatedAt() {
-        this.createdAt = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
-    }
 }
