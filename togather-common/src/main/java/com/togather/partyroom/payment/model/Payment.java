@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.UUID;
 
 
@@ -59,17 +60,20 @@ public class Payment {
 
 
     @Builder
-    public Payment(String paymentKey, String orderName, Method method, long amount, boolean isPaymentSuccess, Member customer, String failReason, boolean isCanceled, String cancelReason) {
+    public Payment(String orderName, Method method, long amount, Member customer) {
         this.orderId = UUID.randomUUID().toString();
-        this.paymentKey = paymentKey;
         this.orderName = orderName;
         this.method = method;
         this.amount = amount;
-        this.isPaymentSuccess = isPaymentSuccess;
+        this.isPaymentSuccess = false;
         this.customer = customer;
-        this.failReason = failReason;
-        this.isCanceled = isCanceled;
-        this.cancelReason = cancelReason;
+    }
 
+    public void updateIsPaymentSuccess() {
+        this.isPaymentSuccess = true;
+    }
+
+    public void updateCreatedAt() {
+        this.createdAt = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
     }
 }

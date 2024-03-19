@@ -2,6 +2,7 @@ package com.togather.partyroom.payment.converter;
 
 import com.togather.member.model.Member;
 import com.togather.member.service.MemberService;
+import com.togather.partyroom.payment.model.Method;
 import com.togather.partyroom.payment.model.Payment;
 import com.togather.partyroom.payment.model.PaymentDto;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,7 @@ public class PaymentConverter {
                 .orderId(paymentDto.getOrderId())
                 .paymentKey(paymentDto.getPaymentKey())
                 .orderName(paymentDto.getOrderName())
-                .method(paymentDto.getMethod())
+                .method(Method.from(paymentDto.getMethod()))
                 .amount(paymentDto.getAmount())
                 .isPaymentSuccess(paymentDto.isPaymentSuccess())
                 .customer(findCustomer)
@@ -38,7 +39,7 @@ public class PaymentConverter {
             return null;
 
         return PaymentDto.builder()
-                .method(payment.getMethod())
+                .method(payment.getMethod().getDescription())
                 .amount(payment.getAmount())
                 .orderName(payment.getOrderName())
                 .orderId(payment.getOrderId())

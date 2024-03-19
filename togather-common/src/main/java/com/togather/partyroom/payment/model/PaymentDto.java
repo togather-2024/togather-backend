@@ -1,19 +1,22 @@
 package com.togather.partyroom.payment.model;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 
 @Getter
 @Builder
+@JsonFilter("PaymentDtoFilter")
 public class PaymentDto {
 
     private long paymentId;
 
-    private Method method;
+    private String method;
 
     private long amount;
 
@@ -37,13 +40,18 @@ public class PaymentDto {
 
     private LocalDateTime createdAt;
 
+    @Setter
     private String successUrl;
 
+    @Setter
     private String failUrl;
 
     @Getter
     @Builder
     public static class Request {
+        @NotNull
+        private long reservationId;
+
         @NotNull
         private Method method;
 

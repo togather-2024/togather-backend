@@ -48,7 +48,7 @@ private final PartyRoomOperationDayService partyRoomOperationDayService;
 
 
 @Transactional
-public void register(PartyRoomReservationRequestDto partyRoomReservationRequestDto, MemberDto loginUser) {
+public long register(PartyRoomReservationRequestDto partyRoomReservationRequestDto, MemberDto loginUser) {
     PartyRoomDto partyRoomDto = partyRoomService.findPartyRoomDtoById(partyRoomReservationRequestDto.getPartyRoomId());
 
     PartyRoomReservationDto partyRoomReservationDto = PartyRoomReservationDto.builder()
@@ -68,6 +68,8 @@ public void register(PartyRoomReservationRequestDto partyRoomReservationRequestD
     partyRoomReservationRepository.save(partyRoomReservation);
 
     log.info("save into party_room_reservation: {}", partyRoomReservation.getReservationId());
+
+    return partyRoomReservation.getReservationId();
 }
 
 private void isValidReservationCapacity(PartyRoomReservationDto partyRoomReservationDto) {

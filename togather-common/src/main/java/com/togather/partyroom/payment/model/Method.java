@@ -18,11 +18,10 @@ public enum Method {
         return description;
     }
 
-
     @JsonCreator
     public static Method from(String method) {
         return Stream.of(Method.values())
-                .filter(m -> m.toString().equals(method.toUpperCase()))
+                .filter(m -> m.getDescription().equals(method))
                 .findFirst()
                 .orElse(NONE);
     }

@@ -41,11 +41,11 @@ public class PartyRoomReservationController {
     @PreAuthorize("hasRole('ROLE_GUEST')")
     @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
     @Operation(summary = "Party Room Reservation Registration", description = "파티룸 예약 등록 API")
-    public ResponseEntity<String> register(@Valid @RequestBody PartyRoomReservationRequestDto reservationRequestDto) {
+    public ResponseEntity<Long> register(@Valid @RequestBody PartyRoomReservationRequestDto reservationRequestDto) {
         MemberDto loginUser = memberService.findByAuthentication(SecurityContextHolder.getContext().getAuthentication());
-        partyRoomReservationService.register(reservationRequestDto, loginUser);
+        long reservationId = partyRoomReservationService.register(reservationRequestDto, loginUser);
 
-        return ResponseEntity.ok("ok");
+        return ResponseEntity.ok(reservationId);
     }
 
     @GetMapping("/my/{reservation-id}")
