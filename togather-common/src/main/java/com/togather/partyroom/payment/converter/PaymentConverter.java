@@ -1,0 +1,55 @@
+package com.togather.partyroom.payment.converter;
+
+import com.togather.member.model.Member;
+import com.togather.member.service.MemberService;
+import com.togather.partyroom.payment.model.Payment;
+import com.togather.partyroom.payment.model.PaymentDto;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+
+@Component
+@RequiredArgsConstructor
+public class PaymentConverter {
+
+    private final MemberService memberService;
+
+    public Payment convertToEntity(PaymentDto paymentDto) {
+        if (paymentDto == null)
+            return null;
+
+        Member findCustomer = memberService.findByEmail(paymentDto.getCustomerEmail());
+
+        return Payment.builder()
+                .orderId(paymentDto.getOrderId())
+                .paymentKey(paymentDto.getPaymentKey())
+                .orderName(paymentDto.getOrderName())
+                .method(paymentDto.getMethod())
+                .amount(paymentDto.getAmount())
+                .isPaymentSuccess(paymentDto.isPaymentSuccess())
+                .customer(findCustomer)
+                .failReason(paymentDto.getFailReason())
+                .isCanceled(paymentDto.isCanceled())
+                .cancelReason(paymentDto.getCancelReason())
+                .build();
+    }
+
+    public PaymentDto convertToDto(Payment payment) {
+        if (payment == null)
+            return null;
+
+        return PaymentDto.builder()
+                .method(payment.getMethod())
+                .amount(payment.getAmount())
+                .orderName(payment.getOrderName())
+                .orderId(payment.getOrderId())
+                .paymentKey(payment.getPaymentKey())
+                .isPaymentSuccess(payment.isPaymentSuccess())
+                .customerEmail(payment.getCustomer().getEmail())
+                .customerName(payment.getCustomer().getMemberName())
+                .isCanceled(payment.isCanceled())
+                .cancelReason(payment.getCancelReason())
+                .failReason(payment.getFailReason())
+                .createdAt(payment.getCreatedAt())
+                .build();
+    }
+}

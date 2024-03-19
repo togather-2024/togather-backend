@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 
@@ -14,6 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Builder
 public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,7 +37,6 @@ public class Payment {
     @Column(name = "amount")
     private long amount; //총 결제금액
 
-
     @Column(name = "is_payment_success")
     private boolean isPaymentSuccess; //성공 여부
 
@@ -51,6 +52,10 @@ public class Payment {
 
     @Column(name = "cancel_reason")
     private String cancelReason; //취소 사유
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt; //생성 일자
+
 
 
     @Builder
