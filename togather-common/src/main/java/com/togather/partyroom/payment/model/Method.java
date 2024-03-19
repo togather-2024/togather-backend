@@ -20,7 +20,6 @@ public enum Method {
 
 
     @JsonCreator
-
     public static Method from(String method) {
         return Stream.of(Method.values())
                 .filter(m -> m.toString().equals(method.toUpperCase()))
