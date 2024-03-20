@@ -46,11 +46,11 @@ public class PartyRoomImageService {
     }
 
     @Transactional
-    public void registerPartyRoomMainImage(MultipartFile file, PartyRoomImageDto partyRoomImageDto) {
-        S3ObjectDto s3ObjectDto = s3ImageUploader.uploadFileWithRandomFilename(file);
-        partyRoomImageDto.setToMainImage();
-        partyRoomImageDto.setImageFileName(s3ObjectDto.getFileKey());
-        partyRoomImageRepository.save(partyRoomImageConverter.convertFromDto(partyRoomImageDto));
+    public void registerPartyRoomImage(MultipartFile imageFile, PartyRoomImageType imageType, PartyRoomDto partyRoomDto) {
+        S3ObjectDto s3ObjectDto = s3ImageUploader.uploadFileWithRandomFilename(imageFile);
+        PartyRoomImageDto mainImageDto = createImageDto(s3ObjectDto.getFileKey(), imageType);
+        mainImageDto.setPartyRoomDto(partyRoomDto);
+        partyRoomImageRepository.save(partyRoomImageConverter.convertFromDto(mainImageDto));
     }
 
     @Transactional
@@ -63,5 +63,12 @@ public class PartyRoomImageService {
         String imageFileUrl = s3ImageUploader.getResourceUrl(partyRoomImageDto.getImageFileName());
         partyRoomImageDto.setImageFileName(imageFileUrl);
         return partyRoomImageDto;
+    }
+
+    private PartyRoomImageDto createImageDto(String imageFileName, PartyRoomImageType imageType) {
+        return PartyRoomImageDto.builder()
+                .imageFileName(imageFileName)
+                .partyRoomImageType(imageType)
+                .build();
     }
 }

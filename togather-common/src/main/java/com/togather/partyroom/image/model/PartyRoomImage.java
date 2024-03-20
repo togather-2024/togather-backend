@@ -23,7 +23,7 @@ public class PartyRoomImage {
     private String imageFileName;
 
     @Column(name = "type", columnDefinition = "varchar")
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     private PartyRoomImageType imageType;
 
 

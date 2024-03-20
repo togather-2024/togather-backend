@@ -50,9 +50,6 @@ public class PartyRoomRequestDto {
     @Schema(description = "list of tags of party room")
     private List<String> customTags = new ArrayList<>();
 
-    // IMAGE FIELDS
-    private String imageFileName;
-
     // LOCATION FIELDS
     private String sido;
     private String sigungu;
@@ -67,7 +64,6 @@ public class PartyRoomRequestDto {
     private List<String> operationDays;
 
 
-    @Hidden
     public PartyRoomDto extractPartyRoomDto() {
         return PartyRoomDto.builder()
                 .partyRoomName(this.partyRoomName)
@@ -92,7 +88,6 @@ public class PartyRoomRequestDto {
                 .collect(Collectors.toList());
     }
 
-    @Hidden
     public PartyRoomLocationDto extractPartyRoomLocationDto() {
         return PartyRoomLocationDto.builder()
                 .sido(this.sido)
@@ -103,15 +98,7 @@ public class PartyRoomRequestDto {
                 .build();
     }
 
-    @Hidden
-    public PartyRoomImageDto extractPartyRoomImageDto() {
-        return PartyRoomImageDto.builder()
-                .imageFileName(this.imageFileName)
-                .partyRoomImageType(PartyRoomImageType.MAIN)
-                .build();
-    }
 
-    @Hidden
     public List<PartyRoomOperationDayDto> extractOperationDays() {
         return this.operationDays.stream()
                 .map(DayOfWeek::valueOf)
