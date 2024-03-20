@@ -67,7 +67,6 @@ public class PartyRoomRequestDto {
     private List<String> operationDays;
 
 
-    @Hidden
     public PartyRoomDto extractPartyRoomDto() {
         return PartyRoomDto.builder()
                 .partyRoomName(this.partyRoomName)
@@ -92,7 +91,6 @@ public class PartyRoomRequestDto {
                 .collect(Collectors.toList());
     }
 
-    @Hidden
     public PartyRoomLocationDto extractPartyRoomLocationDto() {
         return PartyRoomLocationDto.builder()
                 .sido(this.sido)
@@ -103,7 +101,6 @@ public class PartyRoomRequestDto {
                 .build();
     }
 
-    @Hidden
     public PartyRoomImageDto extractPartyRoomImageDto() {
         return PartyRoomImageDto.builder()
                 .imageFileName(this.imageFileName)
@@ -111,7 +108,6 @@ public class PartyRoomRequestDto {
                 .build();
     }
 
-    @Hidden
     public List<PartyRoomOperationDayDto> extractOperationDays() {
         return this.operationDays.stream()
                 .map(DayOfWeek::valueOf)
