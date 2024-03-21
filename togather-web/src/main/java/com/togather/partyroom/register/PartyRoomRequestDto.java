@@ -98,7 +98,6 @@ public class PartyRoomRequestDto {
                 .build();
     }
 
-
     public List<PartyRoomOperationDayDto> extractOperationDays() {
         return this.operationDays.stream()
                 .map(DayOfWeek::valueOf)
