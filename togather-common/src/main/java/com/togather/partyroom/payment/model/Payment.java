@@ -65,8 +65,8 @@ public class Payment extends BaseTimeEntity {
         this.customer = customer;
     }
 
-    public void updateIsPaymentSuccess() {
+    public void update(String paymentKey) {
+        this.paymentKey = paymentKey;
         this.isPaymentSuccess = true;
     }
-
 }

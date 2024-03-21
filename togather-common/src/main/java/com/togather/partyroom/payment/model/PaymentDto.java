@@ -2,15 +2,15 @@ package com.togather.partyroom.payment.model;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
 import jakarta.validation.constraints.NotNull;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 
 @Getter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @JsonFilter("PaymentDtoFilter")
 public class PaymentDto {
 

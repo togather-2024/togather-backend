@@ -34,6 +34,9 @@ subprojects {
 
 		//Swagger - springdoc
 		implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
+
+		//Webflux - WebClient(Used for sending web requests and receiving responses)
+		implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	}
 
 	configurations {
