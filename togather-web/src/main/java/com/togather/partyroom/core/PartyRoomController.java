@@ -5,11 +5,9 @@ import com.togather.common.s3.S3ImageUploader;
 import com.togather.common.s3.S3ObjectDto;
 import com.togather.member.model.MemberDto;
 import com.togather.member.service.MemberService;
-import com.togather.partyroom.core.model.PartyRoomDetailDto;
 import com.togather.partyroom.core.model.PartyRoomDto;
 import com.togather.partyroom.core.model.PartyRoomOperationDayDto;
 import com.togather.partyroom.core.service.PartyRoomService;
-import com.togather.partyroom.image.model.PartyRoomImageDto;
 import com.togather.partyroom.location.model.PartyRoomLocationDto;
 import com.togather.partyroom.register.PartyRoomRequestDto;
 import com.togather.partyroom.tags.model.PartyRoomCustomTagDto;
@@ -65,7 +63,6 @@ public class PartyRoomController {
         partyRoomDto.setPartyRoomHost(partyRoomHost);
 
         PartyRoomDto registeredPartyRoom = partyRoomService.register(partyRoomDto, customTags, partyRoomLocationDto, mainImage, subImages, operationDays);
-
         return new MappingJacksonValue(registeredPartyRoom);
     }
 
