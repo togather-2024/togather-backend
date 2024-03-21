@@ -1,31 +1,25 @@
-package com.togather.common;
+package com.togather.common.response;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
-import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.PropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
-import com.togather.member.model.MemberDto;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
 
 @Aspect
 @Component
 @RequiredArgsConstructor
 public class ResponseDecorationAspect {
 
-    @AfterReturning(pointcut = "@annotation(AddJsonFilters)", returning = "result")
+    @AfterReturning(pointcut = "@annotation(com.togather.common.response.AddJsonFilters)", returning = "result")
     public void decorateResponse(JoinPoint joinPoint, MappingJacksonValue result) {
         ResponseFilter[] filters = ((MethodSignature)joinPoint.getSignature()).getMethod().getAnnotation(AddJsonFilters.class).filters();
 

@@ -1,5 +1,7 @@
 package com.togather.member.service;
 
+import com.togather.common.exception.ErrorCode;
+import com.togather.common.exception.TogatherApiException;
 import com.togather.member.converter.MemberConverter;
 import com.togather.member.model.Member;
 import com.togather.member.model.MemberDto;
@@ -22,6 +24,8 @@ public class MemberService {
 
     @Transactional
     public void register(MemberDto memberDto) {
+        checkDuplicateMember(memberDto.getEmail());
+
         Member member = memberConverter.convertToEntity(memberDto); //TODO: Role(Enum) 세팅은 Controller에서
         memberRepository.save(member);
 
@@ -91,4 +95,10 @@ public class MemberService {
         ));
     }
 
+    public void checkDuplicateMember(String email) {
+        Member alreadyJoinMember = memberRepository.findByEmail(email).orElse(null);
+        if (alreadyJoinMember != null) {
+            throw new TogatherApiException(ErrorCode.JOIN_DUPLICATE_MEMBER);
+        }
+    }
 }
