@@ -6,7 +6,8 @@ import org.springframework.context.annotation.PropertySource;
 @Configuration
 @PropertySource(
         value = {
-                "classpath:application-mysql.yml"
+                "classpath:application-mysql.yml",
+                "classpath:application-s3.yml"
         },
         factory = YamlLoadFactory.class
 )
