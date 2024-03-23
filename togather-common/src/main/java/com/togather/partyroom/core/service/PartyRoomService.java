@@ -7,6 +7,7 @@ import com.togather.partyroom.core.model.PartyRoomDto;
 import com.togather.partyroom.core.model.PartyRoomOperationDayDto;
 import com.togather.partyroom.core.repository.PartyRoomRepository;
 import com.togather.partyroom.image.model.PartyRoomImageDto;
+import com.togather.partyroom.image.model.PartyRoomImageType;
 import com.togather.partyroom.image.service.PartyRoomImageService;
 import com.togather.partyroom.location.model.PartyRoomLocation;
 import com.togather.partyroom.location.model.PartyRoomLocationDto;
@@ -17,7 +18,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -44,7 +46,7 @@ public class PartyRoomService {
 
     @Transactional
     public PartyRoomDto register(PartyRoomDto partyRoomDto, List<PartyRoomCustomTagDto> customTags, PartyRoomLocationDto partyRoomLocationDto,
-                                 PartyRoomImageDto mainPartyRoomImageDto, List<PartyRoomOperationDayDto> operationDayDtoList) {
+                                 MultipartFile mainImage, List<MultipartFile> subImages, List<PartyRoomOperationDayDto> operationDayDtoList) {
 
         // Save party room basic data and persist to get PK of entity
         PartyRoom savedPartyRoomEntity = partyRoomRepository.save(partyRoomConverter.convertFromDto(partyRoomDto));
@@ -59,9 +61,14 @@ public class PartyRoomService {
         partyRoomOperationDayService.registerOperationDays(operationDayDtoList);
 
         // Save main party room image only when file exists
-        if (StringUtils.hasText(mainPartyRoomImageDto.getImageFileName())) {
-            mainPartyRoomImageDto.setPartyRoomDto(partyRoomDto);
-            partyRoomImageService.registerPartyRoomMainImage(mainPartyRoomImageDto);
+        // TODO: Add image file from controller
+        if (mainImage != null) {
+            partyRoomImageService.registerPartyRoomImage(mainImage, PartyRoomImageType.MAIN, partyRoomDto);
+        }
+
+        // Save sub party room images only when list exists
+        if (!CollectionUtils.isEmpty(subImages)) {
+            subImages.stream().forEach(subImage -> partyRoomImageService.registerPartyRoomImage(subImage, PartyRoomImageType.SECONDARY, partyRoomDto));
         }
 
         // Save tag related data

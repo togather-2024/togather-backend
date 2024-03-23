@@ -15,6 +15,7 @@ public class PartyRoomImageDto {
     private long partyRoomImageId;
     @Setter @JsonIgnore
     private PartyRoomDto partyRoomDto;
+    @Setter
     private String imageFileName;
     private PartyRoomImageType partyRoomImageType;
 
