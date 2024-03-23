@@ -1,6 +1,6 @@
     package com.togather.partyroom.reservation;
 
-    import com.togather.common.AddJsonFilters;
+    import com.togather.common.response.AddJsonFilters;
     import com.togather.member.model.MemberDto;
     import com.togather.member.service.MemberService;
     import com.togather.partyroom.reservation.model.PartyRoomReservation;
@@ -25,7 +25,7 @@
 
     import java.util.List;
 
-    import static com.togather.common.ResponseFilter.*;
+    import static com.togather.common.response.ResponseFilter.*;
 
 @RestController
 @RequestMapping("/partyroom/reservation")

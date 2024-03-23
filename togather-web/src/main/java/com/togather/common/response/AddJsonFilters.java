@@ -1,4 +1,4 @@
-package com.togather.common;
+package com.togather.common.response;
 
 import org.aspectj.lang.JoinPoint;
 import org.springframework.http.converter.json.MappingJacksonValue;

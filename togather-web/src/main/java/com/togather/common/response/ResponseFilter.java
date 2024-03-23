@@ -1,4 +1,4 @@
-package com.togather.common;
+package com.togather.common.response;
 
 import com.togather.member.model.MemberDto;
 import com.togather.partyroom.core.model.PartyRoomDto;
