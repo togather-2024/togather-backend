@@ -26,14 +26,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.time.DayOfWeek;
+import java.time.*;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 @Slf4j
@@ -51,7 +49,7 @@ public class PartyRoomReservationService {
 
 
     @Transactional
-    public void register(PartyRoomReservationRequestDto partyRoomReservationRequestDto, MemberDto loginUser) {
+    public long register(PartyRoomReservationRequestDto partyRoomReservationRequestDto, MemberDto loginUser) {
         PartyRoomDto partyRoomDto = partyRoomService.findPartyRoomDtoById(partyRoomReservationRequestDto.getPartyRoomId());
 
         PartyRoomReservationDto partyRoomReservationDto = PartyRoomReservationDto.builder()
@@ -71,6 +69,7 @@ public class PartyRoomReservationService {
         partyRoomReservationRepository.save(partyRoomReservation);
 
         log.info("save into party_room_reservation: {}", partyRoomReservation.getReservationId());
+        return partyRoomReservation.getReservationId();
     }
 
     private void isValidReservationCapacity(PartyRoomReservationDto partyRoomReservationDto) {
@@ -170,4 +169,26 @@ public class PartyRoomReservationService {
         log.info("delete party_room_reservation: {}", partyRoomReservation.getReservationId());
     }
 
+    public PartyRoomReservationResponseDto.AvailableTimes searchAvailableTimes(long partyroomId, LocalDate date) {
+        PartyRoom partyRoom = partyRoomService.findById(partyroomId);
+        List<PartyRoomReservation> reservedList = partyRoomReservationRepository.findByPartyRoomAndDate(partyRoom, date);
+        List<Integer> availableTimes = new ArrayList<>();
+
+        List<Integer> reservedTimes = reservedList.stream()
+                .flatMap(reservation -> IntStream.range(reservation.getStartTime().getHour(), reservation.getEndTime().getHour()).boxed())
+                .distinct()
+                .toList();
+
+        reservedTimes = reservedTimes.stream().distinct().toList();
+
+        for (int i = partyRoom.getOpeningHour(); i < partyRoom.getClosingHour(); i++)
+            if (!reservedTimes.contains(i))
+                availableTimes.add(i);
+
+        log.info("search available {}th party room reservation times", partyRoom.getPartyRoomId());
+
+        return PartyRoomReservationResponseDto.AvailableTimes.builder()
+                .availableTimes(availableTimes)
+                .build();
+    }
 }
