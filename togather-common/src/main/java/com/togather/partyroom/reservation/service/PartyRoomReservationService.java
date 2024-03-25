@@ -174,7 +174,7 @@ public class PartyRoomReservationService {
         List<Integer> availableTimes = new ArrayList<>();
 
         List<Integer> reservedTimes = reservedList.stream()
-                .flatMap(reservation -> IntStream.rangeClosed(reservation.getStartTime().getHour(), reservation.getEndTime().getHour()).boxed())
+                .flatMap(reservation -> IntStream.range(reservation.getStartTime().getHour(), reservation.getEndTime().getHour()).boxed())
                 .distinct()
                 .toList();
 
