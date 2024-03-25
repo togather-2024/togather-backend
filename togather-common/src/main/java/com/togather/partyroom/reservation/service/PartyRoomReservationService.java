@@ -26,14 +26,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.time.DayOfWeek;
+import java.time.*;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 @Slf4j
@@ -51,7 +49,7 @@ public class PartyRoomReservationService {
 
 
     @Transactional
-    public void register(PartyRoomReservationRequestDto partyRoomReservationRequestDto, MemberDto loginUser) {
+    public long register(PartyRoomReservationRequestDto partyRoomReservationRequestDto, MemberDto loginUser) {
         PartyRoomDto partyRoomDto = partyRoomService.findPartyRoomDtoById(partyRoomReservationRequestDto.getPartyRoomId());
 
         PartyRoomReservationDto partyRoomReservationDto = PartyRoomReservationDto.builder()
@@ -71,6 +69,7 @@ public class PartyRoomReservationService {
         partyRoomReservationRepository.save(partyRoomReservation);
 
         log.info("save into party_room_reservation: {}", partyRoomReservation.getReservationId());
+        return partyRoomReservation.getReservationId();
     }
 
     private void isValidReservationCapacity(PartyRoomReservationDto partyRoomReservationDto) {

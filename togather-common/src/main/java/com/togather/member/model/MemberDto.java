@@ -1,6 +1,7 @@
 package com.togather.member.model;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
+import jakarta.validation.constraints.Email;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -17,6 +18,7 @@ public class MemberDto {
 
     private Role role;
 
+    @Email
     private String email;
 
     private String profilePicFile;
