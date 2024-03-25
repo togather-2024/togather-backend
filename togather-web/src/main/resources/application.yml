@@ -8,9 +8,13 @@ jwt:
   # TODO: Should be changed after test
   token-validity-in-seconds: 30000000
 
-
-
+spring:
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
 
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
+

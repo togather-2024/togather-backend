@@ -1,0 +1,11 @@
+cloud:
+  aws:
+    region:
+      static: ap-northeast-2
+    s3:
+      bucket: togather-2024
+    stack:
+      auto: false
+    credentials:
+      access-key: ENC(UtT7zqafmlUMX2rwppek+H4a7ccORIDHgtudDyAhiYA=)
+      secret-key: ENC(T11JnKp8yi74aJr4OxzwF7dFTEVocZo/z8ld7q7hn1OEJ3IQVz0qUcM3sc3sLh6d16S8+l6ieE0=)
