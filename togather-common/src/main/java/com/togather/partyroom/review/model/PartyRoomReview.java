@@ -17,11 +17,11 @@ public class PartyRoomReview {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long reviewId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "party_room_id")
     private PartyRoom partyRoom;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reviewer_srl")
     private Member reviewer;
 
