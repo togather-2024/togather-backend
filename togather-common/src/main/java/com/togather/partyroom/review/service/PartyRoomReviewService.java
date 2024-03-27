@@ -15,6 +15,7 @@ import com.togather.partyroom.review.converter.PartyRoomReviewConverter;
 import com.togather.partyroom.review.model.PartyRoomReview;
 import com.togather.partyroom.review.model.PartyRoomReviewDto;
 import com.togather.partyroom.review.repository.PartyRoomReviewRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,7 @@ public class PartyRoomReviewService {
     private final PartyRoomReservationConverter partyRoomReservationConverter;
     private final PartyRoomReservationService partyRoomReservationService;
 
+    @Transactional
     public PartyRoomReviewDto findByPartyRoomAndReviewer(PartyRoomReservationDto partyRoomReservationDto, MemberDto reviewer) {
         PartyRoomReservation partyRoomReservation = partyRoomReservationConverter.convertToEntity(partyRoomReservationDto);
         Member member = memberConverter.convertToEntity(reviewer);
@@ -40,26 +42,31 @@ public class PartyRoomReviewService {
         return partyRoomReviewConverter.convertFromEntity(partyRoomReviewRepository.findByPartyRoomReservationAndReviewer(partyRoomReservation, member));
     }
 
+    @Transactional
     public List<PartyRoomReviewDto> findAllByReviewer(MemberDto reviewer) {
         return partyRoomReviewRepository.findAllByReviewer(memberConverter.convertToEntity(reviewer))
                 .stream().map(partyRoomReviewConverter::convertFromEntity).toList();
     }
 
+    @Transactional
     public List<PartyRoomReviewDto> findAllByPartyRoom(long partyRoomId) {
         return partyRoomReviewRepository.findAllByPartyRoomId(partyRoomId)
                 .stream().map(partyRoomReviewConverter::convertFromEntity).toList();
     }
 
+    @Transactional
     public PartyRoomReviewDto findDtoById(long reviewId) {
         return partyRoomReviewConverter.convertFromEntity(findById(reviewId));
     }
 
+    @Transactional
     public PartyRoomReview findById(long reviewId) {
         return partyRoomReviewRepository.findById(reviewId)
                 .orElseThrow(() -> new TogatherApiException(ErrorCode.REVIEW_NOT_FOUND));
     }
 
 
+    @Transactional
     public PartyRoomReviewDto registerReview(PartyRoomReviewDto.Request partyRoomReviewDtoRequest, MemberDto reviewer) {
         PartyRoomReservationDto partyRoomReservationDto = partyRoomReservationService.findDtoByReservationId(partyRoomReviewDtoRequest.getPartyRoomReservationId()).getPartyRoomReservationDto();
         PartyRoomDto partyRoomDto = partyRoomReservationDto.getPartyRoomDto();
@@ -89,7 +96,7 @@ public class PartyRoomReviewService {
         return partyRoomReviewConverter.convertFromEntity(saved);
     }
 
-
+    @Transactional
     public boolean canReview(long partyRoomReservationId, MemberDto memberDto) {
         PartyRoomReservationDto partyRoomReservationDto = partyRoomReservationService.findDtoByReservationId(partyRoomReservationId).getPartyRoomReservationDto();
         return isCorrectReviewer(partyRoomReservationDto, memberDto)
@@ -110,12 +117,14 @@ public class PartyRoomReviewService {
     }
 
 
+    @Transactional
     public void modifyReview(long reviewId, String reviewDesc) {
         PartyRoomReview partyRoomReview = findById(reviewId);
         partyRoomReview.modifyReviewDesc(reviewDesc);
         log.info("[PartyRoomReviewService] modified review for reviewId: {}", reviewId);
     }
 
+    @Transactional
     public void deleteReview(long reviewId) {
         partyRoomReviewRepository.deleteById(reviewId);
         log.info("[PartyRoomReviewService] deleted review for reviewId: {}", reviewId);

@@ -14,6 +14,6 @@ public interface PartyRoomReviewRepository extends JpaRepository<PartyRoomReview
 
     List<PartyRoomReview> findAllByReviewer(Member reviewer);
 
-    @Query("select r from PartyRoomReview r where r.partyRoom = :partyRoomId")
+    @Query("select r from PartyRoomReview r where r.partyRoom.partyRoomId = :partyRoomId")
     List<PartyRoomReview> findAllByPartyRoomId(long partyRoomId);
 }
