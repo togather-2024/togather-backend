@@ -1,5 +1,6 @@
 package com.togather.partyroom.reservation.repository;
 
+import com.togather.member.model.Member;
 import com.togather.partyroom.core.model.PartyRoom;
 import com.togather.partyroom.reservation.model.PartyRoomReservation;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,4 +20,6 @@ public interface PartyRoomReservationRepository extends JpaRepository<PartyRoomR
 
     @Query("select p from PartyRoomReservation p where p.partyRoom = :partyRoom and function('DATE', p.startTime) = :localDate")
     List<PartyRoomReservation> findByPartyRoomAndDate(PartyRoom partyRoom, LocalDate localDate);
+
+    PartyRoomReservation findByPartyRoomAndReservationGuestOrderByEndTimeDesc(PartyRoom partyRoom, Member reservationGuest);
 }
