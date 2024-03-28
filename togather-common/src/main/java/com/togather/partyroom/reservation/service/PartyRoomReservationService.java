@@ -181,9 +181,11 @@ public class PartyRoomReservationService {
 
         reservedTimes = reservedTimes.stream().distinct().toList();
 
-        for (int i = partyRoom.getOpeningHour(); i < partyRoom.getClosingHour(); i++)
-            if (!reservedTimes.contains(i))
+        for (int i = partyRoom.getOpeningHour(); i < partyRoom.getClosingHour(); i++) {
+            if (!reservedTimes.contains(i) &&
+                    LocalDateTime.now(ZoneId.of("Asia/Seoul")).isBefore(LocalDateTime.of(date, LocalTime.of(i, 00))))
                 availableTimes.add(i);
+        }
 
         log.info("search available {}th party room reservation times", partyRoom.getPartyRoomId());
 
