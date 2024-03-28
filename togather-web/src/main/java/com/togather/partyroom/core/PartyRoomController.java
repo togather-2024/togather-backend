@@ -1,6 +1,6 @@
 package com.togather.partyroom.core;
 
-import com.togather.common.AddJsonFilters;
+import com.togather.common.response.AddJsonFilters;
 import com.togather.common.s3.S3ImageUploader;
 import com.togather.common.s3.S3ObjectDto;
 import com.togather.member.model.MemberDto;
@@ -30,7 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-import static com.togather.common.ResponseFilter.MEMBER_DTO_EXCLUDE_PII;
+import static com.togather.common.response.ResponseFilter.MEMBER_DTO_EXCLUDE_PII;
 
 @RequiredArgsConstructor
 @Controller
@@ -40,6 +40,7 @@ public class PartyRoomController {
     private final PartyRoomService partyRoomService;
     private final MemberService memberService;
     private final S3ImageUploader s3ImageUploader;
+
     @PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('ROLE_HOST')")
     @ResponseBody
@@ -126,5 +127,4 @@ public class PartyRoomController {
         S3ObjectDto s3ObjectDto = s3ImageUploader.uploadFileWithRandomFilename(oneFile);
         return s3ObjectDto.getS3ResourceUrl();
     }
-
 }

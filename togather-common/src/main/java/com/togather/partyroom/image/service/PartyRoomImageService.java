@@ -60,6 +60,9 @@ public class PartyRoomImageService {
     }
 
     private PartyRoomImageDto setImageFileUrl(PartyRoomImageDto partyRoomImageDto) {
+        if (partyRoomImageDto == null)
+            return null;
+
         String imageFileUrl = s3ImageUploader.getResourceUrl(partyRoomImageDto.getImageFileName());
         partyRoomImageDto.setImageFileName(imageFileUrl);
         return partyRoomImageDto;

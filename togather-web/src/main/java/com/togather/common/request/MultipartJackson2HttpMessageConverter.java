@@ -1,4 +1,4 @@
-package com.togather.common;
+package com.togather.common.request;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.MediaType;

@@ -19,11 +19,11 @@ public class PartyRoomReservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long reservationId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "party_room_id")
     private PartyRoom partyRoom;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "guest_srl")
     private Member reservationGuest;
 

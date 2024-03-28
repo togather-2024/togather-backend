@@ -1,6 +1,6 @@
 package com.togather.partyroom.payment;
 
-import com.togather.common.AddJsonFilters;
+import com.togather.common.response.AddJsonFilters;
 import com.togather.member.model.MemberDto;
 import com.togather.member.service.MemberService;
 import com.togather.partyroom.payment.model.PaymentDto;
@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import static com.togather.common.ResponseFilter.*;
+import static com.togather.common.response.ResponseFilter.PAYMENT_INFO;
 
 @RestController
 @RequiredArgsConstructor

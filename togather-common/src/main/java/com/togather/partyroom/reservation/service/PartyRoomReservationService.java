@@ -190,5 +190,4 @@ public class PartyRoomReservationService {
                 .availableTimes(availableTimes)
                 .build();
     }
-
 }

@@ -15,7 +15,7 @@ public class PartyRoomImage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long partyRoomImageId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "party_room_id")
     private PartyRoom partyRoom;
 
