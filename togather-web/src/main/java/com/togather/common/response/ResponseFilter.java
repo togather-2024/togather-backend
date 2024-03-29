@@ -17,7 +17,8 @@ public enum ResponseFilter {
 //    PARTY_ROOM_RESERVATION_DTO(PartyRoomReservationDto.class, new String[]{}),
     PARTY_ROOM_RESERVATION_RESPONSE_DTO_SIMPLE(PartyRoomReservationResponseDto.class, new String[]{"reservationGuestDto", "guestCount"}),
     PARTY_ROOM_IMAGE_DTO_SIMPLE(PartyRoomImageDto.class, new String[]{"partyRoomImageId", "partyRoomImageType"}),
-    MEMBER_DTO_FOR_RESERVATION(MemberDto.class, new String[]{"memberSrl", "password", "role", "email"})
+    MEMBER_DTO_FOR_RESERVATION(MemberDto.class, new String[]{"memberSrl", "password", "role", "email"}),
+    REVIEW_HIDE_DUPLICATE_INFO_IN_RESERVATION(PartyRoomReservationDto.class, new String[]{"partyRoomDto", "reservationGuestDto"})
     ;
 
     private final Class<?> targetClass;
