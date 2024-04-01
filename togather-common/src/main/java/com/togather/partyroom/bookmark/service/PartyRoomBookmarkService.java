@@ -6,13 +6,17 @@ import com.togather.member.converter.MemberConverter;
 import com.togather.member.model.Member;
 import com.togather.member.model.MemberDto;
 import com.togather.partyroom.bookmark.model.PartyRoomBookmark;
+import com.togather.partyroom.bookmark.model.PartyRoomBookmarkDto;
 import com.togather.partyroom.bookmark.repository.PartyRoomBookmarkRepository;
+import com.togather.partyroom.core.converter.PartyRoomConverter;
 import com.togather.partyroom.core.model.PartyRoom;
 import com.togather.partyroom.core.service.PartyRoomService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Slf4j
@@ -23,6 +27,7 @@ public class PartyRoomBookmarkService {
     private final PartyRoomBookmarkRepository partyRoomBookmarkRepository;
     private final PartyRoomService partyRoomService;
     private final MemberConverter memberConverter;
+    private final PartyRoomConverter partyRoomConverter;
 
     @Transactional
     public void bookmark(MemberDto memberDto, long partyRoomId) {
@@ -53,5 +58,21 @@ public class PartyRoomBookmarkService {
         partyRoomBookmarkRepository.delete(partyRoomBookmark);
 
         log.info("unbookmarked party room - member: {}, party_room_id: {}", member.getMemberSrl(), partyRoomId);
+    }
+
+    public List<PartyRoomBookmarkDto> findAllByMember(MemberDto memberDto) {
+        Member member = memberConverter.convertToEntity(memberDto);
+
+        List<PartyRoomBookmarkDto> partyRoomBookmarkDtoList = partyRoomBookmarkRepository.findAllByMember(member)
+                .stream().map(p -> PartyRoomBookmarkDto.builder()
+                        .bookmarkId(p.getBookmarkId())
+                        .memberDto(memberDto)
+                        .partyRoomDto(partyRoomConverter.convertFromEntity(p.getPartyRoom()))
+                        .build())
+                .toList();
+
+        log.info("find all bookmark list by member: {}", memberDto.getMemberSrl());
+
+        return partyRoomBookmarkDtoList;
     }
 }
