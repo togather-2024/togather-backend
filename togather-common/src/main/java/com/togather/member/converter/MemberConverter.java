@@ -7,6 +7,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class MemberConverter {
     public MemberDto convertToDto(Member member) {
+        if (member == null)
+            return null;
+
         return MemberDto.builder()
                 .memberSrl(member.getMemberSrl())
                 .memberName(member.getMemberName())
@@ -18,6 +21,8 @@ public class MemberConverter {
     }
 
     public Member convertToEntity(MemberDto memberDto) {
+        if (memberDto == null)
+            return null;
         return Member.builder()
                 .memberSrl(memberDto.getMemberSrl())
                 .memberName(memberDto.getMemberName())
