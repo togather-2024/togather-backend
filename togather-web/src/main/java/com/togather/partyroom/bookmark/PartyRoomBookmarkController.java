@@ -21,7 +21,7 @@ import static com.togather.common.response.ResponseFilter.MEMBER_DTO_EXCLUDE_ALL
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/partyroom/bookmark/")
+@RequestMapping("/partyroom/bookmark")
 @Tag(name = "Party Room Bookmark")
 public class PartyRoomBookmarkController {
 
