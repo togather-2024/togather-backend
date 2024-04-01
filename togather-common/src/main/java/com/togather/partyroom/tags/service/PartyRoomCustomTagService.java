@@ -9,13 +9,15 @@ import com.togather.partyroom.tags.model.PartyRoomCustomTagDto;
 import com.togather.partyroom.tags.model.PartyRoomCustomTagRel;
 import com.togather.partyroom.tags.repository.PartyRoomCustomTagRelRepository;
 import com.togather.partyroom.tags.repository.PartyRoomCustomTagRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Limit;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -105,5 +107,11 @@ public class PartyRoomCustomTagService {
 
         // Tags only on after: add relation between tag and party room
         afterList.stream().filter(afterDto -> !beforeTagContent.contains(afterDto.getTagContent())).forEach(afterDto -> registerTag(partyRoomDto, afterDto));
+    }
+
+    @Transactional(readOnly = true)
+    public List<String> getPopularTags(int limit) {
+        List<PartyRoomCustomTag> partyRoomCustomTags = partyRoomCustomTagRepository.findAllByOrderByTagCountDesc(Limit.of(limit));
+        return partyRoomCustomTags.stream().map(PartyRoomCustomTag::getTagContent).toList();
     }
 }

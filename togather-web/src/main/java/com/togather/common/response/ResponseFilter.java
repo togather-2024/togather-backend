@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public enum ResponseFilter {
 
+    MEMBER_DTO_EXCLUDE_PII_WITH_NAME(MemberDto.class, new String[] {"password", "profilePicFile"}),
     MEMBER_DTO_EXCLUDE_PII(MemberDto.class, new String[] {"memberName", "password", "profilePicFile"}),
     PARTY_ROOM_DTO_SIMPLE(PartyRoomDto.class, new String[] {"partyRoomDesc"}),
 //    PARTY_ROOM_RESERVATION_DTO(PartyRoomReservationDto.class, new String[]{}),

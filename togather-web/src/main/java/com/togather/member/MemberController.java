@@ -1,5 +1,7 @@
 package com.togather.member;
 
+import com.togather.common.response.AddJsonFilters;
+import com.togather.common.response.ResponseFilter;
 import com.togather.member.dto.LoginDto;
 import com.togather.member.model.MemberDto;
 import com.togather.member.service.MemberService;
@@ -15,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.json.MappingJacksonValue;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -60,5 +64,16 @@ public class MemberController {
         httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + token);
 
         return new ResponseEntity<>(token, httpHeaders, HttpStatus.OK);
+    }
+
+    @PostMapping("/getUserInfo")
+    @Operation(summary = "get info of user logged in", description = "로그인한 사용자 정보 조회 API")
+    @ApiResponse(responseCode = "200", description = "success", content = @Content(schema = @Schema(implementation = MemberDto.class)))
+    @PreAuthorize("isAuthenticated()")
+    @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
+    @AddJsonFilters(filters = ResponseFilter.MEMBER_DTO_EXCLUDE_PII_WITH_NAME)
+    public MappingJacksonValue getUserInfo() {
+        MemberDto loginUser = memberService.findByAuthentication(SecurityContextHolder.getContext().getAuthentication());
+        return new MappingJacksonValue(loginUser);
     }
 }

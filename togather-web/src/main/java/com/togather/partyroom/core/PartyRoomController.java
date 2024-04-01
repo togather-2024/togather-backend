@@ -11,6 +11,7 @@ import com.togather.partyroom.core.service.PartyRoomService;
 import com.togather.partyroom.location.model.PartyRoomLocationDto;
 import com.togather.partyroom.register.PartyRoomRequestDto;
 import com.togather.partyroom.tags.model.PartyRoomCustomTagDto;
+import com.togather.partyroom.tags.service.PartyRoomCustomTagService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -31,6 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 import static com.togather.common.response.ResponseFilter.MEMBER_DTO_EXCLUDE_PII;
+import static com.togather.common.response.ResponseFilter.MEMBER_DTO_EXCLUDE_PII_WITH_NAME;
 
 @RequiredArgsConstructor
 @Controller
@@ -39,7 +41,7 @@ import static com.togather.common.response.ResponseFilter.MEMBER_DTO_EXCLUDE_PII
 public class PartyRoomController {
     private final PartyRoomService partyRoomService;
     private final MemberService memberService;
-    private final S3ImageUploader s3ImageUploader;
+    private final PartyRoomCustomTagService partyRoomCustomTagService;
 
     @PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('ROLE_HOST')")
@@ -116,15 +118,18 @@ public class PartyRoomController {
     @ApiResponse(responseCode = "200", description = "returns response with string 'ok' when deleted successfully")
     @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
     @ApiResponse(responseCode = "403", description = "has no role or is not owner of party room", content = @Content)
-    @AddJsonFilters(filters = MEMBER_DTO_EXCLUDE_PII)
+    @AddJsonFilters(filters = MEMBER_DTO_EXCLUDE_PII_WITH_NAME)
     public MappingJacksonValue getPartyRoomDetail(@PathVariable("id") long partyRoomId) {
         return new MappingJacksonValue(partyRoomService.findDetailDtoById(partyRoomId));
     }
 
-    @PostMapping(value = "/test/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @GetMapping("/tags/getPopular")
     @ResponseBody
-    public String s3uploadTest(@RequestPart("files") List<MultipartFile> files, @RequestPart("oneFile") MultipartFile oneFile) {
-        S3ObjectDto s3ObjectDto = s3ImageUploader.uploadFileWithRandomFilename(oneFile);
-        return s3ObjectDto.getS3ResourceUrl();
+    @Operation(summary = "get name of tags by popularity. Default value of parameter limit is 10", description = "가장 많이 등록된 태그")
+    @ApiResponse(responseCode = "200", description = "returns string of tags")
+    public ResponseEntity<List<String>> getPopularTags(@RequestParam(required = false, defaultValue = "10") int limit) {
+        List<String> tagContents = partyRoomCustomTagService.getPopularTags(limit);
+        return ResponseEntity.ok(tagContents);
     }
+
 }
