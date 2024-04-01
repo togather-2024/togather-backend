@@ -34,6 +34,9 @@ public class PartyRoomBookmarkService {
                 .partyRoom(partyRoom)
                 .build();
 
+        if (partyRoomBookmarkRepository.findByMemberAndPartyRoom(member, partyRoom) != null)
+            throw new TogatherApiException(ErrorCode.DUPLICATED_BOOKMARK);
+
         partyRoomBookmarkRepository.save(partyRoomBookmark);
 
         log.info("bookmarked party room - member: {}, party_room_id: {}", member.getMemberSrl(), partyRoomId);
