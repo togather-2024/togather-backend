@@ -2,7 +2,6 @@ package com.togather.partyroom.bookmark;
 
 import com.togather.member.model.MemberDto;
 import com.togather.member.service.MemberService;
-import com.togather.partyroom.bookmark.model.PartyRoomBookmarkDto;
 import com.togather.partyroom.bookmark.service.PartyRoomBookmarkService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -26,10 +25,21 @@ public class PartyRoomBookmarkController {
     @ApiResponse(responseCode = "200", description = "success")
     @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
     @ApiResponse(responseCode = "403", description = "user is logged in but has no HOST role", content = @Content)
-    @PostMapping("/registration/{partyroom-id}")
-    public ResponseEntity<String> register(@PathVariable("partyroom-id") long partyRoomId) {
+    @PostMapping("/{partyroom-id}")
+    public ResponseEntity<String> bookmark(@PathVariable("partyroom-id") long partyRoomId) {
         MemberDto loginUser = memberService.findByAuthentication(SecurityContextHolder.getContext().getAuthentication());
-        partyRoomBookmarkService.register(loginUser, partyRoomId);
+        partyRoomBookmarkService.bookmark(loginUser, partyRoomId);
+        return ResponseEntity.ok("ok");
+    }
+
+    @Operation(summary = "Unbookmark Party Room", description = "파티룸 즐겨찾기 삭제 API")
+    @ApiResponse(responseCode = "200", description = "success")
+    @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
+    @ApiResponse(responseCode = "403", description = "user is logged in but has no HOST role", content = @Content)
+    @DeleteMapping("/{partyroom-id}")
+    public ResponseEntity<String> unbookmark(@PathVariable("partyroom-id") long partyRoomId) {
+        MemberDto loginUser = memberService.findByAuthentication(SecurityContextHolder.getContext().getAuthentication());
+        partyRoomBookmarkService.unbookmark(loginUser, partyRoomId);
         return ResponseEntity.ok("ok");
     }
 }

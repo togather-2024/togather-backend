@@ -1,5 +1,7 @@
 package com.togather.partyroom.bookmark.service;
 
+import com.togather.common.exception.ErrorCode;
+import com.togather.common.exception.TogatherApiException;
 import com.togather.member.converter.MemberConverter;
 import com.togather.member.model.Member;
 import com.togather.member.model.MemberDto;
@@ -23,7 +25,7 @@ public class PartyRoomBookmarkService {
     private final MemberConverter memberConverter;
 
     @Transactional
-    public void register(MemberDto memberDto, long partyRoomId) {
+    public void bookmark(MemberDto memberDto, long partyRoomId) {
         Member member = memberConverter.convertToEntity(memberDto);
         PartyRoom partyRoom = partyRoomService.findById(partyRoomId);
 
@@ -34,6 +36,19 @@ public class PartyRoomBookmarkService {
 
         partyRoomBookmarkRepository.save(partyRoomBookmark);
 
-        log.info("register party room bookmark, member:{}, party_room_id: {}", member.getMemberSrl(), partyRoom.getPartyRoomId());
+        log.info("bookmarked party room - member: {}, party_room_id: {}", member.getMemberSrl(), partyRoomId);
+    }
+
+    @Transactional
+    public void unbookmark(MemberDto memberDto, long partyRoomId) {
+        Member member = memberConverter.convertToEntity(memberDto);
+        PartyRoom partyRoom = partyRoomService.findById(partyRoomId);
+
+        PartyRoomBookmark partyRoomBookmark = partyRoomBookmarkRepository.findByMemberAndPartyRoom(member, partyRoom)
+                .orElseThrow(() -> new TogatherApiException(ErrorCode.NOT_FOUND_BOOKMARK));
+
+        partyRoomBookmarkRepository.delete(partyRoomBookmark);
+
+        log.info("unbookmarked party room - member: {}, party_room_id: {}", member.getMemberSrl(), partyRoomId);
     }
 }
