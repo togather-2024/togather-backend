@@ -1,10 +1,14 @@
 package com.togather.partyroom.core.model;
 
 import com.togather.member.model.Member;
+import com.togather.partyroom.bookmark.model.PartyRoomBookmark;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "party_room")
@@ -39,6 +43,10 @@ public class PartyRoom {
 
     @Column(name = "guestCapacity")
     private int guestCapacity;
+
+    @OneToMany(mappedBy = "partyRoom", fetch = FetchType.LAZY)
+    private List<PartyRoomBookmark> bookmarkList = new ArrayList<>();
+
     @Builder
     public PartyRoom(long partyRoomId, String partyRoomName, Member partyRoomHost, String partyRoomDesc, long partyRoomViewCount, int openingHour, int closingHour, long price, int guestCapacity) {
         this.partyRoomId = partyRoomId;
