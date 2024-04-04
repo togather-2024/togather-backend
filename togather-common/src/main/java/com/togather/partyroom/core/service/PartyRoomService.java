@@ -1,6 +1,7 @@
 package com.togather.partyroom.core.service;
 
 import com.togather.member.model.MemberDto;
+import com.togather.member.service.MemberService;
 import com.togather.partyroom.bookmark.model.PartyRoomBookmarkDto;
 import com.togather.partyroom.bookmark.service.PartyRoomBookmarkService;
 import com.togather.partyroom.core.converter.PartyRoomConverter;
@@ -19,6 +20,7 @@ import com.togather.partyroom.tags.model.PartyRoomCustomTagDto;
 import com.togather.partyroom.tags.service.PartyRoomCustomTagService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -38,6 +40,7 @@ public class PartyRoomService {
     private final PartyRoomLocationService partyRoomLocationService;
     private final PartyRoomImageService partyRoomImageService;
     private final PartyRoomBookmarkService partyRoomBookmarkService;
+    private final MemberService memberService;
 
 
     public PartyRoomDto findPartyRoomDtoById(long partyRoomId) {
@@ -133,15 +136,16 @@ public class PartyRoomService {
         log.info("[PartyRoomService - delete] deleted partyRoom data and mapped entities. partyRoomId: {}", partyRoomId);
     }
 
-    public PartyRoomDetailDto findDetailDtoById(long partyRoomId, MemberDto memberDto) {
+    public PartyRoomDetailDto findDetailDtoById(long partyRoomId) {
         PartyRoom partyRoom = findById(partyRoomId);
         PartyRoomDto partyRoomDto = partyRoomConverter.convertFromEntity(partyRoom);
 
+        MemberDto loginUser = memberService.findNullableByAuthentication(SecurityContextHolder.getContext().getAuthentication());
+
         boolean isBookmarked = false;
-        if (memberDto != null) {
-            List<PartyRoomBookmarkDto> partyRoomBookmarkDtoList = partyRoomBookmarkService.findAllByMember(memberDto);
-            isBookmarked = partyRoomBookmarkDtoList.stream()
-                    .anyMatch(bookmarkDto -> bookmarkDto.getPartyRoomDto().equals(partyRoomDto));
+
+        if (loginUser != null) {
+            isBookmarked = partyRoomBookmarkService.hasBookmarked(loginUser, partyRoomId);
         }
 
         PartyRoomLocationDto partyRoomLocationDto = partyRoomLocationService.findLocationDtoByPartyRoom(partyRoom);

@@ -88,11 +88,25 @@ public class MemberService {
                 .orElseThrow(RuntimeException::new);
     }
 
+    /*
+    This method is used when login is required.
+     */
     public MemberDto findByAuthentication(Authentication authentication) {
         String userEmail = authentication.getName();
         return memberConverter.convertToDto(memberRepository.findByEmail(userEmail).orElseThrow(
                 () -> new UsernameNotFoundException("cannot find user by authentication")
         ));
+    }
+
+    /*
+    This method is used when login is optional - just to check
+     */
+    public MemberDto findNullableByAuthentication(Authentication authentication) {
+        try {
+            return findByAuthentication(authentication);
+        } catch (UsernameNotFoundException e) {
+            return null;
+        }
     }
 
     public void checkDuplicateMember(String email) {
