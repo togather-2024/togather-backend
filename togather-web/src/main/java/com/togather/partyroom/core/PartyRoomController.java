@@ -25,6 +25,7 @@ import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -120,7 +121,15 @@ public class PartyRoomController {
     @ApiResponse(responseCode = "403", description = "has no role or is not owner of party room", content = @Content)
     @AddJsonFilters(filters = MEMBER_DTO_EXCLUDE_PII_WITH_NAME)
     public MappingJacksonValue getPartyRoomDetail(@PathVariable("id") long partyRoomId) {
-        return new MappingJacksonValue(partyRoomService.findDetailDtoById(partyRoomId));
+        MemberDto loginUser;
+
+        try {
+            loginUser = memberService.findByAuthentication(SecurityContextHolder.getContext().getAuthentication());
+        } catch (UsernameNotFoundException e){
+            loginUser = null;
+        }
+
+        return new MappingJacksonValue(partyRoomService.findDetailDtoById(partyRoomId, loginUser));
     }
 
     @GetMapping("/tags/getPopular")

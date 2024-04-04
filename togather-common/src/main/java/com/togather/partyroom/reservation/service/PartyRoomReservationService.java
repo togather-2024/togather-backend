@@ -136,7 +136,7 @@ public class PartyRoomReservationService {
         PartyRoomReservationDto partyRoomReservationDto = partyRoomReservationConverter.convertToDto(partyRoomReservationRepository.findById(reservationId)
                 .orElseThrow(RuntimeException::new));
 
-        PartyRoomDetailDto partyRoomDetailDto = partyRoomService.findDetailDtoById(partyRoomReservationDto.getPartyRoomDto().getPartyRoomId());
+        PartyRoomDetailDto partyRoomDetailDto = partyRoomService.findDetailDtoById(partyRoomReservationDto.getPartyRoomDto().getPartyRoomId(), partyRoomReservationDto.getReservationGuestDto());
 
         PartyRoomReservationResponseDto partyRoomReservationResponseDto = PartyRoomReservationResponseDto.builder()
                 .partyRoomReservationDto(partyRoomReservationDto)
