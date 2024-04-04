@@ -75,4 +75,11 @@ public class PartyRoomBookmarkService {
 
         return partyRoomBookmarkDtoList;
     }
+
+    public boolean hasBookmarked(MemberDto memberDto, long partyRoomId) {
+        Member member = memberConverter.convertToEntity(memberDto);
+        PartyRoom partyRoom = partyRoomService.findById(partyRoomId);
+
+        return partyRoomBookmarkRepository.findByMemberAndPartyRoom(member, partyRoom) != null;
+    }
 }
