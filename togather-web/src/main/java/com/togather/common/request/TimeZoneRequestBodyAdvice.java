@@ -20,11 +20,18 @@ import java.util.List;
 @RestControllerAdvice
 @Slf4j
 public class TimeZoneRequestBodyAdvice implements RequestBodyAdvice {
+
+    /**
+     * Always return true, so applied to every API calls (every controller methods)
+     */
     @Override
     public boolean supports(MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
         return true;
     }
 
+    /**
+     * Nothing changed
+     */
     @Override
     public HttpInputMessage beforeBodyRead(HttpInputMessage inputMessage, MethodParameter parameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) throws IOException {
         return inputMessage;
@@ -53,6 +60,10 @@ public class TimeZoneRequestBodyAdvice implements RequestBodyAdvice {
         return body;
     }
 
+
+    /**
+     * Nothing changed
+     */
     @Override
     public Object handleEmptyBody(Object body, HttpInputMessage inputMessage, MethodParameter parameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
         return null;
