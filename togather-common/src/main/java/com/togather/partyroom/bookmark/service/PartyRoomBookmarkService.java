@@ -10,7 +10,6 @@ import com.togather.partyroom.bookmark.model.PartyRoomBookmarkDto;
 import com.togather.partyroom.bookmark.repository.PartyRoomBookmarkRepository;
 import com.togather.partyroom.core.converter.PartyRoomConverter;
 import com.togather.partyroom.core.model.PartyRoom;
-import com.togather.partyroom.core.service.PartyRoomService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,14 +24,12 @@ import java.util.List;
 public class PartyRoomBookmarkService {
 
     private final PartyRoomBookmarkRepository partyRoomBookmarkRepository;
-    private final PartyRoomService partyRoomService;
     private final MemberConverter memberConverter;
     private final PartyRoomConverter partyRoomConverter;
 
     @Transactional
-    public void bookmark(MemberDto memberDto, long partyRoomId) {
+    public void bookmark(MemberDto memberDto, PartyRoom partyRoom) {
         Member member = memberConverter.convertToEntity(memberDto);
-        PartyRoom partyRoom = partyRoomService.findById(partyRoomId);
 
         PartyRoomBookmark partyRoomBookmark = PartyRoomBookmark.builder()
                 .member(member)
@@ -44,20 +41,19 @@ public class PartyRoomBookmarkService {
 
         partyRoomBookmarkRepository.save(partyRoomBookmark);
 
-        log.info("bookmarked party room - member: {}, party_room_id: {}", member.getMemberSrl(), partyRoomId);
+        log.info("bookmarked party room - member: {}, party_room_id: {}", member.getMemberSrl(), partyRoom.getPartyRoomId());
     }
 
     @Transactional
-    public void unbookmark(MemberDto memberDto, long partyRoomId) {
+    public void unbookmark(MemberDto memberDto, PartyRoom partyRoom) {
         Member member = memberConverter.convertToEntity(memberDto);
-        PartyRoom partyRoom = partyRoomService.findById(partyRoomId);
 
         PartyRoomBookmark partyRoomBookmark = partyRoomBookmarkRepository.findByMemberAndPartyRoom(member, partyRoom)
                 .orElseThrow(() -> new TogatherApiException(ErrorCode.NOT_FOUND_BOOKMARK));
 
         partyRoomBookmarkRepository.delete(partyRoomBookmark);
 
-        log.info("unbookmarked party room - member: {}, party_room_id: {}", member.getMemberSrl(), partyRoomId);
+        log.info("unbookmarked party room - member: {}, party_room_id: {}", member.getMemberSrl(), partyRoom.getPartyRoomId());
     }
 
     public List<PartyRoomBookmarkDto> findAllByMember(MemberDto memberDto) {
@@ -76,9 +72,8 @@ public class PartyRoomBookmarkService {
         return partyRoomBookmarkDtoList;
     }
 
-    public boolean hasBookmarked(MemberDto memberDto, long partyRoomId) {
+    public boolean hasBookmarked(MemberDto memberDto, PartyRoom partyRoom) {
         Member member = memberConverter.convertToEntity(memberDto);
-        PartyRoom partyRoom = partyRoomService.findById(partyRoomId);
 
         return partyRoomBookmarkRepository.findByMemberAndPartyRoom(member, partyRoom) != null;
     }

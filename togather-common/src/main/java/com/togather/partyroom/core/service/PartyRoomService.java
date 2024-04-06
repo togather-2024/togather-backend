@@ -141,12 +141,10 @@ public class PartyRoomService {
         PartyRoomDto partyRoomDto = partyRoomConverter.convertFromEntity(partyRoom);
 
         MemberDto loginUser = memberService.findNullableByAuthentication(SecurityContextHolder.getContext().getAuthentication());
-
         boolean isBookmarked = false;
 
-        if (loginUser != null) {
-            isBookmarked = partyRoomBookmarkService.hasBookmarked(loginUser, partyRoomId);
-        }
+        if (loginUser != null)
+            isBookmarked = partyRoomBookmarkService.hasBookmarked(loginUser, partyRoom);
 
         PartyRoomLocationDto partyRoomLocationDto = partyRoomLocationService.findLocationDtoByPartyRoom(partyRoom);
         List<PartyRoomImageDto> partyRoomImageDtoList = partyRoomImageService.findAllImagesByPartyRoom(partyRoom);

@@ -5,6 +5,8 @@ import com.togather.member.model.MemberDto;
 import com.togather.member.service.MemberService;
 import com.togather.partyroom.bookmark.model.PartyRoomBookmarkDto;
 import com.togather.partyroom.bookmark.service.PartyRoomBookmarkService;
+import com.togather.partyroom.core.model.PartyRoom;
+import com.togather.partyroom.core.service.PartyRoomService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -27,6 +29,7 @@ public class PartyRoomBookmarkController {
 
     private final PartyRoomBookmarkService partyRoomBookmarkService;
     private final MemberService memberService;
+    private final PartyRoomService partyRoomService;
 
     @Operation(summary = "Bookmark Party Room", description = "파티룸 즐겨찾기 등록 API")
     @ApiResponse(responseCode = "200", description = "success")
@@ -35,7 +38,8 @@ public class PartyRoomBookmarkController {
     @PostMapping("/{partyroom-id}")
     public ResponseEntity<String> bookmark(@PathVariable("partyroom-id") long partyRoomId) {
         MemberDto loginUser = memberService.findByAuthentication(SecurityContextHolder.getContext().getAuthentication());
-        partyRoomBookmarkService.bookmark(loginUser, partyRoomId);
+        PartyRoom partyRoom = partyRoomService.findById(partyRoomId);
+        partyRoomBookmarkService.bookmark(loginUser, partyRoom);
         return ResponseEntity.ok("ok");
     }
 
@@ -46,7 +50,8 @@ public class PartyRoomBookmarkController {
     @DeleteMapping("/{partyroom-id}")
     public ResponseEntity<String> unbookmark(@PathVariable("partyroom-id") long partyRoomId) {
         MemberDto loginUser = memberService.findByAuthentication(SecurityContextHolder.getContext().getAuthentication());
-        partyRoomBookmarkService.unbookmark(loginUser, partyRoomId);
+        PartyRoom partyRoom = partyRoomService.findById(partyRoomId);
+        partyRoomBookmarkService.unbookmark(loginUser, partyRoom);
         return ResponseEntity.ok("ok");
     }
 
