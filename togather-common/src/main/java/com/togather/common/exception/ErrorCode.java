@@ -9,6 +9,10 @@ public enum ErrorCode {
     // Join
     JOIN_DUPLICATE_MEMBER("member.join.duplicate.id"),
 
+    // Bookmark
+    NOT_FOUND_BOOKMARK("partyroom.bookmark.not_found"),
+    DUPLICATED_BOOKMARK("partyroom.bookmark.duplicate"),
+
 
     // Review
     REVIEW_NOT_FOUND("review.not.found"),

@@ -1,5 +1,9 @@
 package com.togather.partyroom.core.service;
 
+import com.togather.member.model.MemberDto;
+import com.togather.member.service.MemberService;
+import com.togather.partyroom.bookmark.model.PartyRoomBookmarkDto;
+import com.togather.partyroom.bookmark.service.PartyRoomBookmarkService;
 import com.togather.partyroom.core.converter.PartyRoomConverter;
 import com.togather.partyroom.core.model.PartyRoom;
 import com.togather.partyroom.core.model.PartyRoomDetailDto;
@@ -14,10 +18,11 @@ import com.togather.partyroom.location.model.PartyRoomLocationDto;
 import com.togather.partyroom.location.service.PartyRoomLocationService;
 import com.togather.partyroom.tags.model.PartyRoomCustomTagDto;
 import com.togather.partyroom.tags.service.PartyRoomCustomTagService;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,6 +31,7 @@ import java.util.List;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class PartyRoomService {
     private final PartyRoomConverter partyRoomConverter;
     private final PartyRoomRepository partyRoomRepository;
@@ -33,6 +39,8 @@ public class PartyRoomService {
     private final PartyRoomOperationDayService partyRoomOperationDayService;
     private final PartyRoomLocationService partyRoomLocationService;
     private final PartyRoomImageService partyRoomImageService;
+    private final PartyRoomBookmarkService partyRoomBookmarkService;
+    private final MemberService memberService;
 
 
     public PartyRoomDto findPartyRoomDtoById(long partyRoomId) {
@@ -128,10 +136,15 @@ public class PartyRoomService {
         log.info("[PartyRoomService - delete] deleted partyRoom data and mapped entities. partyRoomId: {}", partyRoomId);
     }
 
-    @Transactional
     public PartyRoomDetailDto findDetailDtoById(long partyRoomId) {
         PartyRoom partyRoom = findById(partyRoomId);
         PartyRoomDto partyRoomDto = partyRoomConverter.convertFromEntity(partyRoom);
+
+        MemberDto loginUser = memberService.findNullableByAuthentication(SecurityContextHolder.getContext().getAuthentication());
+        boolean isBookmarked = false;
+
+        if (loginUser != null)
+            isBookmarked = partyRoomBookmarkService.hasBookmarked(loginUser, partyRoom);
 
         PartyRoomLocationDto partyRoomLocationDto = partyRoomLocationService.findLocationDtoByPartyRoom(partyRoom);
         List<PartyRoomImageDto> partyRoomImageDtoList = partyRoomImageService.findAllImagesByPartyRoom(partyRoom);
@@ -143,7 +156,8 @@ public class PartyRoomService {
                 partyRoomLocationDto,
                 partyRoomImageDtoList,
                 operationDayDtoList,
-                customTagDtoList
+                customTagDtoList,
+                isBookmarked
         );
     }
 

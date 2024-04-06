@@ -16,6 +16,9 @@ public class PartyRoomReservationConverter {
     private final MemberConverter memberConverter;
 
     public PartyRoomReservation convertToEntity(PartyRoomReservationDto partyRoomReservationDto) {
+        if (partyRoomReservationDto == null)
+            return null;
+
         return PartyRoomReservation.builder()
                 .reservationId(partyRoomReservationDto.getReservationId())
                 .partyRoom(partyRoomConverter.convertFromDto(partyRoomReservationDto.getPartyRoomDto()))
@@ -31,6 +34,9 @@ public class PartyRoomReservationConverter {
     }
 
     public PartyRoomReservationDto convertToDto(PartyRoomReservation partyRoomReservation) {
+        if (partyRoomReservation == null)
+            return null;
+
         return PartyRoomReservationDto.builder()
                 .reservationId(partyRoomReservation.getReservationId())
                 .partyRoomDto(partyRoomConverter.convertFromEntity(partyRoomReservation.getPartyRoom()))
