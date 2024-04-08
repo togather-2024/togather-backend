@@ -97,7 +97,7 @@ public class MemberController {
     }
 
     @PatchMapping(value = "/update/profileImage", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(summary = "Member Profile Image Update API", description = "회원 프로필사진 변경 API")
+    @Operation(summary = "Member Profile Image Update API", description = "회원 프로필 사진 변경 API")
     @ApiResponse(responseCode = "200", description = "success")
     @PreAuthorize("isAuthenticated()")
     @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
