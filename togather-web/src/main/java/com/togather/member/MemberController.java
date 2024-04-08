@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,6 +25,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/member")
@@ -91,6 +93,16 @@ public class MemberController {
     @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
     public ResponseEntity<String> updatePassword(@RequestBody MemberDto.UpdatePassword updatePassword) {
         memberService.updatePassword(updatePassword);
+        return ResponseEntity.ok("ok");
+    }
+
+    @PatchMapping(value = "/update/profileImage", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Member Profile Image Update API", description = "회원 프로필사진 변경 API")
+    @ApiResponse(responseCode = "200", description = "success")
+    @PreAuthorize("isAuthenticated()")
+    @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
+    public ResponseEntity<String> updateProfileImage(@RequestPart MultipartFile profileImage) {
+        memberService.updateProfileImage(profileImage);
         return ResponseEntity.ok("ok");
     }
 }

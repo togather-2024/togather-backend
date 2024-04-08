@@ -65,4 +65,8 @@ public class Member {
         this.password = password;
     }
 
+    public void updateProfilePicFile(String profilePicFile) {
+        this.profilePicFile = profilePicFile;
+    }
+
 }

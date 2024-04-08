@@ -2,6 +2,8 @@ package com.togather.member.service;
 
 import com.togather.common.exception.ErrorCode;
 import com.togather.common.exception.TogatherApiException;
+import com.togather.common.s3.S3ImageUploader;
+import com.togather.common.s3.S3ObjectDto;
 import com.togather.member.converter.MemberConverter;
 import com.togather.member.model.Member;
 import com.togather.member.model.MemberDto;
@@ -14,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Slf4j
@@ -22,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
     private final MemberConverter memberConverter;
     private final MemberRepository memberRepository;
+    private final S3ImageUploader s3ImageUploader;
 
     @Transactional
     public void register(MemberDto memberDto) {
@@ -134,5 +138,15 @@ public class MemberService {
         findMember.updatePassword(updatePassword.getNewPassword());
 
         log.info("update member password: {}", findMember.getMemberSrl());
+    }
+
+    @Transactional
+    public void updateProfileImage(MultipartFile profileImage) {
+        Member findMember = findMemberByAuthentication(SecurityContextHolder.getContext().getAuthentication());
+
+        S3ObjectDto s3ObjectDto = s3ImageUploader.uploadFileWithRandomFilename(profileImage);
+        findMember.updateProfilePicFile(s3ObjectDto.getFileKey());
+
+        log.info("update member profile image: {}", findMember.getMemberSrl());
     }
 }
