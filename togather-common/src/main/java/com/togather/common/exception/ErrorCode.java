@@ -6,8 +6,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public enum ErrorCode {
-    // Join
+    // Member
     JOIN_DUPLICATE_MEMBER("member.join.duplicate.id"),
+    PREVIOUS_PASSWORD_MISMATCH("member.update.previous_password.mismatch"),
+    NEW_PASSWORD_MISMATCH("member.update.new_password.mismatch"),
+    PASSWORD_MISMATCH("member.withdraw.password.mismatch"),
 
     // Bookmark
     NOT_FOUND_BOOKMARK("partyroom.bookmark.not_found"),
