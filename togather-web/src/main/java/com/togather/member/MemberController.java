@@ -5,7 +5,6 @@ import com.togather.common.response.ResponseFilter;
 import com.togather.member.dto.LoginDto;
 import com.togather.member.model.MemberDto;
 import com.togather.member.service.MemberService;
-import com.togather.partyroom.core.model.PartyRoomDto;
 import com.togather.security.jwt.JwtFilter;
 import com.togather.security.service.JwtProvider;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,10 +22,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/member")
@@ -75,5 +71,16 @@ public class MemberController {
     public MappingJacksonValue getUserInfo() {
         MemberDto loginUser = memberService.findByAuthentication(SecurityContextHolder.getContext().getAuthentication());
         return new MappingJacksonValue(loginUser);
+    }
+
+    @PatchMapping("/update")
+    @Operation(summary = "Member Name Update API", description = "회원 이름 변경 API")
+    @ApiResponse(responseCode = "200", description = "success")
+    @PreAuthorize("isAuthenticated()")
+    @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
+    public ResponseEntity<String> updateName(@RequestParam(name = "name") String name) {
+        MemberDto loginUser = memberService.findByAuthentication(SecurityContextHolder.getContext().getAuthentication());
+        memberService.updateName(loginUser, name);
+        return ResponseEntity.ok("ok");
     }
 }

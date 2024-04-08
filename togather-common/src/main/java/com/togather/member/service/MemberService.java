@@ -57,16 +57,6 @@ public class MemberService {
     }
 
     @Transactional
-    public void update(MemberDto memberDto) {
-        Member findMember = memberRepository.findByEmail(memberDto.getEmail())
-                .orElseThrow(RuntimeException::new); //TODO: 예외 클래스 추후 수정
-
-        findMember.update(memberDto.getMemberName(), memberDto.getPassword(), memberDto.getProfilePicFile());
-
-        log.info("update member info: {}", findMember.getMemberSrl());
-    }
-
-    @Transactional
     public void delete(Long memberSrl) {
         //TODO: 비밀번호 검증 로직 추가할 가능성 있음!!
 
@@ -114,5 +104,13 @@ public class MemberService {
         if (alreadyJoinMember != null) {
             throw new TogatherApiException(ErrorCode.JOIN_DUPLICATE_MEMBER);
         }
+    }
+
+    @Transactional
+    public void updateName(MemberDto memberDto, String name) {
+        Member findMember = memberRepository.findByEmail(memberDto.getEmail())
+                .orElseThrow(RuntimeException::new); //TODO: 예외 클래스 추후 수정
+        findMember.updateName(name);
+        log.info("update member name: {}", findMember.getMemberSrl());
     }
 }
