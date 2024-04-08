@@ -23,11 +23,15 @@ public class MemberDto {
 
     private String profilePicFile;
 
-    @Getter @Builder
+    @Getter
     public static class UpdatePassword {
         private String previousPassword;
         private String newPassword;
         private String confirmNewPassword;
     }
 
+    @Getter
+    public static class Withdraw {
+        private String password;
+    }
 }

@@ -105,4 +105,14 @@ public class MemberController {
         memberService.updateProfileImage(profileImage);
         return ResponseEntity.ok("ok");
     }
+
+    @DeleteMapping(value = "/withdrawal")
+    @Operation(summary = "Member Withdrawal API", description = "회원 탈퇴 API")
+    @ApiResponse(responseCode = "200", description = "success")
+    @PreAuthorize("isAuthenticated()")
+    @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
+    public ResponseEntity<String> withdraw(@RequestBody MemberDto.Withdraw withdraw) {
+        memberService.delete(withdraw);
+        return ResponseEntity.ok("ok");
+    }
 }

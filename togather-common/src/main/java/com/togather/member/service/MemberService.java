@@ -7,7 +7,6 @@ import com.togather.common.s3.S3ObjectDto;
 import com.togather.member.converter.MemberConverter;
 import com.togather.member.model.Member;
 import com.togather.member.model.MemberDto;
-import com.togather.member.model.MemberInfoDto;
 import com.togather.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +30,7 @@ public class MemberService {
     public void register(MemberDto memberDto) {
         checkDuplicateMember(memberDto.getEmail());
 
-        Member member = memberConverter.convertToEntity(memberDto); //TODO: Role(Enum) 세팅은 Controller에서
+        Member member = memberConverter.convertToEntity(memberDto);
         memberRepository.save(member);
 
         log.info("save into member: {}", member.getEmail());
@@ -41,32 +40,15 @@ public class MemberService {
         Member findMember = memberRepository.findByEmailAndPassword(memberDto.getEmail(), memberDto.getPassword())
                 .orElseThrow(RuntimeException::new); //TODO: 예외 클래스 추후 수정
 
-        //TODO: jwt 토큰 발급 로직 구현
-
         log.info("member logged in: {}", findMember.getEmail());
     }
 
-    public MemberInfoDto searchMemberInfo(Long memberSrl) {
-        Member findMember = memberRepository.findById(memberSrl)
-                .orElseThrow(RuntimeException::new); //TODO: 예외 클래스 추후 수정
-
-        log.info("search member info: {}", memberSrl);
-
-        return MemberInfoDto.builder()
-                .memberSrl(memberSrl)
-                .memberName(findMember.getMemberName())
-                .role(findMember.getRole())
-                .profilePicFile(findMember.getProfilePicFile())
-//                .partyRoomReservationDtos() TODO: partyRoomReservationDtos 추가
-                .build();
-    }
-
     @Transactional
-    public void delete(Long memberSrl) {
-        //TODO: 비밀번호 검증 로직 추가할 가능성 있음!!
+    public void delete(MemberDto.Withdraw withdraw) {
+        Member findMember = findMemberByAuthentication(SecurityContextHolder.getContext().getAuthentication());
 
-        Member findMember = memberRepository.findById(memberSrl)
-                .orElseThrow(RuntimeException::new);
+        if (!findMember.getPassword().equals(withdraw.getPassword()))
+            throw new TogatherApiException(ErrorCode.PASSWORD_MISMATCH);
 
         memberRepository.delete(findMember);
 
