@@ -3,7 +3,6 @@ package com.togather.member;
 import com.togather.common.response.AddJsonFilters;
 import com.togather.common.response.ResponseFilter;
 import com.togather.member.dto.LoginDto;
-import com.togather.member.model.Member;
 import com.togather.member.model.MemberDto;
 import com.togather.member.service.MemberService;
 import com.togather.security.jwt.JwtFilter;
