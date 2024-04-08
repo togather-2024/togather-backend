@@ -3,6 +3,7 @@ package com.togather.member;
 import com.togather.common.response.AddJsonFilters;
 import com.togather.common.response.ResponseFilter;
 import com.togather.member.dto.LoginDto;
+import com.togather.member.model.Member;
 import com.togather.member.model.MemberDto;
 import com.togather.member.service.MemberService;
 import com.togather.security.jwt.JwtFilter;
@@ -73,14 +74,23 @@ public class MemberController {
         return new MappingJacksonValue(loginUser);
     }
 
-    @PatchMapping("/update")
+    @PatchMapping("/update/name")
     @Operation(summary = "Member Name Update API", description = "회원 이름 변경 API")
     @ApiResponse(responseCode = "200", description = "success")
     @PreAuthorize("isAuthenticated()")
     @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
     public ResponseEntity<String> updateName(@RequestParam(name = "name") String name) {
-        MemberDto loginUser = memberService.findByAuthentication(SecurityContextHolder.getContext().getAuthentication());
-        memberService.updateName(loginUser, name);
+        memberService.updateName(name);
+        return ResponseEntity.ok("ok");
+    }
+
+    @PatchMapping("/update/password")
+    @Operation(summary = "Member Password Update API", description = "회원 비밀번호 변경 API")
+    @ApiResponse(responseCode = "200", description = "success")
+    @PreAuthorize("isAuthenticated()")
+    @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
+    public ResponseEntity<String> updatePassword(@RequestBody MemberDto.UpdatePassword updatePassword) {
+        memberService.updatePassword(updatePassword);
         return ResponseEntity.ok("ok");
     }
 }

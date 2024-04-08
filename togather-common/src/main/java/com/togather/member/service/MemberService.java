@@ -10,6 +10,7 @@ import com.togather.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -88,6 +89,13 @@ public class MemberService {
         ));
     }
 
+    public Member findMemberByAuthentication(Authentication authentication) {
+        String userEmail = authentication.getName();
+        return memberRepository.findByEmail(userEmail).orElseThrow(
+                () -> new UsernameNotFoundException("cannot find user by authentication")
+        );
+    }
+
     /*
     This method is used when login is optional - just to check
      */
@@ -107,10 +115,24 @@ public class MemberService {
     }
 
     @Transactional
-    public void updateName(MemberDto memberDto, String name) {
-        Member findMember = memberRepository.findByEmail(memberDto.getEmail())
-                .orElseThrow(RuntimeException::new); //TODO: 예외 클래스 추후 수정
+    public void updateName(String name) {
+        Member findMember = findMemberByAuthentication(SecurityContextHolder.getContext().getAuthentication());
+
         findMember.updateName(name);
         log.info("update member name: {}", findMember.getMemberSrl());
+    }
+
+    @Transactional
+    public void updatePassword(MemberDto.UpdatePassword updatePassword) {
+        Member findMember = findMemberByAuthentication(SecurityContextHolder.getContext().getAuthentication());
+
+        if (!findMember.getPassword().equals(updatePassword.getPreviousPassword()))
+            throw new TogatherApiException(ErrorCode.PREVIOUS_PASSWORD_MISMATCH);
+        if (!updatePassword.getNewPassword().equals(updatePassword.getConfirmNewPassword()))
+            throw new TogatherApiException(ErrorCode.NEW_PASSWORD_MISMATCH);
+
+        findMember.updatePassword(updatePassword.getNewPassword());
+
+        log.info("update member password: {}", findMember.getMemberSrl());
     }
 }
