@@ -1,10 +1,8 @@
 package com.togather.partyroom.payment.model;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
 public class PaymentSuccessDto {
 
         String mid; //상점명
@@ -26,7 +24,8 @@ public class PaymentSuccessDto {
         PaymentSuccessCardDto card;
         String type;
 
-    private class PaymentSuccessCardDto {
+    @Getter
+    public static class PaymentSuccessCardDto {
         String company; //회사명
         String number; //카드번호
         String installmentPlanMonths; //할부개월
@@ -38,5 +37,4 @@ public class PaymentSuccessDto {
         String acquireStatus; //승인상태
         String receiptUrl; //영수증 url
     }
-
 }
