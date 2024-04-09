@@ -8,16 +8,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+
 import java.util.UUID;
 
 
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 @Entity
-@Builder
 public class Payment extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -63,6 +60,24 @@ public class Payment extends BaseTimeEntity {
         this.amount = amount;
         this.isPaymentSuccess = false;
         this.customer = customer;
+    }
+
+    // 모든 필드를 포함
+    @Builder
+    public Payment(long paymentId, String orderId, String paymentKey, String orderName, Method method,
+                   long amount, boolean isPaymentSuccess, Member customer, String failReason,
+                   boolean isCanceled, String cancelReason) {
+        this.paymentId = paymentId;
+        this.orderId = orderId;
+        this.paymentKey = paymentKey;
+        this.orderName = orderName;
+        this.method = method;
+        this.amount = amount;
+        this.isPaymentSuccess = isPaymentSuccess;
+        this.customer = customer;
+        this.failReason = failReason;
+        this.isCanceled = isCanceled;
+        this.cancelReason = cancelReason;
     }
 
     public void update(String paymentKey) {

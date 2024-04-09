@@ -21,6 +21,7 @@ public class PaymentConverter {
         Member findCustomer = memberService.findByEmail(paymentDto.getCustomerEmail());
 
         return Payment.builder()
+                .paymentId(paymentDto.getPaymentId())
                 .orderId(paymentDto.getOrderId())
                 .paymentKey(paymentDto.getPaymentKey())
                 .orderName(paymentDto.getOrderName())
@@ -39,6 +40,7 @@ public class PaymentConverter {
             return null;
 
         return PaymentDto.builder()
+                .paymentId(payment.getPaymentId())
                 .method(payment.getMethod().getDescription())
                 .amount(payment.getAmount())
                 .orderName(payment.getOrderName())
