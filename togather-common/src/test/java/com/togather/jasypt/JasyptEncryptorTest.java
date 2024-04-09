@@ -16,10 +16,9 @@ public class JasyptEncryptorTest {
         encryptor.setPassword(password);
         encryptor.setAlgorithm("PBEWithMD5AndTripleDES");
 
-        String content = "test_sk_ORzdMaqN3wOkzZLQoQlm35AkYXQG"; //암호화 할 내용
+        String content = ""; //암호화 할 내용
         String encryptedContent = encryptor.encrypt(content); //암호화
         String decryptedContent = encryptor.decrypt(encryptedContent); //복호화
-
         System.out.println("Enc : " + encryptedContent + ", Dec : " + decryptedContent);
     }
 }

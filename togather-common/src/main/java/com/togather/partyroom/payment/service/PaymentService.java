@@ -42,7 +42,7 @@ public class PaymentService {
         PartyRoomReservation partyRoomReservation = partyRoomReservationService.findByReservationId(paymentDto.getReservationId());
 
         if (partyRoomReservation.getTotalPrice() != paymentDto.getAmount())
-            throw new RuntimeException("mismatched amount with totalPrice");
+            throw new RuntimeException("mismatched amount with totalPrice"); //TODO: exception class 수정하기
 
         Payment payment = Payment.builder()
                 .orderName(paymentDto.getOrderName())
@@ -67,23 +67,24 @@ public class PaymentService {
     public PaymentSuccessDto verifySuccessfulTossPayment(String paymentKey, String orderId, long amount) {
         Payment payment = verifyPayment(orderId, amount);
 
-        PaymentSuccessDto paymentSuccessDto = requestPaymentAccept(payment);
+        PaymentSuccessDto paymentSuccessDto = requestPaymentAccept(payment, paymentKey);
         payment.update(paymentKey);
 
+        log.info("payment successful, paymentId: {}", payment.getPaymentId());
         return paymentSuccessDto;
     }
 
     private Payment verifyPayment(String orderId, long amount) {
         Payment payment = paymentRepository.findByOrderId(orderId)
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(RuntimeException::new); //TODO: Exception
 
         if (payment.getAmount() != amount)
-            throw new RuntimeException();
+            throw new RuntimeException(); //TODO: Exception
 
         return payment;
     }
 
-    private PaymentSuccessDto requestPaymentAccept(Payment payment) {
+    private PaymentSuccessDto requestPaymentAccept(Payment payment, String paymentKey) {
         HttpHeaders httpHeaders = getHeaders();
 
         WebClient webClient = WebClient.builder()
@@ -95,20 +96,23 @@ public class PaymentService {
                 })
                 .build();
 
-        Map<String, Object> params = Map.of("orderId", payment.getOrderId(), "amount", payment.getAmount());
+        Map<String, Object> params = Map.of("paymentKey", paymentKey, "orderId", payment.getOrderId(), "amount", payment.getAmount());
 
-        PaymentSuccessDto paymentSuccessDto = new PaymentSuccessDto();
+        PaymentSuccessDto paymentSuccessDto;
+
         try {
             paymentSuccessDto = webClient.post()
-                    //uri: "https://api.tosspayments.com/v1/payments/" + paymentKey
-                    .uri(uriBuilder -> uriBuilder.path(payment.getPaymentKey()).build())
+                    //uri: "https://api.tosspayments.com/v1/payments/confirm"
+                    .uri(uriBuilder -> uriBuilder.path("confirm").build())
                     .contentType(MediaType.APPLICATION_JSON)
                     .bodyValue(params)
                     .retrieve()
                     .bodyToMono(PaymentSuccessDto.class) //응답을 PaymentSuccessDto 클래스로 변환
                     .block();
+
         } catch (Exception e) {
-            throw new RuntimeException();
+            log.error("error: {}", e.getStackTrace());
+            throw new RuntimeException(e);
         }
 
         return paymentSuccessDto;
@@ -116,14 +120,15 @@ public class PaymentService {
 
     private HttpHeaders getHeaders() {
         HttpHeaders httpHeaders = new HttpHeaders();
-        String encodedAuthKey = new String(
-                //secretApiKey를 Base64로 인코딩
-                Base64.getEncoder().encode((tossPaymentConfig.getTestSecretApiKey() + ":").getBytes(StandardCharsets.UTF_8)));
 
-        httpHeaders.setBasicAuth(encodedAuthKey);
+        String authValue = tossPaymentConfig.getTestSecretApiKey() + ":";
+        String encodedAuthValue = Base64.getEncoder().encodeToString(authValue.getBytes(StandardCharsets.UTF_8)); //Base64로 인코딩
+
+        httpHeaders.add("Authorization", "Basic " + encodedAuthValue); //Authorization 헤더 설정
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         httpHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 
         return httpHeaders;
     }
+
 }

@@ -1,5 +1,10 @@
 package com.togather.partyroom.payment.model;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@NoArgsConstructor
 public class PaymentSuccessDto {
 
         String mid; //상점명
