@@ -2,6 +2,7 @@ package com.togather.partyroom.reservation.model;
 
 import com.togather.member.model.MemberDto;
 import com.togather.partyroom.core.model.PartyRoomDto;
+import com.togather.partyroom.payment.model.PaymentDto;
 import com.togather.partyroom.payment.model.PaymentStatus;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,5 +30,7 @@ public class PartyRoomReservationDto {
     private LocalDateTime bookedDate;
 
     private long totalPrice;
+
+    private PaymentDto paymentDto;
 
 }

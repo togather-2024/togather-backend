@@ -51,7 +51,7 @@ public class PartyRoomReservation {
     private Payment payment;
 
     @Builder
-    public PartyRoomReservation(long reservationId, PartyRoom partyRoom, Member reservationGuest, int guestCount, LocalDateTime startTime, LocalDateTime endTime, PaymentStatus paymentStatus, LocalDateTime bookedDate, long totalPrice) {
+    public PartyRoomReservation(long reservationId, PartyRoom partyRoom, Member reservationGuest, int guestCount, LocalDateTime startTime, LocalDateTime endTime, PaymentStatus paymentStatus, LocalDateTime bookedDate, long totalPrice, Payment payment) {
         this.reservationId = reservationId;
         this.partyRoom = partyRoom;
         this.reservationGuest = reservationGuest;
@@ -61,6 +61,7 @@ public class PartyRoomReservation {
         this.paymentStatus = paymentStatus;
         this.bookedDate = bookedDate;
         this.totalPrice = totalPrice;
+        this.payment = payment;
     }
 
     public void updatePaymentStatus() {
