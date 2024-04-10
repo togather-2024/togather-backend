@@ -99,8 +99,12 @@ public class Payment extends BaseTimeEntity {
         this.cancelReason = cancelReason;
     }
 
-    public void update(String paymentKey) {
+    public void setPaymentSuccess(String paymentKey) {
         this.paymentKey = paymentKey;
         this.isPaymentSuccess = true;
+    }
+
+    public void setPaymentFailed(String message) {
+        this.failReason = message;
     }
 }

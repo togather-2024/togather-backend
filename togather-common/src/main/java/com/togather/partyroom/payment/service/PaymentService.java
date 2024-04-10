@@ -3,10 +3,7 @@ package com.togather.partyroom.payment.service;
 import com.togather.member.converter.MemberConverter;
 import com.togather.member.model.MemberDto;
 import com.togather.partyroom.payment.converter.PaymentConverter;
-import com.togather.partyroom.payment.model.Payment;
-import com.togather.partyroom.payment.model.PaymentDto;
-import com.togather.partyroom.payment.model.PaymentSuccessDto;
-import com.togather.partyroom.payment.model.TossPaymentConfig;
+import com.togather.partyroom.payment.model.*;
 import com.togather.partyroom.payment.repository.PaymentRepository;
 import com.togather.partyroom.reservation.model.PartyRoomReservation;
 import com.togather.partyroom.reservation.service.PartyRoomReservationService;
@@ -65,13 +62,13 @@ public class PaymentService {
     }
 
     @Transactional
-    public PaymentSuccessDto verifySuccessfulTossPayment(String paymentKey, String orderId, long amount) {
+    public PaymentSuccessDto handleSuccessTossPayment(String paymentKey, String orderId, long amount) {
         Payment payment = verifyPayment(orderId, amount);
 
         PaymentSuccessDto paymentSuccessDto = requestPaymentAccept(payment, paymentKey);
-        payment.update(paymentKey);
+        payment.setPaymentSuccess(paymentKey);
 
-        log.info("payment successful, paymentId: {}", payment.getPaymentId());
+        log.info("payment successful for orderId: {}", payment.getOrderId());
 
         partyRoomReservationService.updatePaymentStatusToComplete(payment);
         return paymentSuccessDto;
@@ -134,4 +131,18 @@ public class PaymentService {
         return httpHeaders;
     }
 
+    public PaymentFailDto handleFailedTossPayment(String code, String message, String orderId) {
+        Payment payment = paymentRepository.findByOrderId(orderId)
+                .orElseThrow(RuntimeException::new);//TODO: exception
+
+        payment.setPaymentFailed(message);
+
+        log.info("payment failed for orderId: {}, reason: {}", payment.getOrderId(), message);
+
+        return PaymentFailDto.builder()
+                .errorCode(code)
+                .errorMessage(message)
+                .orderId(orderId)
+                .build();
+    }
 }

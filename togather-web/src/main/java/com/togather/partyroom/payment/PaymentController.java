@@ -4,6 +4,7 @@ import com.togather.common.AddJsonFilters;
 import com.togather.member.model.MemberDto;
 import com.togather.member.service.MemberService;
 import com.togather.partyroom.payment.model.PaymentDto;
+import com.togather.partyroom.payment.model.PaymentFailDto;
 import com.togather.partyroom.payment.model.PaymentSuccessDto;
 import com.togather.partyroom.payment.service.PaymentService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -43,17 +44,31 @@ public class PaymentController {
         return new MappingJacksonValue(responsePaymentDto);
     }
 
-    @PostMapping("/toss/success")
-    @PreAuthorize("hasRole('ROLE_GUEST')")
+    @GetMapping("/toss/success")
+    @PreAuthorize("isAuthenticated()")
     @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
     @Operation(summary = "Approval and Verification After Successful Payment for Toss Payments", description = "결제 완료 후 토스 결제 승인 및 결제 정보 확인 API")
-    @ApiResponse(content = @Content(schema = @Schema(implementation = PaymentDto.class)))
-    public ResponseEntity<PaymentSuccessDto> verifySuccessfulTossPayment(@RequestParam String paymentKey,
-                                                          @RequestParam String orderId,
-                                                          @RequestParam long amount) {
-        PaymentSuccessDto paymentSuccessDto = paymentService.verifySuccessfulTossPayment(paymentKey, orderId, amount);
+    @ApiResponse(content = @Content(schema = @Schema(implementation = PaymentSuccessDto.class)))
+    public ResponseEntity<PaymentSuccessDto> approvePayment(@RequestParam String paymentKey,
+                                                            @RequestParam String orderId,
+                                                            @RequestParam long amount) {
+        PaymentSuccessDto paymentSuccessDto = paymentService.handleSuccessTossPayment(paymentKey, orderId, amount);
 
         return ResponseEntity.ok(paymentSuccessDto);
+    }
+
+    @GetMapping("/toss/fail")
+    @PreAuthorize("isAuthenticated()")
+    @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
+    @Operation(summary = "Approval and Verification After Successful Payment for Toss Payments", description = "결제 완료 후 토스 결제 승인 및 결제 정보 확인 API")
+    @ApiResponse(content = @Content(schema = @Schema(implementation = PaymentFailDto.class)))
+    public ResponseEntity<PaymentFailDto> failPayment(@RequestParam String code,
+                                                      @RequestParam String message,
+                                                      @RequestParam String orderId) {
+
+        PaymentFailDto paymentFailDto = paymentService.handleFailedTossPayment(code, message, orderId);
+
+        return ResponseEntity.ok(paymentFailDto);
     }
 
 }
