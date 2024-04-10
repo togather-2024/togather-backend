@@ -14,10 +14,8 @@ import java.util.UUID;
 
 
 @Getter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
 @Entity
+@NoArgsConstructor
 public class Payment extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -68,6 +66,37 @@ public class Payment extends BaseTimeEntity {
         this.isPaymentSuccess = false;
         this.customer = customer;
         this.partyRoomReservation = partyRoomReservation;
+    }
+
+    @Builder
+    public Payment(long paymentId, String orderId, String paymentKey, String orderName, Method method,
+                   long amount, boolean isPaymentSuccess, Member customer, String failReason, boolean isCanceled, String cancelReason) {
+        this.paymentId = paymentId;
+        this.orderId = orderId;
+        this.paymentKey = paymentKey;
+        this.orderName = orderName;
+        this.method = method;
+        this.amount = amount;
+        this.isPaymentSuccess = isPaymentSuccess;
+        this.customer = customer;
+        this.failReason = failReason;
+        this.isCanceled = isCanceled;
+        this.cancelReason = cancelReason;
+    }
+
+    @Builder
+    public Payment(String orderId, String paymentKey, String orderName, Method method,
+                   long amount, boolean isPaymentSuccess, Member customer, String failReason, boolean isCanceled, String cancelReason) {
+        this.orderId = orderId;
+        this.paymentKey = paymentKey;
+        this.orderName = orderName;
+        this.method = method;
+        this.amount = amount;
+        this.isPaymentSuccess = isPaymentSuccess;
+        this.customer = customer;
+        this.failReason = failReason;
+        this.isCanceled = isCanceled;
+        this.cancelReason = cancelReason;
     }
 
     public void update(String paymentKey) {
