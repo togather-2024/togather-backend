@@ -5,7 +5,6 @@ import com.togather.common.response.ResponseFilter;
 import com.togather.member.dto.LoginDto;
 import com.togather.member.model.MemberDto;
 import com.togather.member.service.MemberService;
-import com.togather.partyroom.core.model.PartyRoomDto;
 import com.togather.security.jwt.JwtFilter;
 import com.togather.security.service.JwtProvider;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,6 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,10 +23,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/member")
@@ -75,5 +73,45 @@ public class MemberController {
     public MappingJacksonValue getUserInfo() {
         MemberDto loginUser = memberService.findByAuthentication(SecurityContextHolder.getContext().getAuthentication());
         return new MappingJacksonValue(loginUser);
+    }
+
+    @PatchMapping("/update/name")
+    @Operation(summary = "Member Name Update API", description = "회원 이름 변경 API")
+    @ApiResponse(responseCode = "200", description = "success")
+    @PreAuthorize("isAuthenticated()")
+    @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
+    public ResponseEntity<String> updateName(@RequestParam(name = "name") String name) {
+        memberService.updateName(name);
+        return ResponseEntity.ok("ok");
+    }
+
+    @PatchMapping("/update/password")
+    @Operation(summary = "Member Password Update API", description = "회원 비밀번호 변경 API")
+    @ApiResponse(responseCode = "200", description = "success")
+    @PreAuthorize("isAuthenticated()")
+    @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
+    public ResponseEntity<String> updatePassword(@RequestBody MemberDto.UpdatePassword updatePassword) {
+        memberService.updatePassword(updatePassword);
+        return ResponseEntity.ok("ok");
+    }
+
+    @PatchMapping(value = "/update/profileImage", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Member Profile Image Update API", description = "회원 프로필 사진 변경 API")
+    @ApiResponse(responseCode = "200", description = "success")
+    @PreAuthorize("isAuthenticated()")
+    @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
+    public ResponseEntity<String> updateProfileImage(@RequestPart MultipartFile profileImage) {
+        memberService.updateProfileImage(profileImage);
+        return ResponseEntity.ok("ok");
+    }
+
+    @DeleteMapping(value = "/withdrawal")
+    @Operation(summary = "Member Withdrawal API", description = "회원 탈퇴 API")
+    @ApiResponse(responseCode = "200", description = "success")
+    @PreAuthorize("isAuthenticated()")
+    @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
+    public ResponseEntity<String> withdraw(@RequestBody MemberDto.Withdraw withdraw) {
+        memberService.delete(withdraw);
+        return ResponseEntity.ok("ok");
     }
 }
