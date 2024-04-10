@@ -60,13 +60,14 @@ public class Payment extends BaseTimeEntity {
     private PartyRoomReservation partyRoomReservation;
 
     @Builder
-    public Payment(String orderName, Method method, long amount, Member customer) {
+    public Payment(String orderName, Method method, long amount, Member customer, PartyRoomReservation partyRoomReservation) {
         this.orderId = UUID.randomUUID().toString();
         this.orderName = orderName;
         this.method = method;
         this.amount = amount;
         this.isPaymentSuccess = false;
         this.customer = customer;
+        this.partyRoomReservation = partyRoomReservation;
     }
 
     public void update(String paymentKey) {

@@ -49,6 +49,7 @@ public class PaymentService {
                 .method(paymentDto.getMethod())
                 .amount(paymentDto.getAmount())
                 .customer(memberConverter.convertToEntity(memberDto))
+                .partyRoomReservation(partyRoomReservation)
                 .build();
 
         paymentRepository.save(payment);
