@@ -109,10 +109,7 @@
         }
 
         @GetMapping("/search/available")
-        @PreAuthorize("hasRole('ROLE_GUEST')")
         @ApiResponse(responseCode = "200", description = "success", content = @Content(schema = @Schema(implementation = PartyRoomReservationResponseDto.class)))
-        @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
-        @ApiResponse(responseCode = "403", description = "user is logged in but has no HOST role", content = @Content)
         @Operation(summary = "Search Available Party Room Reservation Times", description = "예약 가능한 파티룸 시간대 조회")
         public ResponseEntity<PartyRoomReservationResponseDto.AvailableTimes> searchAvailableReservationTimes(@RequestParam long partyroomId,
                                                                                                               @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
