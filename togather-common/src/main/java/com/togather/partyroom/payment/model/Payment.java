@@ -2,6 +2,7 @@ package com.togather.partyroom.payment.model;
 
 import com.togather.common.model.BaseTimeEntity;
 import com.togather.member.model.Member;
+import com.togather.partyroom.reservation.model.PartyRoomReservation;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,6 +14,8 @@ import java.util.UUID;
 
 
 @Getter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 @Entity
 public class Payment extends BaseTimeEntity {
@@ -52,6 +55,10 @@ public class Payment extends BaseTimeEntity {
     @Column(name = "cancel_reason")
     private String cancelReason; //취소 사유
 
+    @OneToOne
+    @JoinColumn(name = "reservation_id")
+    private PartyRoomReservation partyRoomReservation;
+
     @Builder
     public Payment(String orderName, Method method, long amount, Member customer) {
         this.orderId = UUID.randomUUID().toString();
@@ -60,24 +67,6 @@ public class Payment extends BaseTimeEntity {
         this.amount = amount;
         this.isPaymentSuccess = false;
         this.customer = customer;
-    }
-
-    // 모든 필드를 포함
-    @Builder
-    public Payment(long paymentId, String orderId, String paymentKey, String orderName, Method method,
-                   long amount, boolean isPaymentSuccess, Member customer, String failReason,
-                   boolean isCanceled, String cancelReason) {
-        this.paymentId = paymentId;
-        this.orderId = orderId;
-        this.paymentKey = paymentKey;
-        this.orderName = orderName;
-        this.method = method;
-        this.amount = amount;
-        this.isPaymentSuccess = isPaymentSuccess;
-        this.customer = customer;
-        this.failReason = failReason;
-        this.isCanceled = isCanceled;
-        this.cancelReason = cancelReason;
     }
 
     public void update(String paymentKey) {

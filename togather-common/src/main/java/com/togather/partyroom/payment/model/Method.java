@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import java.util.stream.Stream;
 
 public enum Method {
-    CARD("카드"), VIRTUAL("가상계좌"), MOBILE_PHONE("휴대폰"), NONE("")
+    CARD("카드"), VIRTUAL("가상계좌"), MOBILE_PHONE("휴대폰"), SIMPLE("간편결제"), NONE("")
     ;
 
     private final String description;

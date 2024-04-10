@@ -2,6 +2,7 @@ package com.togather.partyroom.reservation.model;
 
 import com.togather.member.model.Member;
 import com.togather.partyroom.core.model.PartyRoom;
+import com.togather.partyroom.payment.model.Payment;
 import com.togather.partyroom.payment.model.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -46,6 +47,9 @@ public class PartyRoomReservation {
     @Column(name = "total_price")
     private long totalPrice;
 
+    @OneToOne(mappedBy = "partyRoomReservation")
+    private Payment payment;
+
     @Builder
     public PartyRoomReservation(long reservationId, PartyRoom partyRoom, Member reservationGuest, int guestCount, LocalDateTime startTime, LocalDateTime endTime, PaymentStatus paymentStatus, LocalDateTime bookedDate, long totalPrice) {
         this.reservationId = reservationId;
@@ -57,5 +61,9 @@ public class PartyRoomReservation {
         this.paymentStatus = paymentStatus;
         this.bookedDate = bookedDate;
         this.totalPrice = totalPrice;
+    }
+
+    public void updatePaymentStatus() {
+        this.paymentStatus = PaymentStatus.COMPLETE;
     }
 }

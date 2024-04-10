@@ -71,6 +71,8 @@ public class PaymentService {
         payment.update(paymentKey);
 
         log.info("payment successful, paymentId: {}", payment.getPaymentId());
+
+        partyRoomReservationService.updatePaymentStatusToComplete(payment);
         return paymentSuccessDto;
     }
 
@@ -102,7 +104,7 @@ public class PaymentService {
 
         try {
             paymentSuccessDto = webClient.post()
-                    //uri: "https://api.tosspayments.com/v1/payments/confirm"
+                    //url: "https://api.tosspayments.com/v1/payments/confirm"
                     .uri(uriBuilder -> uriBuilder.path("confirm").build())
                     .contentType(MediaType.APPLICATION_JSON)
                     .bodyValue(params)
@@ -111,8 +113,8 @@ public class PaymentService {
                     .block();
 
         } catch (Exception e) {
-            log.error("error: {}", e.getStackTrace());
-            throw new RuntimeException(e);
+            log.error("error: {}", e);
+            throw new RuntimeException(e); //TODO: exception
         }
 
         return paymentSuccessDto;
