@@ -20,7 +20,7 @@ public class PaymentConverter {
 
         Member findCustomer = memberService.findByEmail(paymentDto.getCustomerEmail());
 
-        return Payment.builder()
+        return Payment.allFields()
                 .paymentId(paymentDto.getPaymentId())
                 .orderId(paymentDto.getOrderId())
                 .paymentKey(paymentDto.getPaymentKey())
@@ -31,6 +31,7 @@ public class PaymentConverter {
                 .customer(findCustomer)
                 .failReason(paymentDto.getFailReason())
                 .isCanceled(paymentDto.isCanceled())
+                .canceledAt(paymentDto.getCanceledAt())
                 .cancelReason(paymentDto.getCancelReason())
                 .build();
     }
@@ -51,6 +52,7 @@ public class PaymentConverter {
                 .customerName(payment.getCustomer().getMemberName())
                 .isCanceled(payment.isCanceled())
                 .cancelReason(payment.getCancelReason())
+                .canceledAt(payment.getCanceledAt())
                 .failReason(payment.getFailReason())
                 .createdAt(payment.getCreatedAt())
                 .modifiedAt(payment.getModifiedAt())

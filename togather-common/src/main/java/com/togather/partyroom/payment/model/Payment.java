@@ -71,8 +71,8 @@ public class Payment extends BaseTimeEntity {
         this.partyRoomReservation = partyRoomReservation;
     }
 
-    @Builder
-    public Payment(long paymentId, String orderId, String paymentKey, String orderName, Method method,
+    @Builder(builderMethodName = "allFields")
+    public Payment(long paymentId, String orderId, String paymentKey, String orderName, Method method, String canceledAt,
                    long amount, boolean isPaymentSuccess, Member customer, String failReason, boolean isCanceled, String cancelReason) {
         this.paymentId = paymentId;
         this.orderId = orderId;
@@ -85,6 +85,7 @@ public class Payment extends BaseTimeEntity {
         this.failReason = failReason;
         this.isCanceled = isCanceled;
         this.cancelReason = cancelReason;
+        this.canceledAt = canceledAt;
     }
 
     @Builder

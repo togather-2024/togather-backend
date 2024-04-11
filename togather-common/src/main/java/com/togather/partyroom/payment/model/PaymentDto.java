@@ -36,6 +36,8 @@ public class PaymentDto {
 
     private String cancelReason;
 
+    private String canceledAt;
+
     private String failReason;
 
     private LocalDateTime createdAt;

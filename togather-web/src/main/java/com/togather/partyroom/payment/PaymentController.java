@@ -73,13 +73,14 @@ public class PaymentController {
         return ResponseEntity.ok(paymentFailDto);
     }
 
-    @GetMapping("/my/{orderId}")
+    @GetMapping("/my/{paymentKey}")
     @PreAuthorize("isAuthenticated()")
     @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
     @Operation(summary = "Payment Inquiry", description = "결제 조회 API")
     @ApiResponse(content = @Content(schema = @Schema(implementation = PaymentDto.class)))
-    public ResponseEntity<PaymentDto> inquiryPayment(@PathVariable(name = "orderId") String orderId) {
-        PaymentDto paymentDto = paymentService.inquiryPayment(orderId);
+    @AddJsonFilters(filters = {PAYMENT_INFO})
+    public ResponseEntity<PaymentDto> inquiryPayment(@PathVariable(name = "paymentKey") String paymentKey) {
+        PaymentDto paymentDto = paymentService.inquiryPayment(paymentKey);
 
         return ResponseEntity.ok(paymentDto);
     }
