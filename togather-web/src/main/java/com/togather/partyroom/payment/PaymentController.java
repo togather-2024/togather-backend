@@ -25,13 +25,14 @@ import static com.togather.common.ResponseFilter.*;
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "Toss Payments")
+@RequestMapping("/toss")
 public class PaymentController {
 
     private final MemberService memberService;
     private final PaymentService paymentService;
 
-    @PostMapping("/toss")
-    @PreAuthorize("hasRole('ROLE_GUEST')")
+    @PostMapping()
+    @PreAuthorize("isAuthenticated()")
     @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
     @Operation(summary = "Saving Information for Toss Payments", description = "토스 결제를 위한 정보 저장 API")
     @AddJsonFilters(filters = {PAYMENT_INFO})
@@ -44,7 +45,7 @@ public class PaymentController {
         return new MappingJacksonValue(responsePaymentDto);
     }
 
-    @GetMapping("/toss/success")
+    @GetMapping("/success")
     @PreAuthorize("isAuthenticated()")
     @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
     @Operation(summary = "Approval and Verification After Successful Payment for Toss Payments", description = "결제 완료 후 토스 결제 승인 및 결제 정보 확인 API")
@@ -57,10 +58,10 @@ public class PaymentController {
         return ResponseEntity.ok(paymentSuccessDto);
     }
 
-    @GetMapping("/toss/fail")
+    @GetMapping("/fail")
     @PreAuthorize("isAuthenticated()")
     @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
-    @Operation(summary = "Approval and Verification After Successful Payment for Toss Payments", description = "결제 완료 후 토스 결제 승인 및 결제 정보 확인 API")
+    @Operation(summary = "Toss Payments Failure Information", description = "결제 실패 정보 리턴 API")
     @ApiResponse(content = @Content(schema = @Schema(implementation = PaymentFailDto.class)))
     public ResponseEntity<PaymentFailDto> failPayment(@RequestParam String code,
                                                       @RequestParam String message,
@@ -70,5 +71,18 @@ public class PaymentController {
 
         return ResponseEntity.ok(paymentFailDto);
     }
+
+    @GetMapping("/payment/{orderId}")
+    @PreAuthorize("isAuthenticated()")
+    @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
+    @Operation(summary = "Payment Inquiry", description = "결제 조회 API")
+    @ApiResponse(content = @Content(schema = @Schema(implementation = PaymentDto.class)))
+    public ResponseEntity<PaymentDto> inquiryPayment(@PathVariable(name = "orderId") String orderId) {
+        PaymentDto paymentDto = paymentService.inquiryPayment(orderId);
+
+        return ResponseEntity.ok(paymentDto);
+    }
+
+
 
 }

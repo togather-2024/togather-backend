@@ -145,4 +145,35 @@ public class PaymentService {
                 .orderId(orderId)
                 .build();
     }
+
+    public PaymentDto inquiryPayment(String orderId) {
+        HttpHeaders httpHeaders = getHeaders();
+
+        WebClient webClient = WebClient.builder()
+                .baseUrl(TossPaymentConfig.URL)
+                .defaultHeaders(headers -> {
+                    httpHeaders.forEach((key, value) -> {
+                        headers.addAll(key, value);
+                    });
+                })
+                .build();
+
+        PaymentDto paymentDto;
+        try {
+            paymentDto = webClient.get()
+                    //url: "https://api.tosspayments.com/v1/payments/orders/{orderId}"
+                    .uri(uriBuilder -> uriBuilder.path("orders/" + orderId).build())
+                    .retrieve()
+                    .bodyToMono(PaymentDto.class) //응답을 PaymentDto 클래스로 변환
+                    .block();
+
+        } catch (Exception e) {
+            log.error("error: {}", e);
+            throw new RuntimeException(e); //TODO: exception
+        }
+
+        log.info("retrieve payment detail for orderId: {}", orderId);
+
+        return paymentDto;
+    }
 }
