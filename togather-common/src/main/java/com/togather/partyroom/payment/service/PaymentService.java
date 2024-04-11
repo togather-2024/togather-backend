@@ -71,7 +71,7 @@ public class PaymentService {
 
         log.info("payment successful for orderId: {}", payment.getOrderId());
 
-        partyRoomReservationService.updatePaymentStatusToComplete(payment);
+        partyRoomReservationService.updatePaymentStatus(payment, PaymentStatus.COMPLETE);
         return paymentSuccessDto;
     }
 
@@ -194,6 +194,8 @@ public class PaymentService {
 
         log.info("cancel payment for paymentKey: {}", paymentKey);
         log.info("cancelReason: {}", payment.getCancelReason());
+
+        partyRoomReservationService.updatePaymentStatus(payment, PaymentStatus.CANCELED);
 
         return payment.getCancelReason();
     }

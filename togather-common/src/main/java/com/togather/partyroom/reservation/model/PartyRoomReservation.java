@@ -64,7 +64,7 @@ public class PartyRoomReservation {
         this.payment = payment;
     }
 
-    public void updatePaymentStatus() {
-        this.paymentStatus = PaymentStatus.COMPLETE;
+    public void updatePaymentStatus(PaymentStatus paymentStatus) {
+        this.paymentStatus = paymentStatus;
     }
 }

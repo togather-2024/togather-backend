@@ -170,8 +170,8 @@ public class PartyRoomReservationService {
         log.info("delete party_room_reservation: {}", partyRoomReservation.getReservationId());
     }
 
-    public void updatePaymentStatusToComplete(Payment payment) {
+    public void updatePaymentStatus(Payment payment, PaymentStatus paymentStatus) {
         PartyRoomReservation partyRoomReservation = payment.getPartyRoomReservation();
-        partyRoomReservation.updatePaymentStatus();
+        partyRoomReservation.updatePaymentStatus(paymentStatus);
     }
 }
