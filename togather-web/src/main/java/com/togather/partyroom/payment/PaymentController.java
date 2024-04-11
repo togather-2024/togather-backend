@@ -46,7 +46,7 @@ public class PaymentController {
         return new MappingJacksonValue(responsePaymentDto);
     }
 
-    @PostMapping("/success") //TODO: POST->GET
+    @GetMapping("/success")
     @PreAuthorize("isAuthenticated()")
     @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
     @Operation(summary = "Approval and Verification After Successful Payment for Toss Payments", description = "결제 완료 후 토스 결제 승인 및 결제 정보 확인 API")
