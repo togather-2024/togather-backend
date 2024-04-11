@@ -26,13 +26,13 @@ import static com.togather.common.ResponseFilter.*;
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "Toss Payments")
-@RequestMapping("/toss")
+@RequestMapping("/payment")
 public class PaymentController {
 
     private final MemberService memberService;
     private final PaymentService paymentService;
 
-    @PostMapping()
+    @PostMapping("/toss")
     @PreAuthorize("isAuthenticated()")
     @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
     @Operation(summary = "Saving Information for Toss Payments", description = "토스 결제를 위한 정보 저장 API")
@@ -46,7 +46,7 @@ public class PaymentController {
         return new MappingJacksonValue(responsePaymentDto);
     }
 
-    @GetMapping("/success")
+    @GetMapping("/toss/success")
     @PreAuthorize("isAuthenticated()")
     @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
     @Operation(summary = "Approval and Verification After Successful Payment for Toss Payments", description = "결제 완료 후 토스 결제 승인 및 결제 정보 확인 API")
@@ -60,7 +60,7 @@ public class PaymentController {
         return new MappingJacksonValue(paymentSuccessDto);
     }
 
-    @GetMapping("/fail")
+    @GetMapping("/toss/fail")
     @PreAuthorize("isAuthenticated()")
     @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
     @Operation(summary = "Toss Payments Failure Information", description = "결제 실패 정보 리턴 API")
@@ -86,7 +86,7 @@ public class PaymentController {
         return new MappingJacksonValue(paymentDto);
     }
 
-    @PostMapping("/cancel/{paymentKey}")
+    @PostMapping("/toss/cancel/{paymentKey}")
     @PreAuthorize("isAuthenticated()")
     @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
     @Operation(summary = "Payment Cancel", description = "결제 취소 API")
