@@ -112,6 +112,8 @@ public class PaymentService {
                     .block();
         } catch (Exception e) {
             log.error("error: {}", e);
+            deletePayment(payment);
+
             throw new RuntimeException(e); //TODO: exception
         }
 
@@ -139,6 +141,8 @@ public class PaymentService {
         payment.setPaymentFailed(message);
 
         log.info("payment failed for orderId: {}, reason: {}", payment.getOrderId(), message);
+
+        deletePayment(payment);
 
         return PaymentFailDto.builder()
                 .errorCode(code)
@@ -198,5 +202,10 @@ public class PaymentService {
         partyRoomReservationService.updatePaymentStatus(payment, PaymentStatus.CANCELED);
 
         return payment.getCancelReason();
+    }
+
+    private void deletePayment(Payment payment) {
+        paymentRepository.delete(payment);
+        log.info("delete paymentId: {}", payment.getPaymentId());
     }
 }
