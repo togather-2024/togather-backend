@@ -90,7 +90,6 @@ public class PaymentController {
     @PreAuthorize("isAuthenticated()")
     @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
     @Operation(summary = "Payment Cancel", description = "결제 취소 API")
-    @ApiResponse(content = @Content)
     public ResponseEntity<String> cancelPayment(@PathVariable(name = "paymentKey") String paymentKey,
                                                     @RequestBody PaymentCancelDto.Request paymentCancelDto) {
         String cancelReason = paymentService.cancelPayment(paymentKey, paymentCancelDto);

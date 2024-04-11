@@ -52,7 +52,7 @@ public class PartyRoomReservationController {
     @PreAuthorize("hasRole('ROLE_GUEST')")
     @Operation(summary = "Party Room Reservation Search - One", description = "파티룸 예약 상세 조회 API")
     @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
-    @AddJsonFilters(filters = {PARTY_ROOM_DTO_SIMPLE, MEMBER_DTO_FOR_RESERVATION, PARTY_ROOM_IMAGE_DTO_SIMPLE})
+    @AddJsonFilters(filters = {PARTY_ROOM_DTO_SIMPLE, MEMBER_DTO_FOR_RESERVATION, PARTY_ROOM_IMAGE_DTO_SIMPLE,  PAYMENT_INFO_EXCLUDE_HANDLING_URL})
     @ApiResponse(content = @Content(schema = @Schema(implementation = PartyRoomReservationDto.class)))
     public MappingJacksonValue searchOneByReservationIdFiltered(@PathVariable(name = "reservation-id") long reservationId) {
         //guest - 특정 예약 내역 상세 조회
@@ -71,7 +71,7 @@ public class PartyRoomReservationController {
     @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
     @Operation(summary = "Party Room Reservation Search - List", description = "파티룸 예약 리스트 조회 API")
     @AddJsonFilters(filters = {PARTY_ROOM_DTO_SIMPLE, PARTY_ROOM_RESERVATION_RESPONSE_DTO_SIMPLE,
-            PARTY_ROOM_IMAGE_DTO_SIMPLE, MEMBER_DTO_FOR_RESERVATION, PAYMENT_INFO_EXCLUDE_HANDLING_URL})
+            PARTY_ROOM_IMAGE_DTO_SIMPLE, MEMBER_DTO_FOR_RESERVATION})
     @ApiResponse(content = @Content(schema = @Schema(implementation = PartyRoomReservationDto.class)))
     public MappingJacksonValue searchByMember() {
         //guest - 전체 예약 내역 조회
