@@ -5,8 +5,10 @@ import com.togather.common.s3.S3ImageUploader;
 import com.togather.common.s3.S3ObjectDto;
 import com.togather.member.model.MemberDto;
 import com.togather.member.service.MemberService;
+import com.togather.partyroom.core.model.PartyRoomDetailDto;
 import com.togather.partyroom.core.model.PartyRoomDto;
 import com.togather.partyroom.core.model.PartyRoomOperationDayDto;
+import com.togather.partyroom.core.model.PartyRoomSearchQueryDto;
 import com.togather.partyroom.core.service.PartyRoomService;
 import com.togather.partyroom.location.model.PartyRoomLocationDto;
 import com.togather.partyroom.register.PartyRoomRequestDto;
@@ -116,9 +118,7 @@ public class PartyRoomController {
     @GetMapping("/detail/{id}")
     @ResponseBody
     @Operation(summary = "partyRoom detail info API", description = "파티룸 조회 API")
-    @ApiResponse(responseCode = "200", description = "returns response with string 'ok' when deleted successfully")
-    @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
-    @ApiResponse(responseCode = "403", description = "has no role or is not owner of party room", content = @Content)
+    @ApiResponse(responseCode = "200", description = "returns detail info of party room", content = @Content(schema = @Schema(implementation = PartyRoomDetailDto.class)))
     @AddJsonFilters(filters = MEMBER_DTO_EXCLUDE_PII_WITH_NAME)
     public MappingJacksonValue getPartyRoomDetail(@PathVariable("id") long partyRoomId) {
         return new MappingJacksonValue(partyRoomService.findDetailDtoById(partyRoomId));
@@ -131,6 +131,14 @@ public class PartyRoomController {
     public ResponseEntity<List<String>> getPopularTags(@RequestParam(required = false, defaultValue = "10") int limit) {
         List<String> tagContents = partyRoomCustomTagService.getPopularTags(limit);
         return ResponseEntity.ok(tagContents);
+    }
+
+    @GetMapping("/search")
+    @ResponseBody
+    @Operation(summary = "search party rooms based on pagination - returns all if no condition is applied")
+    @ApiResponse(responseCode = "200", description = "returns detail info of party room", content = @Content(schema = @Schema(implementation = PartyRoomDetailDto.class)))
+    public MappingJacksonValue searchPartyRoom(PartyRoomSearchQueryDto partyRoomSearchQueryDto) {
+        return new MappingJacksonValue(partyRoomService.searchPartyRoom(partyRoomSearchQueryDto));
     }
 
 }
