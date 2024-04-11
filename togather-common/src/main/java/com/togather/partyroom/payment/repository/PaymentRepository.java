@@ -11,4 +11,7 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     @Query("select p from Payment p where p.orderId = :orderId")
     Optional<Payment> findByOrderId(String orderId);
 
+    @Query("select p from Payment p where p.paymentKey = :paymentKey")
+    Optional<Payment>findByPaymentKey(String paymentKey);
+
 }

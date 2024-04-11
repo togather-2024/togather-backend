@@ -20,6 +20,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -109,7 +110,6 @@ public class PaymentService {
                     .retrieve()
                     .bodyToMono(PaymentSuccessDto.class) //응답을 PaymentSuccessDto 클래스로 변환
                     .block();
-
         } catch (Exception e) {
             log.error("error: {}", e);
             throw new RuntimeException(e); //TODO: exception
@@ -166,7 +166,6 @@ public class PaymentService {
                     .retrieve()
                     .bodyToMono(PaymentDto.class) //응답을 PaymentDto 클래스로 변환
                     .block();
-
         } catch (Exception e) {
             log.error("error: {}", e);
             throw new RuntimeException(e); //TODO: exception
@@ -175,5 +174,45 @@ public class PaymentService {
         log.info("retrieve payment detail for orderId: {}", orderId);
 
         return paymentDto;
+    }
+
+    public String cancelPayment(String paymentKey, PaymentCancelDto.Request paymentCancelDto) {
+        Payment payment = paymentRepository.findByPaymentKey(paymentKey)
+                .orElseThrow(RuntimeException::new);//TODO: exception
+
+        HttpHeaders httpHeaders = getHeaders();
+        httpHeaders.add("Idempotency-Key", UUID.randomUUID().toString()); //멱등키 추가로 중복 요청 방지
+
+        WebClient webClient = WebClient.builder()
+                .baseUrl(TossPaymentConfig.URL)
+                .defaultHeaders(headers -> {
+                    httpHeaders.forEach((key, value) -> {
+                        headers.addAll(key, value);
+                    });
+                })
+                .build();
+
+        Map<String, String> param = Map.of("cancelReason", paymentCancelDto.getCancelReason());
+
+        PaymentCancelDto.Response paymentCancelResponseDto;
+        try {
+            paymentCancelResponseDto = webClient.post()
+                    //url: "https://api.tosspayments.com/v1/payments/{paymentKey}/cancel"
+                    .uri(uriBuilder -> uriBuilder.path(paymentKey + "/cancel").build())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .bodyValue(param)
+                    .retrieve()
+                    .bodyToMono(PaymentCancelDto.Response.class) //응답을 PaymentCancelDto 클래스로 변환
+                    .block();
+        } catch (Exception e) {
+            log.error("error: {}", e);
+            throw new RuntimeException(e); //TODO: exception
+        }
+
+        payment.setPaymentCancelInfo(paymentCancelResponseDto);
+
+        log.info("cancel payment for paymentKey: {}", paymentKey);
+
+        return payment.getCancelReason();
     }
 }

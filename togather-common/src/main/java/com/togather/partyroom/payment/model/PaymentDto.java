@@ -66,6 +66,5 @@ public class PaymentDto {
         private String successUrl;
 
         private String failUrl;
-
     }
 }

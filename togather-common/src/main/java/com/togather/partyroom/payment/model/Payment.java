@@ -53,6 +53,9 @@ public class Payment extends BaseTimeEntity {
     @Column(name = "cancel_reason")
     private String cancelReason; //취소 사유
 
+    @Column(name = "canceled_at")
+    private String canceledAt;
+
     @OneToOne
     @JoinColumn(name = "reservation_id")
     private PartyRoomReservation partyRoomReservation;
@@ -106,5 +109,11 @@ public class Payment extends BaseTimeEntity {
 
     public void setPaymentFailed(String message) {
         this.failReason = message;
+    }
+
+    public void setPaymentCancelInfo(PaymentCancelDto.Response paymentCancelResponseDto) {
+        this.isCanceled = true;
+        this.canceledAt = paymentCancelResponseDto.getCanceledAt();
+        this.cancelReason = paymentCancelResponseDto.getCancelReason();
     }
 }

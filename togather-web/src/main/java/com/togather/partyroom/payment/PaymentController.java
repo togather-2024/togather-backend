@@ -3,6 +3,7 @@ package com.togather.partyroom.payment;
 import com.togather.common.AddJsonFilters;
 import com.togather.member.model.MemberDto;
 import com.togather.member.service.MemberService;
+import com.togather.partyroom.payment.model.PaymentCancelDto;
 import com.togather.partyroom.payment.model.PaymentDto;
 import com.togather.partyroom.payment.model.PaymentFailDto;
 import com.togather.partyroom.payment.model.PaymentSuccessDto;
@@ -72,7 +73,7 @@ public class PaymentController {
         return ResponseEntity.ok(paymentFailDto);
     }
 
-    @GetMapping("/payment/{orderId}")
+    @GetMapping("/my/{orderId}")
     @PreAuthorize("isAuthenticated()")
     @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
     @Operation(summary = "Payment Inquiry", description = "결제 조회 API")
@@ -83,6 +84,15 @@ public class PaymentController {
         return ResponseEntity.ok(paymentDto);
     }
 
+    @PostMapping("/cancel/{paymentKey}")
+    @PreAuthorize("isAuthenticated()")
+    @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
+    @Operation(summary = "Payment Cancel", description = "결제 취소 API")
+    @ApiResponse(content = @Content)
+    public ResponseEntity<String> cancelPayment(@PathVariable(name = "paymentKey") String paymentKey,
+                                                    @RequestBody PaymentCancelDto.Request paymentCancelDto) {
+        String cancelReason = paymentService.cancelPayment(paymentKey, paymentCancelDto);
 
-
+        return ResponseEntity.ok(cancelReason);
+    }
 }
