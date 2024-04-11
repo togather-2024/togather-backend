@@ -131,6 +131,7 @@ public class PaymentService {
         return httpHeaders;
     }
 
+    @Transactional
     public PaymentFailDto handleFailedTossPayment(String code, String message, String orderId) {
         Payment payment = paymentRepository.findByOrderId(orderId)
                 .orElseThrow(RuntimeException::new);//TODO: exception
@@ -155,6 +156,7 @@ public class PaymentService {
         return paymentDto;
     }
 
+    @Transactional
     public String cancelPayment(String paymentKey, PaymentCancelDto.Request paymentCancelDto) {
         Payment payment = paymentRepository.findByPaymentKey(paymentKey)
                 .orElseThrow(RuntimeException::new);//TODO: exception
@@ -173,7 +175,7 @@ public class PaymentService {
 
         Map<String, String> param = Map.of("cancelReason", paymentCancelDto.getCancelReason());
 
-        PaymentCancelDto.Response paymentCancelResponseDto;
+        PaymentCancelDto paymentCancelResponseDto;
         try {
             paymentCancelResponseDto = webClient.post()
                     //url: "https://api.tosspayments.com/v1/payments/{paymentKey}/cancel"
@@ -181,7 +183,7 @@ public class PaymentService {
                     .contentType(MediaType.APPLICATION_JSON)
                     .bodyValue(param)
                     .retrieve()
-                    .bodyToMono(PaymentCancelDto.Response.class) //응답을 PaymentCancelDto 클래스로 변환
+                    .bodyToMono(PaymentCancelDto.class) //응답을 PaymentCancelDto 클래스로 변환
                     .block();
         } catch (Exception e) {
             log.error("error: {}", e);
@@ -191,6 +193,7 @@ public class PaymentService {
         payment.setPaymentCancelInfo(paymentCancelResponseDto);
 
         log.info("cancel payment for paymentKey: {}", paymentKey);
+        log.info("cancelReason: {}", payment.getCancelReason());
 
         return payment.getCancelReason();
     }

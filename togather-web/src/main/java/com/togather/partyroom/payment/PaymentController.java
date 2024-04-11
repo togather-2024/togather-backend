@@ -46,17 +46,18 @@ public class PaymentController {
         return new MappingJacksonValue(responsePaymentDto);
     }
 
-    @GetMapping("/success")
+    @PostMapping("/success") //TODO: POST->GET
     @PreAuthorize("isAuthenticated()")
     @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
     @Operation(summary = "Approval and Verification After Successful Payment for Toss Payments", description = "결제 완료 후 토스 결제 승인 및 결제 정보 확인 API")
     @ApiResponse(content = @Content(schema = @Schema(implementation = PaymentSuccessDto.class)))
-    public ResponseEntity<PaymentSuccessDto> approvePayment(@RequestParam String paymentKey,
+    @AddJsonFilters(filters = {PAYMENT_INFO_EXCLUDE_HANDLING_URL})
+    public MappingJacksonValue approvePayment(@RequestParam String paymentKey,
                                                             @RequestParam String orderId,
                                                             @RequestParam long amount) {
         PaymentSuccessDto paymentSuccessDto = paymentService.handleSuccessTossPayment(paymentKey, orderId, amount);
 
-        return ResponseEntity.ok(paymentSuccessDto);
+        return new MappingJacksonValue(paymentSuccessDto);
     }
 
     @GetMapping("/fail")
@@ -78,11 +79,11 @@ public class PaymentController {
     @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
     @Operation(summary = "Payment Inquiry", description = "결제 조회 API")
     @ApiResponse(content = @Content(schema = @Schema(implementation = PaymentDto.class)))
-    @AddJsonFilters(filters = {PAYMENT_INFO})
-    public ResponseEntity<PaymentDto> inquiryPayment(@PathVariable(name = "paymentKey") String paymentKey) {
+    @AddJsonFilters(filters = {PAYMENT_INFO_EXCLUDE_HANDLING_URL})
+    public MappingJacksonValue inquiryPayment(@PathVariable(name = "paymentKey") String paymentKey) {
         PaymentDto paymentDto = paymentService.inquiryPayment(paymentKey);
 
-        return ResponseEntity.ok(paymentDto);
+        return new MappingJacksonValue(paymentDto);
     }
 
     @PostMapping("/cancel/{paymentKey}")

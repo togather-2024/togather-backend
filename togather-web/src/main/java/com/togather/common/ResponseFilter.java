@@ -19,6 +19,7 @@ public enum ResponseFilter {
     PARTY_ROOM_IMAGE_DTO_SIMPLE(PartyRoomImageDto.class, new String[]{"partyRoomImageId", "partyRoomImageType"}),
     MEMBER_DTO_FOR_RESERVATION(MemberDto.class, new String[]{"password", "role", "email"}),
     PAYMENT_INFO(PaymentDto.class, new String[]{"paymentId", "createdAt", "paymentKey"}),
+    PAYMENT_INFO_EXCLUDE_HANDLING_URL(PaymentDto.class, new String[]{"paymentId", "createdAt", "paymentKey", "successUrl", "failUrl"})
     ;
 
     private final Class<?> targetClass;

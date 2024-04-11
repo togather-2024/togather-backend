@@ -112,9 +112,9 @@ public class Payment extends BaseTimeEntity {
         this.failReason = message;
     }
 
-    public void setPaymentCancelInfo(PaymentCancelDto.Response paymentCancelResponseDto) {
+    public void setPaymentCancelInfo(PaymentCancelDto paymentCancelDto) {
         this.isCanceled = true;
-        this.canceledAt = paymentCancelResponseDto.getCanceledAt();
-        this.cancelReason = paymentCancelResponseDto.getCancelReason();
+        this.canceledAt = paymentCancelDto.getCancels().get(0).getCanceledAt();
+        this.cancelReason = paymentCancelDto.getCancels().get(0).getCancelReason();
     }
 }
