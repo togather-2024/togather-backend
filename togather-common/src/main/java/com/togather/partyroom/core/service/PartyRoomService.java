@@ -5,10 +5,7 @@ import com.togather.member.service.MemberService;
 import com.togather.partyroom.bookmark.model.PartyRoomBookmarkDto;
 import com.togather.partyroom.bookmark.service.PartyRoomBookmarkService;
 import com.togather.partyroom.core.converter.PartyRoomConverter;
-import com.togather.partyroom.core.model.PartyRoom;
-import com.togather.partyroom.core.model.PartyRoomDetailDto;
-import com.togather.partyroom.core.model.PartyRoomDto;
-import com.togather.partyroom.core.model.PartyRoomOperationDayDto;
+import com.togather.partyroom.core.model.*;
 import com.togather.partyroom.core.repository.PartyRoomRepository;
 import com.togather.partyroom.image.model.PartyRoomImageDto;
 import com.togather.partyroom.image.model.PartyRoomImageType;
@@ -166,4 +163,11 @@ public class PartyRoomService {
                 .orElseThrow(RuntimeException::new);
     }
 
+    public List<PartyRoomDetailDto> searchPartyRoom(PartyRoomSearchQueryDto partyRoomSearchQueryDto) {
+        List<PartyRoom> partyRooms = partyRoomRepository.search(partyRoomSearchQueryDto);
+        return partyRooms.stream()
+                .map(PartyRoom::getPartyRoomId)
+                .map(this::findDetailDtoById)
+                .toList();
+    }
 }
