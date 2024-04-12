@@ -145,7 +145,7 @@ public class PartyRoomReservationService {
                 .partyRoomImageDto(partyRoomDetailDto.getPartyRoomImageDtoList().stream()
                         .filter(image -> image.getPartyRoomImageType() == PartyRoomImageType.MAIN)
                         .findFirst().orElse(null))
-                .paymentKey(partyRoomReservationDto.getPaymentDto().getPaymentKey())
+                .paymentKey(partyRoomReservationDto.getPaymentDto().getPaymentKey() == null ? null : partyRoomReservationDto.getPaymentDto().getPaymentKey())
                 .build();
 
         log.info("find party_room_reservation by reservation id: {}", reservationId);
