@@ -42,6 +42,7 @@ public class PaymentService {
         if (partyRoomReservation.getTotalPrice() != paymentDto.getAmount())
             throw new RuntimeException("mismatched amount with totalPrice"); //TODO: exception class 수정하기
 
+
         Payment payment = Payment.builder()
                 .orderName(paymentDto.getOrderName())
                 .method(paymentDto.getMethod())
@@ -79,8 +80,10 @@ public class PaymentService {
         Payment payment = paymentRepository.findByOrderId(orderId)
                 .orElseThrow(RuntimeException::new); //TODO: Exception
 
-        if (payment.getAmount() != amount)
+        if (payment.getAmount() != amount) {
+            deletePayment(payment);
             throw new RuntimeException(); //TODO: Exception
+        }
 
         return payment;
     }

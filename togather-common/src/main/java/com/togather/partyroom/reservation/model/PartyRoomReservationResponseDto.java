@@ -16,4 +16,6 @@ public class PartyRoomReservationResponseDto {
     private PartyRoomLocationDto partyRoomLocationDto;
 
     private PartyRoomImageDto partyRoomImageDto;
+
+    private String paymentKey;
 }
