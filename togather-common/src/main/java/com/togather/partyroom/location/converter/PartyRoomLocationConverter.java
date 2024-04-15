@@ -24,6 +24,7 @@ public class PartyRoomLocationConverter {
                 .roadName(partyRoomLocationDto.getRoadName())
                 .roadAddress(partyRoomLocationDto.getRoadAddress())
                 .jibunAddress(partyRoomLocationDto.getJibunAddress())
+                .detailAddress(partyRoomLocationDto.getDetailAddress())
                 .build();
     }
 
@@ -40,6 +41,7 @@ public class PartyRoomLocationConverter {
                 .roadName(partyRoomLocation.getRoadName())
                 .roadAddress(partyRoomLocation.getRoadAddress())
                 .jibunAddress(partyRoomLocation.getJibunAddress())
+                .detailAddress(partyRoomLocation.getDetailAddress())
                 .build();
     }
 }
