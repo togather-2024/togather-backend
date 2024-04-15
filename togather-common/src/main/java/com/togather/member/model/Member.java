@@ -1,5 +1,6 @@
 package com.togather.member.model;
 
+import com.togather.partyroom.bookmark.model.PartyRoomBookmark;
 import com.togather.partyroom.core.model.PartyRoom;
 import com.togather.partyroom.payment.model.Payment;
 import jakarta.persistence.*;
@@ -37,11 +38,14 @@ public class Member {
     @Column(name = "profile_pic_file")
     private String profilePicFile;
 
-    @OneToMany(mappedBy = "partyRoomHost")
+    @OneToMany(mappedBy = "partyRoomHost", fetch = FetchType.LAZY)
     private List<PartyRoom> partyRoomList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "customer")
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
     private List<Payment> paymentList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
+    private List<PartyRoomBookmark> bookmarkList = new ArrayList<>();
 
     @Builder
     public Member(long memberSrl, String memberName, String password, Role role, String email, String profilePicFile) {
@@ -53,9 +57,15 @@ public class Member {
         this.profilePicFile = profilePicFile;
     }
 
-    public void update(String memberName, String password, String profilePicFile) {
+    public void updateName(String memberName) {
         this.memberName = memberName;
+    }
+
+    public void updatePassword(String password) {
         this.password = password;
+    }
+
+    public void updateProfilePicFile(String profilePicFile) {
         this.profilePicFile = profilePicFile;
     }
 

@@ -1,16 +1,19 @@
 package com.togather.partyroom.core;
 
-import com.togather.common.AddJsonFilters;
+import com.togather.common.response.AddJsonFilters;
+import com.togather.common.s3.S3ImageUploader;
+import com.togather.common.s3.S3ObjectDto;
 import com.togather.member.model.MemberDto;
 import com.togather.member.service.MemberService;
 import com.togather.partyroom.core.model.PartyRoomDetailDto;
 import com.togather.partyroom.core.model.PartyRoomDto;
 import com.togather.partyroom.core.model.PartyRoomOperationDayDto;
+import com.togather.partyroom.core.model.PartyRoomSearchQueryDto;
 import com.togather.partyroom.core.service.PartyRoomService;
-import com.togather.partyroom.image.model.PartyRoomImageDto;
 import com.togather.partyroom.location.model.PartyRoomLocationDto;
 import com.togather.partyroom.register.PartyRoomRequestDto;
 import com.togather.partyroom.tags.model.PartyRoomCustomTagDto;
+import com.togather.partyroom.tags.service.PartyRoomCustomTagService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -18,17 +21,21 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-import static com.togather.common.ResponseFilter.MEMBER_DTO_EXCLUDE_PII;
+import static com.togather.common.response.ResponseFilter.MEMBER_DTO_EXCLUDE_PII;
+import static com.togather.common.response.ResponseFilter.MEMBER_DTO_EXCLUDE_PII_WITH_NAME;
 
 @RequiredArgsConstructor
 @Controller
@@ -37,7 +44,9 @@ import static com.togather.common.ResponseFilter.MEMBER_DTO_EXCLUDE_PII;
 public class PartyRoomController {
     private final PartyRoomService partyRoomService;
     private final MemberService memberService;
-    @PostMapping("/register")
+    private final PartyRoomCustomTagService partyRoomCustomTagService;
+
+    @PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('ROLE_HOST')")
     @ResponseBody
     @Operation(summary = "partyRoom creation(Registration) API", description = "파티룸 등록 API")
@@ -45,7 +54,9 @@ public class PartyRoomController {
     @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
     @ApiResponse(responseCode = "403", description = "user is logged in but has no HOST role", content = @Content)
     @AddJsonFilters(filters = MEMBER_DTO_EXCLUDE_PII)
-    public MappingJacksonValue register(@Valid @RequestBody PartyRoomRequestDto partyRoomRequestDto) {
+    public MappingJacksonValue register(@Valid @RequestPart PartyRoomRequestDto partyRoomRequestDto,
+                                        @RequestPart(required = false) MultipartFile mainImage,
+                                        @RequestPart(required = false) List<MultipartFile> subImages) {
 
         PartyRoomDto partyRoomDto = partyRoomRequestDto.extractPartyRoomDto();
         // DONE: extract from JWT token
@@ -54,12 +65,10 @@ public class PartyRoomController {
         PartyRoomLocationDto partyRoomLocationDto = partyRoomRequestDto.extractPartyRoomLocationDto();
         List<PartyRoomCustomTagDto> customTags = partyRoomRequestDto.extractCustomTags();
         List<PartyRoomOperationDayDto> operationDays = partyRoomRequestDto.extractOperationDays();
-        PartyRoomImageDto partyRoomMainImageDto = partyRoomRequestDto.extractPartyRoomImageDto();
 
         partyRoomDto.setPartyRoomHost(partyRoomHost);
 
-        PartyRoomDto registeredPartyRoom = partyRoomService.register(partyRoomDto, customTags, partyRoomLocationDto, partyRoomMainImageDto, operationDays);
-
+        PartyRoomDto registeredPartyRoom = partyRoomService.register(partyRoomDto, customTags, partyRoomLocationDto, mainImage, subImages, operationDays);
         return new MappingJacksonValue(registeredPartyRoom);
     }
 
@@ -83,9 +92,8 @@ public class PartyRoomController {
         PartyRoomLocationDto partyRoomLocationDto = partyRoomRequestDto.extractPartyRoomLocationDto();
         List<PartyRoomCustomTagDto> customTags = partyRoomRequestDto.extractCustomTags();
         List<PartyRoomOperationDayDto> operationDays = partyRoomRequestDto.extractOperationDays();
-        PartyRoomImageDto partyRoomMainImageDto = partyRoomRequestDto.extractPartyRoomImageDto();
 
-        PartyRoomDto registeredPartyRoom = partyRoomService.modifyPartyRoom(partyRoomDto, customTags, partyRoomLocationDto, partyRoomMainImageDto, operationDays);
+        PartyRoomDto registeredPartyRoom = partyRoomService.modifyPartyRoom(partyRoomDto, customTags, partyRoomLocationDto, null, operationDays);
         return new MappingJacksonValue(registeredPartyRoom);
     }
 
@@ -108,15 +116,29 @@ public class PartyRoomController {
     }
 
     @GetMapping("/detail/{id}")
-    @PreAuthorize("hasRole('ROLE_HOST')")
     @ResponseBody
     @Operation(summary = "partyRoom detail info API", description = "파티룸 조회 API")
-    @ApiResponse(responseCode = "200", description = "returns response with string 'ok' when deleted successfully")
-    @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
-    @ApiResponse(responseCode = "403", description = "has no role or is not owner of party room", content = @Content)
-    @AddJsonFilters(filters = MEMBER_DTO_EXCLUDE_PII)
+    @ApiResponse(responseCode = "200", description = "returns detail info of party room", content = @Content(schema = @Schema(implementation = PartyRoomDetailDto.class)))
+    @AddJsonFilters(filters = MEMBER_DTO_EXCLUDE_PII_WITH_NAME)
     public MappingJacksonValue getPartyRoomDetail(@PathVariable("id") long partyRoomId) {
         return new MappingJacksonValue(partyRoomService.findDetailDtoById(partyRoomId));
+    }
+
+    @GetMapping("/tags/getPopular")
+    @ResponseBody
+    @Operation(summary = "get name of tags by popularity. Default value of parameter limit is 10", description = "가장 많이 등록된 태그")
+    @ApiResponse(responseCode = "200", description = "returns string of tags")
+    public ResponseEntity<List<String>> getPopularTags(@RequestParam(required = false, defaultValue = "10") int limit) {
+        List<String> tagContents = partyRoomCustomTagService.getPopularTags(limit);
+        return ResponseEntity.ok(tagContents);
+    }
+
+    @GetMapping("/search")
+    @ResponseBody
+    @Operation(summary = "search party rooms based on pagination - returns all if no condition is applied")
+    @ApiResponse(responseCode = "200", description = "returns detail info of party room", content = @Content(schema = @Schema(implementation = PartyRoomDetailDto.class)))
+    public MappingJacksonValue searchPartyRoom(PartyRoomSearchQueryDto partyRoomSearchQueryDto) {
+        return new MappingJacksonValue(partyRoomService.searchPartyRoom(partyRoomSearchQueryDto));
     }
 
 }

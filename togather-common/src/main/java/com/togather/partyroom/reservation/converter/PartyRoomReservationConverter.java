@@ -51,6 +51,7 @@ public class PartyRoomReservationConverter {
                 .bookedDate(partyRoomReservation.getBookedDate())
                 .totalPrice(partyRoomReservation.getTotalPrice())
                 .paymentDto(paymentConverter.convertToDto(partyRoomReservation.getPayment()))
+                .guestCount(partyRoomReservation.getGuestCount())
                 .build();
     }
 }

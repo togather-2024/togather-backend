@@ -6,6 +6,9 @@ import com.togather.partyroom.location.model.PartyRoomLocationDto;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.List;
+
+
 @Getter
 @Builder
 @JsonFilter("PartyRoomReservationResponseDtoFilter")
@@ -18,4 +21,10 @@ public class PartyRoomReservationResponseDto {
     private PartyRoomImageDto partyRoomImageDto;
 
     private String paymentKey;
+
+    @Builder
+    @Getter
+    public static class AvailableTimes {
+        private List<Integer> availableTimes;
+    }
 }

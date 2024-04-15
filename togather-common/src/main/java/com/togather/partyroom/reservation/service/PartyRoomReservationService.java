@@ -2,6 +2,7 @@ package com.togather.partyroom.reservation.service;
 
 import com.togather.member.model.MemberDto;
 import com.togather.partyroom.core.converter.PartyRoomConverter;
+import com.togather.partyroom.core.model.PartyRoom;
 import com.togather.partyroom.core.model.PartyRoomDetailDto;
 import com.togather.partyroom.core.model.PartyRoomDto;
 import com.togather.partyroom.core.model.PartyRoomOperationDayDto;
@@ -24,14 +25,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.time.DayOfWeek;
+import java.time.*;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 @Slf4j
@@ -175,5 +174,30 @@ public class PartyRoomReservationService {
     public void updatePaymentStatus(Payment payment, PaymentStatus paymentStatus) {
         PartyRoomReservation partyRoomReservation = payment.getPartyRoomReservation();
         partyRoomReservation.updatePaymentStatus(paymentStatus);
+    }
+
+    public PartyRoomReservationResponseDto.AvailableTimes searchAvailableTimes(long partyroomId, LocalDate date) {
+        PartyRoom partyRoom = partyRoomService.findById(partyroomId);
+        List<PartyRoomReservation> reservedList = partyRoomReservationRepository.findByPartyRoomAndDate(partyRoom, date);
+        List<Integer> availableTimes = new ArrayList<>();
+
+        List<Integer> reservedTimes = reservedList.stream()
+                .flatMap(reservation -> IntStream.range(reservation.getStartTime().getHour(), reservation.getEndTime().getHour()).boxed())
+                .distinct()
+                .toList();
+
+        reservedTimes = reservedTimes.stream().distinct().toList();
+
+        for (int i = partyRoom.getOpeningHour(); i < partyRoom.getClosingHour(); i++) {
+            if (!reservedTimes.contains(i) &&
+                    LocalDateTime.now(ZoneId.of("Asia/Seoul")).isBefore(LocalDateTime.of(date, LocalTime.of(i, 00))))
+                availableTimes.add(i);
+        }
+
+        log.info("search available {}th party room reservation times", partyRoom.getPartyRoomId());
+
+        return PartyRoomReservationResponseDto.AvailableTimes.builder()
+                .availableTimes(availableTimes)
+                .build();
     }
 }

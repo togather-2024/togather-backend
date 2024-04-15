@@ -50,9 +50,6 @@ public class PartyRoomRequestDto {
     @Schema(description = "list of tags of party room")
     private List<String> customTags = new ArrayList<>();
 
-    // IMAGE FIELDS
-    private String imageFileName;
-
     // LOCATION FIELDS
     private String sido;
     private String sigungu;
@@ -98,13 +95,6 @@ public class PartyRoomRequestDto {
                 .roadName(this.roadName)
                 .roadAddress(this.roadAddress)
                 .jibunAddress(this.jibunAddress)
-                .build();
-    }
-
-    public PartyRoomImageDto extractPartyRoomImageDto() {
-        return PartyRoomImageDto.builder()
-                .imageFileName(this.imageFileName)
-                .partyRoomImageType(PartyRoomImageType.MAIN)
                 .build();
     }
 

@@ -10,6 +10,9 @@ import org.springframework.stereotype.Component;
 public class EmailVerificationConverter {
 
     public EmailVerification convertToEntity(EmailVerificationDto emailVerificationDto) {
+        if (emailVerificationDto == null)
+            return null;
+
         return EmailVerification.builder()
                 .emailVerificationId(emailVerificationDto.getEmailVerificationId())
                 .receiverEmailAddress(emailVerificationDto.getReceiverEmailAddress())
