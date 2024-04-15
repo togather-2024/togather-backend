@@ -2,6 +2,8 @@ package com.togather.partyroom.reservation.converter;
 
 import com.togather.member.converter.MemberConverter;
 import com.togather.partyroom.core.converter.PartyRoomConverter;
+import com.togather.partyroom.payment.converter.PaymentConverter;
+import com.togather.partyroom.payment.model.Payment;
 import com.togather.partyroom.payment.model.PaymentStatus;
 import com.togather.partyroom.reservation.model.PartyRoomReservation;
 import com.togather.partyroom.reservation.model.PartyRoomReservationDto;
@@ -14,6 +16,7 @@ public class PartyRoomReservationConverter {
 
     private final PartyRoomConverter partyRoomConverter;
     private final MemberConverter memberConverter;
+    private final PaymentConverter paymentConverter;
 
     public PartyRoomReservation convertToEntity(PartyRoomReservationDto partyRoomReservationDto) {
         if (partyRoomReservationDto == null)
@@ -29,6 +32,7 @@ public class PartyRoomReservationConverter {
                 .paymentStatus(PaymentStatus.from(String.valueOf(partyRoomReservationDto.getPaymentStatus())))
                 .bookedDate(partyRoomReservationDto.getBookedDate())
                 .totalPrice(partyRoomReservationDto.getTotalPrice())
+                .payment(paymentConverter.convertToEntity(partyRoomReservationDto.getPaymentDto()))
                 .build();
 
     }
@@ -46,6 +50,7 @@ public class PartyRoomReservationConverter {
                 .paymentStatus(partyRoomReservation.getPaymentStatus())
                 .bookedDate(partyRoomReservation.getBookedDate())
                 .totalPrice(partyRoomReservation.getTotalPrice())
+                .paymentDto(paymentConverter.convertToDto(partyRoomReservation.getPayment()))
                 .guestCount(partyRoomReservation.getGuestCount())
                 .build();
     }

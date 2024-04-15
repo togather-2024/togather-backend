@@ -20,6 +20,8 @@ public class PartyRoomReservationResponseDto {
 
     private PartyRoomImageDto partyRoomImageDto;
 
+    private String paymentKey;
+
     @Builder
     @Getter
     public static class AvailableTimes {
