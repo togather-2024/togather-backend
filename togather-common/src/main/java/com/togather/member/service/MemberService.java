@@ -75,11 +75,12 @@ public class MemberService {
         ));
     }
 
-<<<<<<< HEAD
+
     public Member findByEmail(String email) {
         return memberRepository.findByEmail(email)
                 .orElseThrow(RuntimeException::new);
-=======
+    }
+
     public Member findMemberByAuthentication(Authentication authentication) {
         String userEmail = authentication.getName();
         return memberRepository.findByEmail(userEmail).orElseThrow(
@@ -135,6 +136,5 @@ public class MemberService {
         findMember.updateProfilePicFile(s3ObjectDto.getFileKey());
 
         log.info("update member profile image: {}", findMember.getMemberSrl());
->>>>>>> main
     }
 }

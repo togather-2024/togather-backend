@@ -1,6 +1,6 @@
 package com.togather.partyroom.payment;
 
-import com.togather.common.AddJsonFilters;
+import com.togather.common.response.AddJsonFilters;
 import com.togather.member.model.MemberDto;
 import com.togather.member.service.MemberService;
 import com.togather.partyroom.payment.model.PaymentCancelDto;
@@ -21,7 +21,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import static com.togather.common.ResponseFilter.*;
+import static com.togather.common.response.ResponseFilter.*;
 
 @RestController
 @RequiredArgsConstructor
