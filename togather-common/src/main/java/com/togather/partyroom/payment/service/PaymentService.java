@@ -141,7 +141,7 @@ public class PaymentService {
         Payment payment = paymentRepository.findByOrderId(orderId)
                 .orElseThrow(RuntimeException::new);//TODO: exception
 
-        payment.setPaymentFailed(message);
+        payment.setPaymentFailed(message); //TODO: it can also be deleted
 
         log.info("payment failed for orderId: {}, reason: {}", payment.getOrderId(), message);
 
