@@ -17,4 +17,5 @@ public class PartyRoomLocationDto {
     private String roadName;
     private String roadAddress;
     private String jibunAddress;
+    private String detailAddress;
 }
