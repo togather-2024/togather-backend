@@ -40,11 +40,12 @@ public class PartyRoomRepositoryImpl implements PartyRoomCustomRepository {
                 .leftJoin(partyRoomCustomTag).on(partyRoomCustomTag.eq(partyRoomCustomTagRel.partyRoomCustomTag))
 
                 .where(sidoEquals(partyRoomSearchQueryDto.getSido()),
-                        sigunguEquals(partyRoomSearchQueryDto.getSigungu()),
+                        sigunguLike(partyRoomSearchQueryDto.getSigungu()),
                         opensAt(partyRoomSearchQueryDto.getDate()),
                         guestCapacityGoe(partyRoomSearchQueryDto.getGuestCount()),
                         containsKeyword(partyRoomSearchQueryDto.getKeywords()))
                 .distinct()
+                .orderBy(partyRoom.partyRoomId.desc())
                 .offset(page.getOffset())
                 .limit(page.getPageSize())
                 .fetch();
@@ -72,9 +73,9 @@ public class PartyRoomRepositoryImpl implements PartyRoomCustomRepository {
         return null;
     }
 
-    private BooleanExpression sigunguEquals(String sigungu) {
+    private BooleanExpression sigunguLike(String sigungu) {
         if (StringUtils.hasText(sigungu)) {
-            return partyRoomLocation.sigungu.eq(sigungu);
+            return partyRoomLocation.sigungu.like(sigungu + "%");
         }
         return null;
     }
