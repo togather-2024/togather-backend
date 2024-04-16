@@ -8,11 +8,10 @@ import com.togather.partyroom.core.model.PartyRoomDto;
 import com.togather.partyroom.core.model.PartyRoomOperationDayDto;
 import com.togather.partyroom.core.service.PartyRoomOperationDayService;
 import com.togather.partyroom.core.service.PartyRoomService;
-import com.togather.partyroom.image.model.PartyRoomImageDto;
 import com.togather.partyroom.image.model.PartyRoomImageType;
 import com.togather.partyroom.image.service.PartyRoomImageService;
-import com.togather.partyroom.location.model.PartyRoomLocationDto;
 import com.togather.partyroom.location.service.PartyRoomLocationService;
+import com.togather.partyroom.payment.model.Payment;
 import com.togather.partyroom.payment.model.PaymentStatus;
 import com.togather.partyroom.reservation.converter.PartyRoomReservationConverter;
 import com.togather.partyroom.reservation.model.PartyRoomReservation;
@@ -69,6 +68,7 @@ public class PartyRoomReservationService {
         partyRoomReservationRepository.save(partyRoomReservation);
 
         log.info("save into party_room_reservation: {}", partyRoomReservation.getReservationId());
+
         return partyRoomReservation.getReservationId();
     }
 
@@ -136,6 +136,7 @@ public class PartyRoomReservationService {
         PartyRoomReservationDto partyRoomReservationDto = partyRoomReservationConverter.convertToDto(partyRoomReservationRepository.findById(reservationId)
                 .orElseThrow(RuntimeException::new));
 
+        String paymentKey = partyRoomReservationDto.getPaymentDto() == null ? null : partyRoomReservationDto.getPaymentDto().getPaymentKey();
         PartyRoomDetailDto partyRoomDetailDto = partyRoomService.findDetailDtoById(partyRoomReservationDto.getPartyRoomDto().getPartyRoomId());
 
         PartyRoomReservationResponseDto partyRoomReservationResponseDto = PartyRoomReservationResponseDto.builder()
@@ -144,6 +145,7 @@ public class PartyRoomReservationService {
                 .partyRoomImageDto(partyRoomDetailDto.getPartyRoomImageDtoList().stream()
                         .filter(image -> image.getPartyRoomImageType() == PartyRoomImageType.MAIN)
                         .findFirst().orElse(null))
+                .paymentKey(paymentKey)
                 .build();
 
         log.info("find party_room_reservation by reservation id: {}", reservationId);
@@ -167,6 +169,11 @@ public class PartyRoomReservationService {
         partyRoomReservationRepository.delete(partyRoomReservation);
 
         log.info("delete party_room_reservation: {}", partyRoomReservation.getReservationId());
+    }
+
+    public void updatePaymentStatus(Payment payment, PaymentStatus paymentStatus) {
+        PartyRoomReservation partyRoomReservation = payment.getPartyRoomReservation();
+        partyRoomReservation.updatePaymentStatus(paymentStatus);
     }
 
     public PartyRoomReservationResponseDto.AvailableTimes searchAvailableTimes(long partyroomId, LocalDate date) {

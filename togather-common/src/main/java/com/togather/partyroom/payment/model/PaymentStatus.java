@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import java.util.stream.Stream;
 
 public enum PaymentStatus {
-    NOT_PAYED, PENDING, COMPLETE, NONE;
+    NOT_PAYED, PENDING, COMPLETE, CANCELED, NONE;
 
     @JsonCreator
     public static PaymentStatus from(String paymentStatus) {

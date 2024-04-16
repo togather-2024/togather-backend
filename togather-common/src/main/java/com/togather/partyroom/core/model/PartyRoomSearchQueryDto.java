@@ -1,6 +1,4 @@
 package com.togather.partyroom.core.model;
-
-import io.swagger.v3.oas.annotations.media.Encoding;
 import lombok.Data;
 
 import java.time.LocalDate;
