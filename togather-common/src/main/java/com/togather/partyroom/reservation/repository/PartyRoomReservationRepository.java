@@ -2,8 +2,10 @@ package com.togather.partyroom.reservation.repository;
 
 import com.togather.member.model.Member;
 import com.togather.partyroom.core.model.PartyRoom;
+import com.togather.partyroom.payment.model.PaymentStatus;
 import com.togather.partyroom.reservation.model.PartyRoomReservation;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDate;
@@ -22,4 +24,8 @@ public interface PartyRoomReservationRepository extends JpaRepository<PartyRoomR
     List<PartyRoomReservation> findByPartyRoomAndDate(PartyRoom partyRoom, LocalDate localDate);
 
     PartyRoomReservation findByPartyRoomAndReservationGuestOrderByEndTimeDesc(PartyRoom partyRoom, Member reservationGuest);
+
+    @Modifying
+    @Query("update PartyRoomReservation p set p.paymentStatus = :paymentStatus where p.reservationId = :reservationId")
+    void updatePaymentStatus(long reservationId, PaymentStatus paymentStatus);
 }

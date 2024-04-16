@@ -21,6 +21,7 @@ import com.togather.partyroom.reservation.model.PartyRoomReservationResponseDto;
 import com.togather.partyroom.reservation.repository.PartyRoomReservationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -35,7 +36,6 @@ import java.util.stream.IntStream;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class PartyRoomReservationService {
 
     private final PartyRoomReservationRepository partyRoomReservationRepository;
@@ -45,6 +45,8 @@ public class PartyRoomReservationService {
     private final PartyRoomLocationService partyRoomLocationService;
     private final PartyRoomImageService partyRoomImageService;
     private final PartyRoomOperationDayService partyRoomOperationDayService;
+    private final TaskScheduler taskScheduler;
+    private final PartyRoomReservationScheduleService scheduleService;
 
 
     @Transactional
@@ -67,7 +69,11 @@ public class PartyRoomReservationService {
         PartyRoomReservation partyRoomReservation = partyRoomReservationConverter.convertToEntity(partyRoomReservationDto);
         partyRoomReservationRepository.save(partyRoomReservation);
 
-        log.info("save into party_room_reservation: {}", partyRoomReservation.getReservationId());
+        long reservationId = partyRoomReservation.getReservationId();
+
+        log.info("save into party_room_reservation: {}", reservationId);
+
+        taskScheduler.schedule(() -> scheduleService.removeExpiredReservation(reservationId), Instant.now().plusSeconds(30));
 
         return partyRoomReservation.getReservationId();
     }
