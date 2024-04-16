@@ -117,4 +117,8 @@ public class Payment extends BaseTimeEntity {
         this.canceledAt = paymentCancelDto.getCancels().get(0).getCanceledAt();
         this.cancelReason = paymentCancelDto.getCancels().get(0).getCancelReason();
     }
+
+    public void updateMethod(Method method) {
+        this.method = method;
+    }
 }
