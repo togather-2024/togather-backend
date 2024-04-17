@@ -1,4 +1,4 @@
-package com.togather.config;
+package com.togather.config.schedule;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

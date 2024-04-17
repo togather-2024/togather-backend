@@ -36,6 +36,7 @@ import java.util.stream.IntStream;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@Transactional
 public class PartyRoomReservationService {
 
     private final PartyRoomReservationRepository partyRoomReservationRepository;
@@ -78,6 +79,16 @@ public class PartyRoomReservationService {
         return partyRoomReservation.getReservationId();
     }
 
+    @Transactional
+    public void removeExpiredReservation(long reservationId) {
+        PartyRoomReservation reservation = partyRoomReservationRepository.findById(reservationId).orElse(null);
+        if (reservation != null && reservation.getPaymentStatus() == PaymentStatus.PENDING) {
+            reservation.updatePaymentStatus(PaymentStatus.NOT_PAYED);
+            //partyRoomReservationRepository.updatePaymentStatus(reservationId, PaymentStatus.NOT_PAYED);
+            log.info("[PartyRoomReservationService] changed status to NOT_PAYED for expired reservation. reservationId: {}", reservation.getReservationId());
+        }
+    }
+
     private void isValidReservationCapacity(PartyRoomReservationDto partyRoomReservationDto) {
         if (!(partyRoomReservationDto.getPartyRoomDto().getGuestCapacity() >= partyRoomReservationDto.getGuestCount()))
             throw new RuntimeException("exceeds capacity");
@@ -103,7 +114,7 @@ public class PartyRoomReservationService {
     }
 
     private void isAlreadyReserved(PartyRoomReservationDto partyRoomReservationDto) {
-        List<PartyRoomReservation> partyRoomReservationList = partyRoomReservationRepository.findByDateTimeReserved(partyRoomReservationDto.getStartTime(), partyRoomReservationDto.getEndTime());
+        List<PartyRoomReservation> partyRoomReservationList = partyRoomReservationRepository.findByDateTimeReservedAndPartyRoomId(partyRoomReservationDto.getStartTime(), partyRoomReservationDto.getEndTime(), partyRoomReservationDto.getPartyRoomDto().getPartyRoomId());
 
         for (PartyRoomReservation reservation : partyRoomReservationList)
             if (reservation.getPaymentStatus().equals(PaymentStatus.COMPLETE) || reservation.getPaymentStatus().equals(PaymentStatus.PENDING))
@@ -188,6 +199,7 @@ public class PartyRoomReservationService {
         List<Integer> availableTimes = new ArrayList<>();
 
         List<Integer> reservedTimes = reservedList.stream()
+                .filter(reservation -> reservation.getPaymentStatus() == PaymentStatus.COMPLETE || reservation.getPaymentStatus() == PaymentStatus.PENDING)
                 .flatMap(reservation -> IntStream.range(reservation.getStartTime().getHour(), reservation.getEndTime().getHour()).boxed())
                 .distinct()
                 .toList();
