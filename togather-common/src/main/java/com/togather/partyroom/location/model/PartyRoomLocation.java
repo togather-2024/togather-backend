@@ -34,8 +34,11 @@ public class PartyRoomLocation {
     @Column(name = "jibun_address")
     private String jibunAddress;
 
+    @Column(name = "detail_address")
+    private String detailAddress;
+
     @Builder
-    public PartyRoomLocation(long partyRoomLocationId, PartyRoom partyRoom, String sido, String sigungu, String roadName, String roadAddress, String jibunAddress) {
+    public PartyRoomLocation(long partyRoomLocationId, PartyRoom partyRoom, String sido, String sigungu, String roadName, String roadAddress, String jibunAddress, String detailAddress) {
         this.partyRoomLocationId = partyRoomLocationId;
         this.partyRoom = partyRoom;
         this.sido = sido;
@@ -43,17 +46,19 @@ public class PartyRoomLocation {
         this.roadName = roadName;
         this.roadAddress = roadAddress;
         this.jibunAddress = jibunAddress;
+        this.detailAddress = detailAddress;
     }
 
-    public void modifyPartyRoomLocation(String sido, String sigungu, String roadName, String roadAddress, String jibunAddress) {
+    public void modifyPartyRoomLocation(String sido, String sigungu, String roadName, String roadAddress, String jibunAddress, String detailAddress) {
         this.sido = sido;
         this.sigungu = sigungu;
         this.roadName = roadName;
         this.roadAddress = roadAddress;
         this.jibunAddress = jibunAddress;
+        this.detailAddress = detailAddress;
     }
 
     public void modifyPartyRoomLocation(PartyRoomLocation after) {
-        modifyPartyRoomLocation(after.getSido(), after.getSigungu(), after.getRoadName(), after.getRoadAddress(), after.getJibunAddress());
+        modifyPartyRoomLocation(after.getSido(), after.getSigungu(), after.getRoadName(), after.getRoadAddress(), after.getJibunAddress(), after.getDetailAddress());
     }
 }

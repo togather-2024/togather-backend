@@ -56,6 +56,7 @@ public class PartyRoomRequestDto {
     private String roadName;
     private String roadAddress;
     private String jibunAddress;
+    private String detailAddress;
 
     // OPERATION DAY FIELDS
     @NotEmpty
@@ -95,6 +96,7 @@ public class PartyRoomRequestDto {
                 .roadName(this.roadName)
                 .roadAddress(this.roadAddress)
                 .jibunAddress(this.jibunAddress)
+                .detailAddress(this.detailAddress)
                 .build();
     }
 
