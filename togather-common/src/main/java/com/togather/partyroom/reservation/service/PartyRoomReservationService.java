@@ -25,7 +25,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.sql.Timestamp;
 import java.time.*;
 
 import java.util.ArrayList;
@@ -98,8 +97,7 @@ public class PartyRoomReservationService {
     }
 
     private void isAlreadyReserved(PartyRoomReservationDto partyRoomReservationDto) {
-        List<PartyRoomReservation> partyRoomReservationList = partyRoomReservationRepository.findByDateTimeReserved(
-                Timestamp.valueOf(partyRoomReservationDto.getStartTime()), Timestamp.valueOf(partyRoomReservationDto.getEndTime()));
+        List<PartyRoomReservation> partyRoomReservationList = partyRoomReservationRepository.findByDateTimeReserved(partyRoomReservationDto.getStartTime(), partyRoomReservationDto.getEndTime());
 
         for (PartyRoomReservation reservation : partyRoomReservationList)
             if (reservation.getPaymentStatus().equals(PaymentStatus.COMPLETE) || reservation.getPaymentStatus().equals(PaymentStatus.PENDING))
