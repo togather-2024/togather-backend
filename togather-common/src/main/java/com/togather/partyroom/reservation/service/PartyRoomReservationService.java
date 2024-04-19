@@ -74,19 +74,9 @@ public class PartyRoomReservationService {
 
         log.info("save into party_room_reservation: {}", reservationId);
 
-        taskScheduler.schedule(() -> scheduleService.removeExpiredReservation(reservationId), Instant.now().plusSeconds(30));
+        taskScheduler.schedule(() -> scheduleService.removeExpiredReservation(reservationId), Instant.now().plusSeconds(30 * 60));
 
         return partyRoomReservation.getReservationId();
-    }
-
-    @Transactional
-    public void removeExpiredReservation(long reservationId) {
-        PartyRoomReservation reservation = partyRoomReservationRepository.findById(reservationId).orElse(null);
-        if (reservation != null && reservation.getPaymentStatus() == PaymentStatus.PENDING) {
-            reservation.updatePaymentStatus(PaymentStatus.NOT_PAYED);
-            //partyRoomReservationRepository.updatePaymentStatus(reservationId, PaymentStatus.NOT_PAYED);
-            log.info("[PartyRoomReservationService] changed status to NOT_PAYED for expired reservation. reservationId: {}", reservation.getReservationId());
-        }
     }
 
     private void isValidReservationCapacity(PartyRoomReservationDto partyRoomReservationDto) {

@@ -20,8 +20,8 @@ public class PartyRoomReservationScheduleService {
     public void removeExpiredReservation(long reservationId) {
         PartyRoomReservation reservation = partyRoomReservationRepository.findById(reservationId).orElse(null);
         if (reservation != null && reservation.getPaymentStatus() == PaymentStatus.PENDING) {
-            reservation.updatePaymentStatus(PaymentStatus.NOT_PAYED);
-            //partyRoomReservationRepository.updatePaymentStatus(reservationId, PaymentStatus.NOT_PAYED);
+            //reservation.updatePaymentStatus(PaymentStatus.NOT_PAYED);
+            partyRoomReservationRepository.updatePaymentStatus(reservationId, PaymentStatus.NOT_PAYED);
             log.info("[PartyRoomReservationService] changed status to NOT_PAYED for expired reservation. reservationId: {}", reservation.getReservationId());
         }
     }
