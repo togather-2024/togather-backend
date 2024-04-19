@@ -17,6 +17,7 @@ import com.togather.partyroom.review.model.PartyRoomReviewDto;
 import com.togather.partyroom.review.repository.PartyRoomReviewRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,14 +44,14 @@ public class PartyRoomReviewService {
     }
 
     @Transactional(readOnly = true)
-    public List<PartyRoomReviewDto> findAllByReviewer(MemberDto reviewer) {
-        return partyRoomReviewRepository.findAllByReviewer(memberConverter.convertToEntity(reviewer))
+    public List<PartyRoomReviewDto> findAllByReviewer(MemberDto reviewer, PageRequest pageRequest) {
+        return partyRoomReviewRepository.findAllByReviewer(memberConverter.convertToEntity(reviewer), pageRequest)
                 .stream().map(partyRoomReviewConverter::convertFromEntity).toList();
     }
 
     @Transactional(readOnly = true)
-    public List<PartyRoomReviewDto> findAllByPartyRoom(long partyRoomId) {
-        return partyRoomReviewRepository.findAllByPartyRoomId(partyRoomId)
+    public List<PartyRoomReviewDto> findAllByPartyRoom(long partyRoomId, PageRequest pageRequest) {
+        return partyRoomReviewRepository.findAllByPartyRoomId(partyRoomId, pageRequest)
                 .stream().map(partyRoomReviewConverter::convertFromEntity).toList();
     }
 
