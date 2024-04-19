@@ -42,18 +42,25 @@ public class PaymentService {
         if (partyRoomReservation.getTotalPrice() != paymentDto.getAmount())
             throw new RuntimeException("mismatched amount with totalPrice"); //TODO: exception class 수정하기
 
+        Payment payment = paymentRepository.findByPartyRoomReservation(partyRoomReservation).orElse(null);
 
-        Payment payment = Payment.builder()
-                .orderName(paymentDto.getOrderName())
-                .method(paymentDto.getMethod())
-                .amount(paymentDto.getAmount())
-                .customer(memberConverter.convertToEntity(memberDto))
-                .partyRoomReservation(partyRoomReservation)
-                .build();
+        if (payment != null) {
+            payment.updateMethod(paymentDto.getMethod());
 
-        paymentRepository.save(payment);
+            log.info("update method field of temporary Payment object: {}", payment.getPaymentId());
+        } else {
+            payment = Payment.builder()
+                    .orderName(paymentDto.getOrderName())
+                    .method(paymentDto.getMethod())
+                    .amount(paymentDto.getAmount())
+                    .customer(memberConverter.convertToEntity(memberDto))
+                    .partyRoomReservation(partyRoomReservation)
+                    .build();
 
-        log.info("save temporary Payment object: {}", payment.getPaymentId());
+            paymentRepository.save(payment);
+
+            log.info("save temporary Payment object: {}", payment.getPaymentId());
+        }
 
         PaymentDto responsePaymentDto = paymentConverter.convertToDto(payment);
 
