@@ -76,6 +76,6 @@ public class PartyRoomBookmarkService {
     public boolean hasBookmarked(MemberDto memberDto, PartyRoom partyRoom) {
         Member member = memberConverter.convertToEntity(memberDto);
 
-        return partyRoomBookmarkRepository.findByMemberAndPartyRoom(member, partyRoom) != null;
+        return partyRoomBookmarkRepository.findByMemberAndPartyRoom(member, partyRoom).isPresent();
     }
 }

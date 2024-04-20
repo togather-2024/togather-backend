@@ -143,6 +143,8 @@ public class PartyRoomService {
         if (loginUser != null)
             isBookmarked = partyRoomBookmarkService.hasBookmarked(loginUser, partyRoom);
 
+        log.info("isBookmarked: {}", isBookmarked);
+
         PartyRoomLocationDto partyRoomLocationDto = partyRoomLocationService.findLocationDtoByPartyRoom(partyRoom);
         List<PartyRoomImageDto> partyRoomImageDtoList = partyRoomImageService.findAllImagesByPartyRoom(partyRoom);
         List<PartyRoomOperationDayDto> operationDayDtoList = partyRoomOperationDayService.findOperationDaysByPartyRoom(partyRoom);
