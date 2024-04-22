@@ -31,7 +31,6 @@ public class PartyRoomReviewService {
     private final PartyRoomReviewRepository partyRoomReviewRepository;
     private final PartyRoomReviewConverter partyRoomReviewConverter;
     private final MemberConverter memberConverter;
-    private final PartyRoomConverter partyRoomConverter;
     private final PartyRoomReservationConverter partyRoomReservationConverter;
     private final PartyRoomReservationService partyRoomReservationService;
 
@@ -53,6 +52,11 @@ public class PartyRoomReviewService {
     public List<PartyRoomReviewDto> findAllByPartyRoom(long partyRoomId, PageRequest pageRequest) {
         return partyRoomReviewRepository.findAllByPartyRoomId(partyRoomId, pageRequest)
                 .stream().map(partyRoomReviewConverter::convertFromEntity).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public long countByPartyRoom(long partyRoomId) {
+        return partyRoomReviewRepository.countByPartyRoomId(partyRoomId);
     }
 
     @Transactional(readOnly = true)
