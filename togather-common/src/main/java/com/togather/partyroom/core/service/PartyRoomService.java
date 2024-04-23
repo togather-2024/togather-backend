@@ -13,6 +13,7 @@ import com.togather.partyroom.image.service.PartyRoomImageService;
 import com.togather.partyroom.location.model.PartyRoomLocation;
 import com.togather.partyroom.location.model.PartyRoomLocationDto;
 import com.togather.partyroom.location.service.PartyRoomLocationService;
+import com.togather.partyroom.review.service.PartyRoomReviewService;
 import com.togather.partyroom.tags.model.PartyRoomCustomTagDto;
 import com.togather.partyroom.tags.service.PartyRoomCustomTagService;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,7 @@ public class PartyRoomService {
     private final PartyRoomLocationService partyRoomLocationService;
     private final PartyRoomImageService partyRoomImageService;
     private final PartyRoomBookmarkService partyRoomBookmarkService;
+    private final PartyRoomReviewService partyRoomReviewService;
     private final MemberService memberService;
 
 
@@ -147,6 +149,8 @@ public class PartyRoomService {
         List<PartyRoomImageDto> partyRoomImageDtoList = partyRoomImageService.findAllImagesByPartyRoom(partyRoom);
         List<PartyRoomOperationDayDto> operationDayDtoList = partyRoomOperationDayService.findOperationDaysByPartyRoom(partyRoom);
         List<PartyRoomCustomTagDto> customTagDtoList = partyRoomCustomTagService.findCustomTagsByPartyRoom(partyRoom);
+        long reviewCount = partyRoomReviewService.countByPartyRoom(partyRoomId);
+        long bookmarkCount = partyRoomBookmarkService.countByPartyRoom(partyRoomId);
 
         return new PartyRoomDetailDto(
                 partyRoomDto,
@@ -154,7 +158,9 @@ public class PartyRoomService {
                 partyRoomImageDtoList,
                 operationDayDtoList,
                 customTagDtoList,
-                isBookmarked
+                isBookmarked,
+                reviewCount,
+                bookmarkCount
         );
     }
 

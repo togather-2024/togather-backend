@@ -78,4 +78,8 @@ public class PartyRoomBookmarkService {
 
         return partyRoomBookmarkRepository.findByMemberAndPartyRoom(member, partyRoom) != null;
     }
+
+    public long countByPartyRoom(long partyRoomId) {
+        return partyRoomBookmarkRepository.countByPartyRoomId(partyRoomId);
+    }
 }
