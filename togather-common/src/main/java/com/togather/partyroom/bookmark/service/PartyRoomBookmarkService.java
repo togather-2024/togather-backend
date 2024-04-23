@@ -10,6 +10,8 @@ import com.togather.partyroom.bookmark.model.PartyRoomBookmarkDto;
 import com.togather.partyroom.bookmark.repository.PartyRoomBookmarkRepository;
 import com.togather.partyroom.core.converter.PartyRoomConverter;
 import com.togather.partyroom.core.model.PartyRoom;
+import com.togather.partyroom.image.service.PartyRoomImageService;
+import com.togather.partyroom.location.service.PartyRoomLocationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,6 +28,8 @@ public class PartyRoomBookmarkService {
     private final PartyRoomBookmarkRepository partyRoomBookmarkRepository;
     private final MemberConverter memberConverter;
     private final PartyRoomConverter partyRoomConverter;
+    private final PartyRoomLocationService partyRoomLocationService;
+    private final PartyRoomImageService partyRoomImageService;
 
     @Transactional
     public void bookmark(MemberDto memberDto, PartyRoom partyRoom) {
@@ -65,6 +69,8 @@ public class PartyRoomBookmarkService {
                         .bookmarkId(p.getBookmarkId())
                         .memberDto(memberDto)
                         .partyRoomDto(partyRoomConverter.convertFromEntity(p.getPartyRoom()))
+                        .partyRoomImageDto(partyRoomImageService.findPartyRoomMainImageByPartyRoom(p.getPartyRoom()))
+                        .partyRoomLocationDto(partyRoomLocationService.findLocationDtoByPartyRoom(p.getPartyRoom()))
                         .build())
                 .toList();
 
@@ -76,7 +82,7 @@ public class PartyRoomBookmarkService {
     public boolean hasBookmarked(MemberDto memberDto, PartyRoom partyRoom) {
         Member member = memberConverter.convertToEntity(memberDto);
 
-        return partyRoomBookmarkRepository.findByMemberAndPartyRoom(member, partyRoom) != null;
+        return partyRoomBookmarkRepository.findByMemberAndPartyRoom(member, partyRoom).isPresent();
     }
 
     public long countByPartyRoom(long partyRoomId) {
