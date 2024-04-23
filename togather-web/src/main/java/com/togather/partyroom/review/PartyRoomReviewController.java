@@ -1,4 +1,4 @@
-package com.togather.review;
+package com.togather.partyroom.review;
 
 import com.togather.common.response.AddJsonFilters;
 import com.togather.member.model.MemberDto;
