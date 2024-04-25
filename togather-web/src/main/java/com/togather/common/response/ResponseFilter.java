@@ -21,6 +21,8 @@ public enum ResponseFilter {
 
     MEMBER_DTO_EXCLUDE_ALL(MemberDto.class, new String[]{"memberSrl", "memberName", "password", "role", "email", "profilePicFile"}),
 
+    MEMBER_DTO_EXCLUDE_PW(MemberDto.class, new String[]{"memberSrl", "password"}),
+
 
     PARTY_ROOM_DTO_SIMPLE(PartyRoomDto.class, new String[] {"partyRoomDesc"}),
 
