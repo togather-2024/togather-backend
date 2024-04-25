@@ -1,10 +1,12 @@
 package com.togather.partyroom.payment.repository;
 
+import com.togather.member.model.Member;
 import com.togather.partyroom.payment.model.Payment;
 import com.togather.partyroom.reservation.model.PartyRoomReservation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
@@ -17,5 +19,8 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
     @Query("select p from Payment p where p.partyRoomReservation = :partyRoomReservation")
     Optional<Payment> findByPartyRoomReservation(PartyRoomReservation partyRoomReservation);
+
+    @Query("select p from Payment p where p.customer = :member")
+    List<Payment> findAllByMember(Member member);
 
 }

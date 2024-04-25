@@ -5,7 +5,6 @@ import com.togather.common.exception.TogatherApiException;
 import com.togather.member.converter.MemberConverter;
 import com.togather.member.model.Member;
 import com.togather.member.model.MemberDto;
-import com.togather.partyroom.core.converter.PartyRoomConverter;
 import com.togather.partyroom.core.model.PartyRoomDto;
 import com.togather.partyroom.reservation.converter.PartyRoomReservationConverter;
 import com.togather.partyroom.reservation.model.PartyRoomReservation;
@@ -30,7 +29,6 @@ public class PartyRoomReviewService {
     private final PartyRoomReviewRepository partyRoomReviewRepository;
     private final PartyRoomReviewConverter partyRoomReviewConverter;
     private final MemberConverter memberConverter;
-    private final PartyRoomConverter partyRoomConverter;
     private final PartyRoomReservationConverter partyRoomReservationConverter;
     private final PartyRoomReservationService partyRoomReservationService;
 
@@ -75,7 +73,7 @@ public class PartyRoomReviewService {
             throw new TogatherApiException(ErrorCode.REVIEW_DIFFERENT_MEMBER);
         }
 
-        if (!hasFinishedPartyRoomReservation(partyRoomReservationDto)) {
+        if (!partyRoomReservationService.hasFinishedPartyRoomReservation(partyRoomReservationDto)) {
             throw new TogatherApiException(ErrorCode.REVIEW_RESERVATION_NOT_COMPLETE);
         }
 
@@ -100,7 +98,7 @@ public class PartyRoomReviewService {
     public boolean canReview(long partyRoomReservationId, MemberDto memberDto) {
         PartyRoomReservationDto partyRoomReservationDto = partyRoomReservationService.findDtoByReservationId(partyRoomReservationId).getPartyRoomReservationDto();
         return isCorrectReviewer(partyRoomReservationDto, memberDto)
-                && hasFinishedPartyRoomReservation(partyRoomReservationDto)
+                && partyRoomReservationService.hasFinishedPartyRoomReservation(partyRoomReservationDto)
                 && !hasAlreadyReviewed(partyRoomReservationDto, memberDto);
     }
 
@@ -108,14 +106,9 @@ public class PartyRoomReviewService {
         return partyRoomReservationDto.getReservationGuestDto().getMemberSrl() == reviewer.getMemberSrl();
     }
 
-    private boolean hasFinishedPartyRoomReservation(PartyRoomReservationDto partyRoomReservationDto) {
-        return LocalDateTime.now().isAfter(partyRoomReservationDto.getEndTime());
-    }
-
     private boolean hasAlreadyReviewed(PartyRoomReservationDto partyRoomReservationDto, MemberDto reviewer) {
         return findByPartyRoomAndReviewer(partyRoomReservationDto, reviewer) != null;
     }
-
 
     @Transactional
     public void modifyReview(long reviewId, String reviewDesc) {

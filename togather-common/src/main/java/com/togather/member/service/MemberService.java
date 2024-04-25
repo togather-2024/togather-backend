@@ -8,6 +8,18 @@ import com.togather.member.converter.MemberConverter;
 import com.togather.member.model.Member;
 import com.togather.member.model.MemberDto;
 import com.togather.member.repository.MemberRepository;
+import com.togather.partyroom.bookmark.converter.PartyRoomBookmarkConverter;
+import com.togather.partyroom.bookmark.model.PartyRoomBookmarkDto;
+import com.togather.partyroom.bookmark.service.PartyRoomBookmarkService;
+import com.togather.partyroom.payment.model.Payment;
+import com.togather.partyroom.payment.model.PaymentDto;
+import com.togather.partyroom.payment.service.PaymentService;
+import com.togather.partyroom.reservation.converter.PartyRoomReservationConverter;
+import com.togather.partyroom.reservation.model.PartyRoomReservationDto;
+import com.togather.partyroom.reservation.model.PartyRoomReservationResponseDto;
+import com.togather.partyroom.reservation.service.PartyRoomReservationService;
+import com.togather.partyroom.review.model.PartyRoomReviewDto;
+import com.togather.partyroom.review.service.PartyRoomReviewService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -17,6 +29,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @Service
 @Slf4j
 @Transactional(readOnly = true)
@@ -25,8 +39,15 @@ public class MemberService {
     private final MemberConverter memberConverter;
     private final MemberRepository memberRepository;
     private final S3ImageUploader s3ImageUploader;
+    private final PartyRoomBookmarkService partyRoomBookmarkService;
+    private final PartyRoomBookmarkConverter partyRoomBookmarkConverter;
+    private final PartyRoomReservationService partyRoomReservationService;
+    private final PartyRoomReservationConverter partyRoomReservationConverter;
+    private final PartyRoomReviewService partyRoomReviewService;
+    private final PaymentService paymentService;
 
     @Transactional
+
     public void register(MemberDto memberDto) {
         checkDuplicateMember(memberDto.getEmail());
 
@@ -45,12 +66,43 @@ public class MemberService {
 
     @Transactional
     public void delete(MemberDto.Withdraw withdraw) {
-        Member findMember = findMemberByAuthentication(SecurityContextHolder.getContext().getAuthentication());
+        MemberDto findMember = findByAuthentication(SecurityContextHolder.getContext().getAuthentication());
 
+        //패스워드 불일치 예외 처리
         if (!findMember.getPassword().equals(withdraw.getPassword()))
             throw new TogatherApiException(ErrorCode.PASSWORD_MISMATCH);
 
-        memberRepository.delete(findMember);
+        //처리중인 예약이 있으면 예외 처리
+        List<PartyRoomReservationResponseDto> reservationList = partyRoomReservationService.findAllByMember(findMember);
+        reservationList.stream()
+                .filter(reservation -> partyRoomReservationService.hasFinishedPartyRoomReservation(reservation.getPartyRoomReservationDto()))
+                .findAny()
+                .ifPresent(reservation -> {
+                    throw new TogatherApiException(ErrorCode.EXIST_RESERVATION);
+                });
+
+        //자식 테이블 데이터 일괄 삭제(북마크, 예약, 결제, 리뷰)
+        List<PartyRoomReviewDto> reviewList = partyRoomReviewService.findAllByReviewer(findMember);
+        reviewList.stream()
+                .map(PartyRoomReviewDto::getReviewId)
+                .forEach(partyRoomReviewService::deleteReview);
+
+        List<Payment> paymentList = paymentService.findAllByMember(memberConverter.convertToEntity(findMember));
+        paymentList.stream()
+                .forEach(paymentService::deletePayment);
+
+        reservationList.stream()
+                .map(PartyRoomReservationResponseDto::getPartyRoomReservationDto)
+                .map(reservation -> partyRoomReservationConverter.convertToEntity(reservation))
+                .forEach(partyRoomReservationService::delete);
+
+        List<PartyRoomBookmarkDto> bookmarkList = partyRoomBookmarkService.findAllByMember(findMember);
+        bookmarkList.stream()
+                .map(bookmark -> partyRoomBookmarkConverter.convertToEntity(bookmark))
+                .forEach(bookmark -> partyRoomBookmarkService.unbookmark(findMember, bookmark.getPartyRoom()));
+
+        //회원 삭제
+        memberRepository.delete(memberConverter.convertToEntity(findMember));
 
         log.info("delete member: {}", findMember.getMemberSrl());
     }
