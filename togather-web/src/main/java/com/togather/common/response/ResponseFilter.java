@@ -17,6 +17,8 @@ public enum ResponseFilter {
 
     MEMBER_DTO_EXCLUDE_PII(MemberDto.class, new String[] {"memberName", "password", "profilePicFile"}),
 
+    MEMBER_DTO_EXCLUDE_PASSWORD(MemberDto.class, new String[]{"password"}),
+
     MEMBER_DTO_FOR_RESERVATION(MemberDto.class, new String[]{"memberSrl", "password", "role", "email"}),
 
     MEMBER_DTO_EXCLUDE_ALL(MemberDto.class, new String[]{"memberSrl", "memberName", "password", "role", "email", "profilePicFile"}),

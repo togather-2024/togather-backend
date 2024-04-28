@@ -22,5 +22,4 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
     @Query("select p from Payment p where p.customer = :member")
     List<Payment> findAllByMember(Member member);
-
 }

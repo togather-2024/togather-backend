@@ -17,4 +17,7 @@ public interface PartyRoomBookmarkRepository extends JpaRepository<PartyRoomBook
 
     @Query("select p from PartyRoomBookmark p where p.member = :member")
     List<PartyRoomBookmark> findAllByMember(Member member);
+
+    @Query("select count(*) from PartyRoomBookmark p where p.partyRoom.partyRoomId = :partyRoomId")
+    long countByPartyRoomId(long partyRoomId);
 }

@@ -16,6 +16,9 @@ import com.togather.partyroom.review.model.PartyRoomReviewDto;
 import com.togather.partyroom.review.repository.PartyRoomReviewRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,13 +27,17 @@ import java.util.List;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class PartyRoomReviewService {
-    private final PartyRoomReviewRepository partyRoomReviewRepository;
-    private final PartyRoomReviewConverter partyRoomReviewConverter;
-    private final MemberConverter memberConverter;
-    private final PartyRoomReservationConverter partyRoomReservationConverter;
-    private final PartyRoomReservationService partyRoomReservationService;
+    @Autowired
+    private PartyRoomReviewRepository partyRoomReviewRepository;
+    @Autowired
+    private PartyRoomReviewConverter partyRoomReviewConverter;
+    @Autowired
+    private MemberConverter memberConverter;
+    @Autowired
+    private PartyRoomReservationConverter partyRoomReservationConverter;
+    @Autowired @Lazy
+    private PartyRoomReservationService partyRoomReservationService;
 
     @Transactional(readOnly = true)
     public PartyRoomReviewDto findByPartyRoomAndReviewer(PartyRoomReservationDto partyRoomReservationDto, MemberDto reviewer) {
@@ -41,15 +48,26 @@ public class PartyRoomReviewService {
     }
 
     @Transactional(readOnly = true)
+    public List<PartyRoomReviewDto> findAllByReviewer(MemberDto reviewer, PageRequest pageRequest) {
+        return partyRoomReviewRepository.findAllByReviewer(memberConverter.convertToEntity(reviewer), pageRequest)
+                .stream().map(partyRoomReviewConverter::convertFromEntity).toList();
+    }
+
+    @Transactional(readOnly = true)
     public List<PartyRoomReviewDto> findAllByReviewer(MemberDto reviewer) {
         return partyRoomReviewRepository.findAllByReviewer(memberConverter.convertToEntity(reviewer))
                 .stream().map(partyRoomReviewConverter::convertFromEntity).toList();
     }
 
     @Transactional(readOnly = true)
-    public List<PartyRoomReviewDto> findAllByPartyRoom(long partyRoomId) {
-        return partyRoomReviewRepository.findAllByPartyRoomId(partyRoomId)
+    public List<PartyRoomReviewDto> findAllByPartyRoom(long partyRoomId, PageRequest pageRequest) {
+        return partyRoomReviewRepository.findAllByPartyRoomId(partyRoomId, pageRequest)
                 .stream().map(partyRoomReviewConverter::convertFromEntity).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public long countByPartyRoom(long partyRoomId) {
+        return partyRoomReviewRepository.countByPartyRoomId(partyRoomId);
     }
 
     @Transactional(readOnly = true)

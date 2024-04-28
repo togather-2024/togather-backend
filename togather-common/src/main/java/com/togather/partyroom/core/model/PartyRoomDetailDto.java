@@ -16,4 +16,6 @@ public class PartyRoomDetailDto {
     private final List<PartyRoomOperationDayDto> operationDays;
     private final List<PartyRoomCustomTagDto> customTags;
     private final boolean isBookmarked;
+    private final long reviewCount;
+    private final long bookmarkCount;
 }

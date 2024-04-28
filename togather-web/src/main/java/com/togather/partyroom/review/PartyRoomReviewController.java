@@ -1,4 +1,4 @@
-package com.togather.review;
+package com.togather.partyroom.review;
 
 import com.togather.common.response.AddJsonFilters;
 import com.togather.member.model.MemberDto;
@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.security.access.AccessDeniedException;
@@ -33,18 +34,21 @@ public class PartyRoomReviewController {
     @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
     @Operation(summary = "Review List by member", description = "자신이 남긴 리뷰를 조회할 수 있는 API")
     @ApiResponse(content = @Content(schema = @Schema(implementation = PartyRoomReviewDto.class)))
-    @AddJsonFilters(filters = {MEMBER_DTO_EXCLUDE_PII, REVIEW_HIDE_DUPLICATE_INFO_IN_RESERVATION})
-    public MappingJacksonValue getMyReviews() {
+    @AddJsonFilters(filters = {MEMBER_DTO_EXCLUDE_PASSWORD, REVIEW_HIDE_DUPLICATE_INFO_IN_RESERVATION})
+    public MappingJacksonValue getMyReviews(@RequestParam(required = false, defaultValue = "1") int pageNum,
+                                            @RequestParam(required = false, defaultValue = "10") int pageSize) {
         MemberDto loginUser = memberService.findByAuthentication(SecurityContextHolder.getContext().getAuthentication());
-        return new MappingJacksonValue(partyRoomReviewService.findAllByReviewer(loginUser));
+        return new MappingJacksonValue(partyRoomReviewService.findAllByReviewer(loginUser, PageRequest.of(pageNum - 1, pageSize)));
     }
 
     @GetMapping("/partyroom/{partyRoomId}")
     @Operation(summary = "Review List by party room", description = "특정 파티룸에 대한 리뷰를 조회할 수 있는 API - 누구나 조회 가능")
     @ApiResponse(content = @Content(schema = @Schema(implementation = PartyRoomReviewDto.class)))
-    @AddJsonFilters(filters = {MEMBER_DTO_EXCLUDE_PII, REVIEW_HIDE_DUPLICATE_INFO_IN_RESERVATION})
-    public MappingJacksonValue getReviewsOfPartyRoom(@PathVariable("partyRoomId") long partyRoomId) {
-        return new MappingJacksonValue(partyRoomReviewService.findAllByPartyRoom(partyRoomId));
+    @AddJsonFilters(filters = {MEMBER_DTO_EXCLUDE_PASSWORD, REVIEW_HIDE_DUPLICATE_INFO_IN_RESERVATION})
+    public MappingJacksonValue getReviewsOfPartyRoom(@PathVariable("partyRoomId") long partyRoomId,
+                                                     @RequestParam(required = false, defaultValue = "1") int pageNum,
+                                                     @RequestParam(required = false, defaultValue = "10") int pageSize) {
+        return new MappingJacksonValue(partyRoomReviewService.findAllByPartyRoom(partyRoomId, PageRequest.of(pageNum - 1, pageSize)));
     }
 
     @PostMapping("/register")
