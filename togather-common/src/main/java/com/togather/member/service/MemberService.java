@@ -20,8 +20,9 @@ import com.togather.partyroom.reservation.model.PartyRoomReservationResponseDto;
 import com.togather.partyroom.reservation.service.PartyRoomReservationService;
 import com.togather.partyroom.review.model.PartyRoomReviewDto;
 import com.togather.partyroom.review.service.PartyRoomReviewService;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -34,17 +35,25 @@ import java.util.List;
 @Service
 @Slf4j
 @Transactional(readOnly = true)
-@RequiredArgsConstructor
 public class MemberService {
-    private final MemberConverter memberConverter;
-    private final MemberRepository memberRepository;
-    private final S3ImageUploader s3ImageUploader;
-    private final PartyRoomBookmarkService partyRoomBookmarkService;
-    private final PartyRoomBookmarkConverter partyRoomBookmarkConverter;
-    private final PartyRoomReservationService partyRoomReservationService;
-    private final PartyRoomReservationConverter partyRoomReservationConverter;
-    private final PartyRoomReviewService partyRoomReviewService;
-    private final PaymentService paymentService;
+    @Autowired
+    private MemberConverter memberConverter;
+    @Autowired
+    private MemberRepository memberRepository;
+    @Autowired
+    private S3ImageUploader s3ImageUploader;
+    @Autowired
+    private PartyRoomBookmarkService partyRoomBookmarkService;
+    @Autowired
+    private PartyRoomBookmarkConverter partyRoomBookmarkConverter;
+    @Autowired @Lazy
+    private PartyRoomReservationService partyRoomReservationService;
+    @Autowired @Lazy
+    private PartyRoomReservationConverter partyRoomReservationConverter;
+    @Autowired @Lazy
+    private PartyRoomReviewService partyRoomReviewService;
+    @Autowired @Lazy
+    private PaymentService paymentService;
 
     @Transactional
 
