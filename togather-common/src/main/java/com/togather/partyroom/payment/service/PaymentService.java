@@ -1,6 +1,7 @@
 package com.togather.partyroom.payment.service;
 
 import com.togather.member.converter.MemberConverter;
+import com.togather.member.model.Member;
 import com.togather.member.model.MemberDto;
 import com.togather.partyroom.payment.converter.PaymentConverter;
 import com.togather.partyroom.payment.model.*;
@@ -17,10 +18,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.http.MediaType;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -214,8 +212,12 @@ public class PaymentService {
         return payment.getCancelReason();
     }
 
-    private void deletePayment(Payment payment) {
+    public void deletePayment(Payment payment) {
         paymentRepository.delete(payment);
         log.info("delete paymentId: {}", payment.getPaymentId());
+    }
+
+    public List<Payment> findAllByMember(Member member) {
+        return paymentRepository.findAllByMember(member);
     }
 }

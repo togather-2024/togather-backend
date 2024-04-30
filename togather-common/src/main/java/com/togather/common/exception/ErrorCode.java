@@ -11,6 +11,9 @@ public enum ErrorCode {
     PREVIOUS_PASSWORD_MISMATCH("member.update.previous_password.mismatch"),
     NEW_PASSWORD_MISMATCH("member.update.new_password.mismatch"),
     PASSWORD_MISMATCH("member.withdraw.password.mismatch"),
+    EXIST_RESERVATION("member.withdraw.reservation.exist"),
+    HOST_WITHDRAWAL_DISABLED("member.withdraw.role.host"),
+
 
     // Bookmark
     NOT_FOUND_BOOKMARK("partyroom.bookmark.not_found"),
@@ -22,6 +25,7 @@ public enum ErrorCode {
     REVIEW_DIFFERENT_MEMBER("review.different.member"),
     REVIEW_RESERVATION_NOT_COMPLETE("review.reservation.not.complete"),
     DUPLICATE_REVIEW_TRIAL("review.already.finished"),
+
 
     INTERNAL_SERVER_ERROR("fail");
 

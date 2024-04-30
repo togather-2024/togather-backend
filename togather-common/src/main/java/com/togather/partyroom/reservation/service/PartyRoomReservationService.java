@@ -208,4 +208,8 @@ public class PartyRoomReservationService {
                 .availableTimes(availableTimes)
                 .build();
     }
+
+    public boolean hasFinishedPartyRoomReservation(PartyRoomReservationDto partyRoomReservationDto) {
+        return LocalDateTime.now().isAfter(partyRoomReservationDto.getEndTime());
+    }
 }
