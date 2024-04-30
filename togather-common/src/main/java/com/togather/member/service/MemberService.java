@@ -12,8 +12,10 @@ import com.togather.partyroom.bookmark.converter.PartyRoomBookmarkConverter;
 import com.togather.partyroom.bookmark.model.PartyRoomBookmarkDto;
 import com.togather.partyroom.bookmark.service.PartyRoomBookmarkService;
 import com.togather.partyroom.payment.model.Payment;
+import com.togather.partyroom.payment.model.PaymentStatus;
 import com.togather.partyroom.payment.service.PaymentService;
 import com.togather.partyroom.reservation.converter.PartyRoomReservationConverter;
+import com.togather.partyroom.reservation.model.PartyRoomReservationDto;
 import com.togather.partyroom.reservation.model.PartyRoomReservationResponseDto;
 import com.togather.partyroom.reservation.service.PartyRoomReservationService;
 import com.togather.partyroom.review.model.PartyRoomReviewDto;
@@ -54,7 +56,6 @@ public class MemberService {
     private PaymentService paymentService;
 
     @Transactional
-
     public void register(MemberDto memberDto) {
         checkDuplicateMember(memberDto.getEmail());
 
@@ -62,13 +63,6 @@ public class MemberService {
         memberRepository.save(member);
 
         log.info("save into member: {}", member.getEmail());
-    }
-
-    public void login(MemberDto memberDto) {
-        Member findMember = memberRepository.findByEmailAndPassword(memberDto.getEmail(), memberDto.getPassword())
-                .orElseThrow(RuntimeException::new); //TODO: 예외 클래스 추후 수정
-
-        log.info("member logged in: {}", findMember.getEmail());
     }
 
     @Transactional
@@ -82,11 +76,21 @@ public class MemberService {
         //처리중인 예약이 있으면 예외 처리
         List<PartyRoomReservationResponseDto> reservationList = partyRoomReservationService.findAllByMember(findMember);
         reservationList.stream()
-                .filter(reservation -> partyRoomReservationService.hasFinishedPartyRoomReservation(reservation.getPartyRoomReservationDto()))
-                .findAny()
-                .ifPresent(reservation -> {
-                    throw new TogatherApiException(ErrorCode.EXIST_RESERVATION);
-                });
+                .filter(reservation -> {
+                    PartyRoomReservationDto reservationDto = reservation.getPartyRoomReservationDto();
+                    PaymentStatus paymentStatus = reservationDto.getPaymentStatus();
+
+                    //예약이 진행중일 경우 예외
+                    if (paymentStatus == PaymentStatus.PENDING || //예약 등록 후 결제를 안 한 상태일 경우
+                            (paymentStatus == PaymentStatus.COMPLETE &&
+                            !partyRoomReservationService.hasFinishedPartyRoomReservation(reservationDto))) {
+                        //결제를 마쳤지만 이용을 안 한 경우
+                        throw new TogatherApiException(ErrorCode.EXIST_RESERVATION);
+                    }
+
+                    return false;
+                })
+                .findAny();
 
         //자식 테이블 데이터 일괄 삭제(북마크, 예약, 결제, 리뷰)
         List<PartyRoomReviewDto> reviewList = partyRoomReviewService.findAllByReviewer(findMember);
