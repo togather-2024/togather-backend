@@ -16,7 +16,7 @@ public class MemberConverter {
                 .password(member.getPassword())
                 .role(member.getRole())
                 .email(member.getEmail())
-                .profilePicFile("path" + member.getProfilePicFile())
+                .profilePicFile(member.getProfilePicFile())
                 .build();
     }
 
