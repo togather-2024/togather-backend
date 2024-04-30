@@ -1,11 +1,17 @@
 package com.togather.member.converter;
 
+import com.togather.common.s3.S3ImageUploader;
 import com.togather.member.model.Member;
 import com.togather.member.model.MemberDto;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class MemberConverter {
+
+    private final S3ImageUploader s3ImageUploader;
+
     public MemberDto convertToDto(Member member) {
         if (member == null)
             return null;
@@ -16,7 +22,7 @@ public class MemberConverter {
                 .password(member.getPassword())
                 .role(member.getRole())
                 .email(member.getEmail())
-                .profilePicFile(member.getProfilePicFile())
+                .profilePicFile(s3ImageUploader.getResourceUrl(member.getProfilePicFile()))
                 .build();
     }
 
