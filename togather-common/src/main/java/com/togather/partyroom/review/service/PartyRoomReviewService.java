@@ -14,7 +14,6 @@ import com.togather.partyroom.review.converter.PartyRoomReviewConverter;
 import com.togather.partyroom.review.model.PartyRoomReview;
 import com.togather.partyroom.review.model.PartyRoomReviewDto;
 import com.togather.partyroom.review.repository.PartyRoomReviewRepository;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;

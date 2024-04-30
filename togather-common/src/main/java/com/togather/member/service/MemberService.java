@@ -7,6 +7,7 @@ import com.togather.common.s3.S3ObjectDto;
 import com.togather.member.converter.MemberConverter;
 import com.togather.member.model.Member;
 import com.togather.member.model.MemberDto;
+import com.togather.member.model.Role;
 import com.togather.member.repository.MemberRepository;
 import com.togather.partyroom.bookmark.converter.PartyRoomBookmarkConverter;
 import com.togather.partyroom.bookmark.model.PartyRoomBookmarkDto;
@@ -68,6 +69,9 @@ public class MemberService {
     @Transactional
     public void delete(MemberDto.Withdraw withdraw) {
         MemberDto findMember = findByAuthentication(SecurityContextHolder.getContext().getAuthentication());
+
+        if (findMember.getRole() == Role.HOST)
+            throw new TogatherApiException(ErrorCode.HOST_WITHDRAWAL_DISABLED);
 
         //패스워드 불일치 예외 처리
         if (!findMember.getPassword().equals(withdraw.getPassword()))

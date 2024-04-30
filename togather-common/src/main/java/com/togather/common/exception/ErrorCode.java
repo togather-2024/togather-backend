@@ -12,6 +12,7 @@ public enum ErrorCode {
     NEW_PASSWORD_MISMATCH("member.update.new_password.mismatch"),
     PASSWORD_MISMATCH("member.withdraw.password.mismatch"),
     EXIST_RESERVATION("member.withdraw.reservation.exist"),
+    HOST_WITHDRAWAL_DISABLED("member.withdraw.role.host"),
 
 
     // Bookmark
