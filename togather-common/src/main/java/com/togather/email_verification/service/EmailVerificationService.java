@@ -1,5 +1,7 @@
 package com.togather.email_verification.service;
 
+import com.togather.common.exception.ErrorCode;
+import com.togather.common.exception.TogatherApiException;
 import com.togather.email_verification.converter.EmailVerificationConverter;
 import com.togather.email_verification.dto.EmailVerificationDto;
 import com.togather.email_verification.model.EmailVerification;
@@ -55,7 +57,7 @@ public class EmailVerificationService {
 
     public MimeMessage createEmailForm(EmailVerificationDto emailVerificationDto) {
         if (isEmailDuplicated(emailVerificationDto.getReceiverEmailAddress()))
-            throw new RuntimeException("중복된 이메일입니다: " + emailVerificationDto.getReceiverEmailAddress()); //TODO: 예외 클래스 수정
+            throw new TogatherApiException(ErrorCode.EMAIL_SEND_DUPLICATE_MEMBER); //TODO: 예외 클래스 수정
 
         MimeMessage message = javaMailSender.createMimeMessage();
 
@@ -86,12 +88,14 @@ public class EmailVerificationService {
 
     public void verifyEmailVerificationCode(EmailVerificationDto emailVerificationDto) {
         EmailVerification findEmailVerification = emailVerificationRepository.findLatestByEmail(emailVerificationDto.getReceiverEmailAddress())
-                .orElseThrow(RuntimeException::new); //TODO: 예외 클래스 수정
+                .orElseThrow(() -> new TogatherApiException(ErrorCode.EMAIL_VERIFY_NO_TRIAL));
 
         LocalDateTime currentTime = LocalDateTime.now();
-        if (currentTime.isAfter(findEmailVerification.getVerificationExpirationTime())
-                || !findEmailVerification.getVerificationCode().equals(emailVerificationDto.getVerificationCode())) {
-            throw new RuntimeException(); //TODO: 상황에 따라 예외 처리 세분화
+        if (currentTime.isAfter(findEmailVerification.getVerificationExpirationTime())) {
+            throw new TogatherApiException(ErrorCode.EMAIL_VERIFY_EXPIRED_CODE);
+        }
+         if (!findEmailVerification.getVerificationCode().equals(emailVerificationDto.getVerificationCode())) {
+            throw new TogatherApiException(ErrorCode.EMAIL_VERIFY_WRONG_CODE);
         }
 
         log.info("email verification successfully completed.: {}", emailVerificationDto.getReceiverEmailAddress());

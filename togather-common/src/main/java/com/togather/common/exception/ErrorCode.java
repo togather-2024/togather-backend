@@ -14,6 +14,12 @@ public enum ErrorCode {
     EXIST_RESERVATION("member.withdraw.reservation.exist"),
     HOST_WITHDRAWAL_DISABLED("member.withdraw.role.host"),
 
+    // Email Verification
+    EMAIL_SEND_DUPLICATE_MEMBER("email.send.duplicate.member"),
+    EMAIL_VERIFY_NO_TRIAL("email.verify.no.trial"),
+    EMAIL_VERIFY_EXPIRED_CODE("email.verify.expired.code"),
+    EMAIL_VERIFY_WRONG_CODE("email.verify.wrong.code"),
+
 
     // Bookmark
     NOT_FOUND_BOOKMARK("partyroom.bookmark.not_found"),
