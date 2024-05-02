@@ -32,7 +32,7 @@ spring:
           timeout: 5000
           writetimeout: 5000
     auth-code-expiration-millis: 1800000 # 유효시간, 30 * 60 * 1000 == 30분
-q
+
 payment:
   toss:
     test_client_api_key: ENC(m4QNrU3Sr+TO3diLYuK7hDENtdoOLSItixQ0gdeHxh9yQGi6GxhvZJGf4/jdy6KZ)
