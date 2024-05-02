@@ -20,18 +20,15 @@ public enum ErrorCode {
     EMAIL_VERIFY_EXPIRED_CODE("email.verify.expired.code"),
     EMAIL_VERIFY_WRONG_CODE("email.verify.wrong.code"),
 
-
     // Bookmark
     NOT_FOUND_BOOKMARK("partyroom.bookmark.not_found"),
     DUPLICATED_BOOKMARK("partyroom.bookmark.duplicate"),
-
 
     // Review
     REVIEW_NOT_FOUND("review.not.found"),
     REVIEW_DIFFERENT_MEMBER("review.different.member"),
     REVIEW_RESERVATION_NOT_COMPLETE("review.reservation.not.complete"),
     DUPLICATE_REVIEW_TRIAL("review.already.finished"),
-
 
     INTERNAL_SERVER_ERROR("fail");
 
