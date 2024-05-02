@@ -9,6 +9,10 @@ public class LocalDateTimeUtils {
     private static final String KST_ZONE_ID = "Asia/Seoul";
 
     public static LocalDateTime convertFromUtc(LocalDateTime utc, ZoneId zoneId) {
+        if (utc == null) {
+            return null;
+        }
+
         ZonedDateTime zonedDateTime = utc.atZone(ZoneId.of("UTC"));
         return zonedDateTime.withZoneSameInstant(zoneId).toLocalDateTime();
     }
