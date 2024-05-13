@@ -69,4 +69,7 @@ public class Member {
         this.profilePicFile = profilePicFile;
     }
 
+    public void switchRole(Role role) {
+        this.role = role;
+    }
 }

@@ -204,4 +204,13 @@ public class MemberService {
 
         log.info("update member profile image: {}", findMember.getMemberSrl());
     }
+
+    @Transactional
+    public void switchRoleGuestToHost(long memberSrl) {
+        Member findMember = findMemberByAuthentication(SecurityContextHolder.getContext().getAuthentication());
+
+        findMember.switchRole(Role.HOST);
+
+        log.info("switch role (GUEST to HOST): {}", memberSrl);
+    }
 }

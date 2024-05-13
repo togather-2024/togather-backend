@@ -114,4 +114,15 @@ public class MemberController {
         memberService.delete(withdraw);
         return ResponseEntity.ok("ok");
     }
+
+    @PostMapping("/switch-role/{memberSrl}")
+    @Operation(summary = "Member role transition (guest-to-host)", description = "회원 권한 전환(게스트 -> 호스트)")
+    @ApiResponse(responseCode = "200", description = "success")
+    @PreAuthorize("isAuthenticated()")
+    @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
+    public ResponseEntity<String> switchRoleGuestToHost(@PathVariable("memberSrl") long memberSrl) {
+        memberService.switchRoleGuestToHost(memberSrl);
+
+        return ResponseEntity.ok("ok");
+    }
 }
