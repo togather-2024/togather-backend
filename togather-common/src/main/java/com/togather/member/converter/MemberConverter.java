@@ -16,13 +16,17 @@ public class MemberConverter {
         if (member == null)
             return null;
 
+        String resourceUrl = null;
+        if (member.getProfilePicFile() != null)
+            resourceUrl = s3ImageUploader.getResourceUrl(member.getProfilePicFile());
+
         return MemberDto.builder()
                 .memberSrl(member.getMemberSrl())
                 .memberName(member.getMemberName())
                 .password(member.getPassword())
                 .role(member.getRole())
                 .email(member.getEmail())
-                .profilePicFile(s3ImageUploader.getResourceUrl(member.getProfilePicFile()))
+                .profilePicFile(resourceUrl)
                 .build();
     }
 

@@ -69,7 +69,7 @@ public class MemberController {
     @ApiResponse(responseCode = "200", description = "success", content = @Content(schema = @Schema(implementation = MemberDto.class)))
     @PreAuthorize("isAuthenticated()")
     @ApiResponse(responseCode = "401", description = "user not logged in (No JWT token)", content = @Content)
-    @AddJsonFilters(filters = ResponseFilter.MEMBER_DTO_EXCLUDE_PW)
+    @AddJsonFilters(filters = ResponseFilter.MEMBER_DTO_EXCLUDE_PASSWORD)
     public MappingJacksonValue getUserInfo() {
         MemberDto loginUser = memberService.findByAuthentication(SecurityContextHolder.getContext().getAuthentication());
         return new MappingJacksonValue(loginUser);
